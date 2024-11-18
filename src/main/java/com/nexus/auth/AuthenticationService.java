@@ -1,8 +1,7 @@
 package com.nexus.auth;
 
 import com.nexus.auth.jwt.JwtService;
-import com.nexus.auth.user.User;
-import com.nexus.auth.user.UserRepository;
+import com.nexus.user.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

@@ -1,7 +1,7 @@
 package com.nexus.auth.principal;
 
-import com.nexus.auth.user.User;
-import com.nexus.auth.user.UserRepository;
+import com.nexus.user.User;
+import com.nexus.user.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

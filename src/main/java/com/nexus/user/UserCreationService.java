@@ -1,4 +1,4 @@
-package com.nexus.auth.user;
+package com.nexus.user;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;

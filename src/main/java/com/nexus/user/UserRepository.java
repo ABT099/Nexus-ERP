@@ -1,4 +1,4 @@
-package com.nexus.auth.user;
+package com.nexus.user;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

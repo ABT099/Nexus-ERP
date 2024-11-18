@@ -1,6 +1,6 @@
 package com.nexus.common.abstraction;
 
-import com.nexus.auth.user.User;
+import com.nexus.user.User;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.OneToOne;

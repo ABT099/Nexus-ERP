@@ -1,4 +1,4 @@
-package com.nexus.auth.user;
+package com.nexus.user;
 
 public enum UserType {
     SUPER_USER,

@@ -1,7 +1,7 @@
 package com.nexus;
 
-import com.nexus.auth.user.UserCreationService;
-import com.nexus.auth.user.UserType;
+import com.nexus.user.UserCreationService;
+import com.nexus.user.UserType;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

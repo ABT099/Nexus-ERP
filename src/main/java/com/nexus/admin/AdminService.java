@@ -1,8 +1,8 @@
 package com.nexus.admin;
 
-import com.nexus.auth.user.User;
-import com.nexus.auth.user.UserCreationService;
-import com.nexus.auth.user.UserType;
+import com.nexus.user.User;
+import com.nexus.user.UserCreationService;
+import com.nexus.user.UserType;
 import com.nexus.common.abstraction.AbstractUserService;
 import com.nexus.common.request.CreatePersonRequest;
 import com.nexus.common.request.UpdatePersonRequest;
