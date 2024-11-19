@@ -1,21 +1,39 @@
 package com.nexus.common.abstraction;
 
 import com.nexus.user.User;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.util.Date;
 
 @MappedSuperclass
-public abstract class AbstractAppUser extends AbstractArchivable {
+public abstract class AbstractAppUser {
 
+    @Id
+    @GeneratedValue
+    private Long id;
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(
+            name = "user_id",
+            nullable = false,
+            updatable = false,
+            unique = true
+    )
     private User user;
+    @CreatedDate
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdDate;
+    @Column(nullable = false)
+    private boolean archived = false;
 
     public AbstractAppUser(User user) {
         this.user = user;
     }
     public AbstractAppUser() {}
+
+    public Long getId() {
+        return id;
+    }
 
     public User getUser() {
         return user;
@@ -23,5 +41,17 @@ public abstract class AbstractAppUser extends AbstractArchivable {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 }

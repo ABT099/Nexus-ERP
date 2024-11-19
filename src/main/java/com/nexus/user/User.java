@@ -7,21 +7,27 @@ import jakarta.persistence.*;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
     @Column(
             unique = true,
-            nullable = false
+            nullable = false,
+            columnDefinition = "text"
     )
     private String username;
-    @Column(nullable = false)
+    @Column(
+            nullable = false,
+            columnDefinition = "text"
+    )
     private String password;
     @Column(
             nullable = false,
-            updatable = false
+            updatable = false,
+            columnDefinition = "text"
     )
     @Enumerated(EnumType.STRING)
     private UserType userType;
+    @Column(columnDefinition = "text")
     private String avatarUrl;
     @Column(nullable = false)
     private boolean archived = false;

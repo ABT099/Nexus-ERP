@@ -1,6 +1,5 @@
 package com.nexus.common.repository;
 
-import com.nexus.common.abstraction.AbstractArchivable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -9,7 +8,7 @@ import org.springframework.data.repository.NoRepositoryBean;
 import java.util.List;
 
 @NoRepositoryBean
-public interface ArchivableRepository<T extends AbstractArchivable, ID> extends JpaRepository<T, ID> {
+public interface ArchivableRepository<T, ID> extends JpaRepository<T, ID> {
     @Modifying
     @Query("""
         UPDATE #{#entityName} e

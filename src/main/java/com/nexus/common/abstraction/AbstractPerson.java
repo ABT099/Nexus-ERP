@@ -6,9 +6,15 @@ import jakarta.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public abstract class AbstractPerson extends AbstractAppUser {
-    @Column(nullable = false)
+    @Column(
+            nullable = false,
+            columnDefinition = "text"
+    )
     private String firstName;
-    @Column(nullable = false)
+    @Column(
+            nullable = false,
+            columnDefinition = "text"
+    )
     private String lastName;
 
     public AbstractPerson(User user, String firstName, String lastName) {
