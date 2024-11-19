@@ -3,6 +3,8 @@ package com.nexus.admin;
 import com.nexus.common.ArchivableQueryType;
 import com.nexus.common.request.CreatePersonRequest;
 import com.nexus.common.request.UpdatePersonRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,7 +41,10 @@ public class AdminController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Admin> getById(@PathVariable long id) {
+    public ResponseEntity<Admin> getById(
+            @Valid
+            @Positive
+            @PathVariable long id) {
         Admin admin = adminService.getById(id);
 
         if (admin == null) {
@@ -61,7 +66,7 @@ public class AdminController {
     }
 
     @PostMapping
-    public void create(@RequestBody CreatePersonRequest request) {
+    public void create(@Valid @RequestBody CreatePersonRequest request) {
         adminService.create(request);
     }
 
@@ -70,13 +75,19 @@ public class AdminController {
         adminService.update(request);
     }
 
-    @PostMapping("archive/{id}")
-    public void archive(@PathVariable long id) {
+    @PatchMapping("archive/{id}")
+    public void archive(
+            @Valid
+            @Positive
+            @PathVariable long id) {
         adminService.archive(id);
     }
 
     @DeleteMapping("{id}")
-    public void delete(@PathVariable long id) {
+    public void delete(
+            @Valid
+            @Positive
+            @PathVariable long id) {
         adminService.delete(id);
     }
 }
