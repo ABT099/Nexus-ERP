@@ -1,11 +1,14 @@
 package com.nexus.common.abstraction;
 
 import com.nexus.user.User;
+import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public class AbstractPerson extends AbstractAppUser {
+public abstract class AbstractPerson extends AbstractAppUser {
+    @Column(nullable = false)
     private String firstName;
+    @Column(nullable = false)
     private String lastName;
 
     public AbstractPerson(User user, String firstName, String lastName) {

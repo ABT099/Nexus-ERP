@@ -9,11 +9,21 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(
+            unique = true,
+            nullable = false
+    )
     private String username;
+    @Column(nullable = false)
     private String password;
+    @Column(
+            nullable = false,
+            updatable = false
+    )
     @Enumerated(EnumType.STRING)
     private UserType userType;
     private String avatarUrl;
+    @Column(nullable = false)
     private boolean archived = false;
 
     public User(String username, String password, UserType userType) {
