@@ -1,5 +1,6 @@
 package com.nexus.admin;
 
+import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.user.User;
 import com.nexus.user.UserCreationService;
 import com.nexus.user.UserType;
@@ -36,12 +37,16 @@ public class AdminService extends AbstractUserService {
 
     public Admin getById(Long id) {
         return adminRepository.findById(id)
-                .orElse(null);
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("admin with id " + id + " not found")
+                );
     }
 
     public Admin getMe() {
         return adminRepository.findById(getUserId())
-                .orElse(null);
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("admin not found")
+                );
     }
 
     public void create(CreatePersonRequest request) {
@@ -53,15 +58,10 @@ public class AdminService extends AbstractUserService {
     }
 
     public void update(UpdatePersonRequest request) {
-        // Todo: Change to exception
-
         Admin admin = adminRepository.findById(getUserId())
-                .orElse(null);
-
-        if (admin == null) {
-            System.out.println("Admin not found");
-            return;
-        }
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("admin not found")
+                );
 
         boolean updated = false;
 

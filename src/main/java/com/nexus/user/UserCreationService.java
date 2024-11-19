@@ -1,5 +1,6 @@
 package com.nexus.user;
 
+import com.nexus.exception.DuplicateResourceException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,7 @@ public class UserCreationService {
 
     public User create(String username, String password, UserType userType) {
         if (userRepository.existsByUsername(username)) {
-            throw new RuntimeException("Username already exists");
+            throw new DuplicateResourceException("Username already exists");
         }
 
         String hashedPassword = bCryptPasswordEncoder.encode(password);

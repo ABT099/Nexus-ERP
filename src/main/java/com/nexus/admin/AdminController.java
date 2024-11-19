@@ -31,10 +31,7 @@ public class AdminController {
         switch (archived) {
             case NonArchived -> admins = adminService.getAllNonArchived();
             case Archived -> admins = adminService.getAllArchived();
-            case null -> admins = adminService.getAll();
-            default -> {
-                return ResponseEntity.badRequest().build();
-            }
+            default -> admins = adminService.getAll();
         }
 
         return ResponseEntity.ok(admins);
@@ -47,20 +44,12 @@ public class AdminController {
             @PathVariable long id) {
         Admin admin = adminService.getById(id);
 
-        if (admin == null) {
-            return ResponseEntity.notFound().build();
-        }
-
         return ResponseEntity.ok(admin);
     }
 
     @GetMapping("me")
     public ResponseEntity<Admin> getMe() {
         Admin admin = adminService.getMe();
-
-        if (admin == null) {
-            return ResponseEntity.notFound().build();
-        }
 
         return ResponseEntity.ok(admin);
     }
