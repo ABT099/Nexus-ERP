@@ -8,6 +8,7 @@ import com.nexus.user.UserType;
 import com.nexus.common.abstraction.AbstractUserService;
 import com.nexus.common.person.CreatePersonRequest;
 import com.nexus.common.person.UpdatePersonRequest;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,6 +38,10 @@ public class AdminService extends AbstractUserService {
         return adminRepository.findAllArchived();
     }
 
+    public List<Admin> getAllByIds(Iterable<Long> ids) {
+        return adminRepository.findAllById(ids);
+    }
+
     public Admin getById(Long id) {
         return adminRepository.findById(id)
                 .orElseThrow(
@@ -51,6 +56,7 @@ public class AdminService extends AbstractUserService {
                 );
     }
 
+    @Transactional
     public void create(CreatePersonRequest request) {
         User createdUser = userCreationService.create(request.username(), request.password(), UserType.ADMIN);
 

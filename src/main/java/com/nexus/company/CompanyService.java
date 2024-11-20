@@ -5,6 +5,7 @@ import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.user.User;
 import com.nexus.user.UserCreationService;
 import com.nexus.user.UserType;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,6 +44,7 @@ public class CompanyService extends AbstractUserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
+    @Transactional
     public void create(CreateCompanyRequest request) {
         User createdUser = userCreationService.create(request.username(), request.password(), UserType.CUSTOMER);
 
