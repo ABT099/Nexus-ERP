@@ -1,10 +1,16 @@
 package com.nexus.event;
 
+import com.nexus.notification.NotificationHandler;
+import com.nexus.notification.NotificationHolderDto;
+import com.nexus.notification.NotificationType;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,6 +23,12 @@ public class EventHandler {
     private static final Comparator<EventHolderDto> EVENT_COMPARATOR =
             Comparator.comparing(EventHolderDto::isUrgent).reversed()
                     .thenComparing(EventHolderDto::getDate);
+
+    private final NotificationHandler notificationHandler;
+
+    public EventHandler(NotificationHandler notificationHandler) {
+        this.notificationHandler = notificationHandler;
+    }
 
     @Async
     @Scheduled(fixedRate = 3600000)
@@ -34,7 +46,11 @@ public class EventHandler {
         for (Long adminId : adminIds) {
             adminEvents.computeIfAbsent(adminId, id -> new ConcurrentSkipListSet<>(EVENT_COMPARATOR))
                     .add(event);
-            updateUrgentStatus(adminEvents.get(adminId), now);
+
+            ConcurrentSkipListSet<EventHolderDto> events = adminEvents.get(adminId);
+
+            updateUrgentStatus(events, now);
+            sendReminder(adminId, events);
         }
     }
 
@@ -43,7 +59,11 @@ public class EventHandler {
 
         adminEvents.computeIfAbsent(adminId, id -> new ConcurrentSkipListSet<>(EVENT_COMPARATOR))
                 .add(event);
+
+        ConcurrentSkipListSet<EventHolderDto> events = adminEvents.get(adminId);
+
         updateUrgentStatus(adminEvents.get(adminId), now);
+        sendReminder(adminId, events);
     }
 
     public void removeEvent(Set<Long> adminIds, EventHolderDto event) {
@@ -93,5 +113,28 @@ public class EventHandler {
                 iterator.remove();
             }
         }
+    }
+
+    private void sendReminder(Long adminId, ConcurrentSkipListSet<EventHolderDto> events) {
+        LocalDate today = LocalDate.now();
+        LocalDate tomorrow = today.plusDays(1);
+
+        for (EventHolderDto event : events) {
+            LocalDate eventDay = event.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalTime eventTime = event.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+
+            if ((eventDay.equals(today) || eventDay.equals(tomorrow))) {
+                String dayDescription = eventDay.equals(today) ? "today" : "tomorrow";
+                NotificationHolderDto notification = new NotificationHolderDto(
+                        adminId,
+                        "Event Reminder",
+                        "Reminder for the event: " + event.getEventName() + " scheduled for: " + dayDescription + " at " + eventTime.toString(),
+                        NotificationType.REMINDER
+                );
+                notificationHandler.addNotification(notification);
+            }
+        }
+
+        notificationHandler.flush();
     }
 }

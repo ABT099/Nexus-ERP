@@ -6,7 +6,9 @@ import com.nexus.user.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class NotificationService {
@@ -29,9 +31,30 @@ public class NotificationService {
                 user,
                 createNotificationDto.title(),
                 createNotificationDto.body(),
-                createNotificationDto.date());
+                createNotificationDto.type());
 
         notificationRepository.save(notification);
+    }
+
+    public void saveAll(List<CreateNotificationDto> createNotificationDtos) {
+        Set<Long> userIds = createNotificationDtos.stream()
+                .map(CreateNotificationDto::userId)
+                .collect(Collectors.toSet());
+
+        Map<Long, User> usersMap = userRepository.findAllById(userIds).stream()
+                .collect(Collectors.toMap(User::getId, user -> user));
+
+        List<Notification> notifications = createNotificationDtos.stream()
+                .map(dto -> {
+                    User user = usersMap.get(dto.userId());
+                    if (user == null) {
+                        throw new ResourceNotFoundException("User not found for ID: " + dto.userId());
+                    }
+                    return new Notification(user, dto.title(), dto.body(), dto.type());
+                })
+                .collect(Collectors.toList());
+
+        notificationRepository.saveAll(notifications);
     }
 
     public void readBatch(Set<Long> ids) {

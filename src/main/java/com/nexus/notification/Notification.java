@@ -4,6 +4,7 @@ import com.nexus.user.User;
 import jakarta.persistence.*;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Entity
@@ -20,15 +21,18 @@ public class Notification extends AbstractPersistable<Long> {
     @Column(nullable = false, columnDefinition = "text")
     private String body;
     @Temporal(TemporalType.TIMESTAMP)
-    private Date date;
+    private ZonedDateTime date = ZonedDateTime.now();
     @Column(nullable = false)
     private boolean read = false;
 
-    public Notification(User user, String title, String body, Date date) {
+    @Enumerated(EnumType.STRING)
+    private NotificationType type;
+
+    public Notification(User user, String title, String body, NotificationType type) {
         this.user = user;
         this.title = title;
         this.body = body;
-        this.date = date;
+        this.type = type;
     }
 
     public Notification() {}
@@ -49,11 +53,11 @@ public class Notification extends AbstractPersistable<Long> {
         this.body = body;
     }
 
-    public Date getDate() {
+    public ZonedDateTime getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(ZonedDateTime date) {
         this.date = date;
     }
 
@@ -63,5 +67,13 @@ public class Notification extends AbstractPersistable<Long> {
 
     public void setRead(boolean read) {
         this.read = read;
+    }
+
+    public NotificationType getType() {
+        return type;
+    }
+
+    public void setType(NotificationType type) {
+        this.type = type;
     }
 }
