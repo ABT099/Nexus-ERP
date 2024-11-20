@@ -1,6 +1,5 @@
 package com.nexus.customer;
 
-import com.nexus.admin.Admin;
 import com.nexus.common.ArchivableQueryType;
 import com.nexus.common.person.CreatePersonRequest;
 import com.nexus.common.person.UpdatePersonRequest;
