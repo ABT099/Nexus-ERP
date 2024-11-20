@@ -7,9 +7,7 @@ import com.nexus.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,9 +23,18 @@ public class EventService {
         this.eventHandler = eventHandler;
     }
 
+    @Transactional
     public List<Event> findAllByAdmin(long adminId) {
-        Set<Integer> ids = eventHandler.getEventsForAdmin(adminId);
-        return eventRepository.findAllById(ids);
+        List<Event> events = Optional.ofNullable(eventRepository.findAllByAdminId(adminId))
+                .orElse(Collections.emptyList());
+
+        events.sort(
+                Comparator.comparing(Event::isUrgent, Comparator.nullsLast(Boolean::compareTo)).reversed()
+                        .thenComparing(Event::getDate, Comparator.nullsLast(Comparator.naturalOrder()))
+                        .thenComparing(Event::getId, Comparator.nullsLast(Comparator.naturalOrder()))
+        );
+
+        return events;
     }
 
     public Event findById(int id) {

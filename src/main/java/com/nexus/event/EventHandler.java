@@ -25,9 +25,11 @@ public class EventHandler {
                     .thenComparing(EventHolderDto::getDate);
 
     private final NotificationHandler notificationHandler;
+    private final EventRepository eventRepository;
 
-    public EventHandler(NotificationHandler notificationHandler) {
+    public EventHandler(NotificationHandler notificationHandler, EventRepository eventRepository) {
         this.notificationHandler = notificationHandler;
+        this.eventRepository = eventRepository;
     }
 
     @Async
@@ -40,6 +42,7 @@ public class EventHandler {
         }
     }
 
+    @Async
     public void addEvent(Set<Long> adminIds, EventHolderDto event) {
         Instant now = Instant.now();
 
@@ -54,6 +57,7 @@ public class EventHandler {
         }
     }
 
+    @Async
     public void addEvent(Long adminId, EventHolderDto event) {
         Instant now = Instant.now();
 
@@ -66,6 +70,7 @@ public class EventHandler {
         sendReminder(adminId, events);
     }
 
+    @Async
     public void removeEvent(Set<Long> adminIds, EventHolderDto event) {
         for (Long adminId : adminIds) {
             ConcurrentSkipListSet<EventHolderDto> events = adminEvents.get(adminId);
@@ -78,6 +83,7 @@ public class EventHandler {
         }
     }
 
+    @Async
     public void removeEvent(Long adminId, EventHolderDto event) {
         ConcurrentSkipListSet<EventHolderDto> events = adminEvents.get(adminId);
         if (events != null) {
@@ -88,19 +94,10 @@ public class EventHandler {
         }
     }
 
-    public Set<Integer> getEventsForAdmin(Long adminId) {
-        ConcurrentSkipListSet<EventHolderDto> events = adminEvents.getOrDefault(
-                adminId, new ConcurrentSkipListSet<>(EVENT_COMPARATOR));
-
-        Set<Integer> eventIds = new HashSet<>();
-        for (EventHolderDto event : events) {
-            eventIds.add(event.getEventId());
-        }
-        return eventIds;
-    }
-
     private void updateUrgentStatus(ConcurrentSkipListSet<EventHolderDto> events, Instant now) {
         if (events == null) return;
+
+        Set<Integer> eventIdsToUpdate = new HashSet<>();
 
         Iterator<EventHolderDto> iterator = events.iterator();
         while (iterator.hasNext()) {
@@ -109,10 +106,13 @@ public class EventHandler {
 
             if (hoursDifference > 0 && hoursDifference < 24 && !event.isUrgent()) {
                 event.setUrgent(true);
+                eventIdsToUpdate.add(event.getEventId());
             } else if (hoursDifference < 0) {
                 iterator.remove();
             }
         }
+
+        eventRepository.updateUrgentToTrue(eventIdsToUpdate);
     }
 
     private void sendReminder(Long adminId, ConcurrentSkipListSet<EventHolderDto> events) {
