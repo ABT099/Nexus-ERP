@@ -1,6 +1,9 @@
 package com.nexus.user;
 
+import com.nexus.notification.Notification;
 import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "_user")
@@ -31,6 +34,13 @@ public class User {
     private String avatarUrl;
     @Column(nullable = false)
     private boolean archived = false;
+
+    @OneToMany(
+            orphanRemoval = true,
+            cascade = CascadeType.PERSIST,
+            mappedBy = "user"
+    )
+    private List<Notification> notifications;
 
     public User(String username, String password, UserType userType) {
         this.username = username;

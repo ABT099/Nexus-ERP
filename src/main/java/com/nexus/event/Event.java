@@ -5,6 +5,7 @@ import com.nexus.common.Status;
 import jakarta.persistence.*;
 import org.springframework.data.jpa.domain.AbstractAuditable;
 
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -25,6 +26,10 @@ public class Event extends AbstractAuditable<Admin, Integer> {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status = Status.PENDING;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date date;
+    @Column(nullable = false)
+    private boolean urgent = false;
 
     @ManyToMany
     @JoinTable(
@@ -89,5 +94,21 @@ public class Event extends AbstractAuditable<Admin, Integer> {
     public void removeAdmin(Admin admin) {
         admins.remove(admin);
         admin.removeEvent(this);
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public boolean isUrgent() {
+        return urgent;
+    }
+
+    public void setUrgent(boolean urgent) {
+        this.urgent = urgent;
     }
 }
