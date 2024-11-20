@@ -57,6 +57,19 @@ public class DefaultExceptionHandler {
         return new ResponseEntity<>(apiError, ex.getStatusCode());
     }
 
+    @ExceptionHandler(NoUpdateException.class)
+    public ResponseEntity<ApiError> handle(NoUpdateException ex, HttpServletRequest request) {
+        ApiError apiError = new ApiError(
+                request.getRequestURI(),
+                ex.getMessage(),
+                BAD_REQUEST.value(),
+                ZonedDateTime.now(),
+                List.of()
+        );
+
+        return new ResponseEntity<>(apiError, BAD_REQUEST);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handle(Exception ex, HttpServletRequest request) {
         ApiError apiError = new ApiError(

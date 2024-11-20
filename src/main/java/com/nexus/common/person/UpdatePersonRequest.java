@@ -1,4 +1,4 @@
-package com.nexus.common.request;
+package com.nexus.common.person;
 
 public record UpdatePersonRequest(
         String firstName,

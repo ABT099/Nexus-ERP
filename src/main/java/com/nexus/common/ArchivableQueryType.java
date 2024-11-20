@@ -1,6 +1,6 @@
 package com.nexus.common;
 
 public enum ArchivableQueryType {
-    NonArchived,
+    ALL,
     Archived
 }

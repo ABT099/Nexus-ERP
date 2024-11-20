@@ -1,26 +1,28 @@
 package com.nexus.admin;
 
+import com.nexus.common.person.PersonService;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.user.User;
 import com.nexus.user.UserCreationService;
 import com.nexus.user.UserType;
 import com.nexus.common.abstraction.AbstractUserService;
-import com.nexus.common.request.CreatePersonRequest;
-import com.nexus.common.request.UpdatePersonRequest;
+import com.nexus.common.person.CreatePersonRequest;
+import com.nexus.common.person.UpdatePersonRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class AdminService extends AbstractUserService {
 
     private final AdminRepository adminRepository;
     private final UserCreationService userCreationService;
+    private final PersonService<Admin> personService;
 
-    public AdminService(AdminRepository adminRepository, UserCreationService userCreationService) {
+    public AdminService(AdminRepository adminRepository, UserCreationService userCreationService, PersonService<Admin> personService) {
         this.adminRepository = adminRepository;
         this.userCreationService = userCreationService;
+        this.personService = personService;
     }
 
     public List<Admin> getAll() {
@@ -57,27 +59,20 @@ public class AdminService extends AbstractUserService {
         adminRepository.save(admin);
     }
 
-    public void update(UpdatePersonRequest request) {
-        Admin admin = adminRepository.findById(getUserId())
-                .orElseThrow(
-                        () -> new ResourceNotFoundException("admin not found")
-                );
+    public void updateById(Long id, UpdatePersonRequest request) {
+        Admin admin = getById(id);
 
-        boolean updated = false;
+        admin = personService.updatePerson(admin, request);
 
-        if (!Objects.equals(admin.getFirstName(), request.firstName())) {
-            admin.setFirstName(request.firstName());
-            updated = true;
-        }
+        adminRepository.save(admin);
+    }
 
-        if (!Objects.equals(admin.getLastName(), request.lastName())) {
-            admin.setLastName(request.lastName());
-            updated = true;
-        }
+    public void updateMe(UpdatePersonRequest request) {
+        Admin admin = getMe();
 
-        if (updated) {
-            adminRepository.save(admin);
-        }
+        admin = personService.updatePerson(admin, request);
+
+        adminRepository.save(admin);
     }
 
     public void archive(Long id) {

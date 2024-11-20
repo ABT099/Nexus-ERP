@@ -1,5 +1,6 @@
-package com.nexus.admin;
+package com.nexus.customer;
 
+import com.nexus.admin.Admin;
 import com.nexus.common.ArchivableQueryType;
 import com.nexus.common.person.CreatePersonRequest;
 import com.nexus.common.person.UpdatePersonRequest;
@@ -11,52 +12,52 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admins")
-public class AdminController {
-    private final AdminService adminService;
+@RequestMapping("customers")
+public class CustomerController {
 
-    public AdminController(AdminService adminService) {
-        this.adminService = adminService;
+    private final CustomerService customerService;
+
+    public CustomerController(CustomerService customerService) {
+        this.customerService = customerService;
     }
 
     @GetMapping
-    public ResponseEntity<List<Admin>> getAll(
+    public ResponseEntity<List<Customer>> getCustomers(
             @RequestParam(
                     required = false,
                     name = "a"
-            ) ArchivableQueryType archived
-    ) {
-        List<Admin> admins;
+            )ArchivableQueryType queryType) {
+        List<Customer> customers;
 
-        switch (archived) {
-            case ALL -> admins = adminService.getAll();
-            case Archived -> admins = adminService.getAllArchived();
-            default -> admins = adminService.getAllNonArchived();
+        switch (queryType) {
+            case ALL -> customers = customerService.getAll();
+            case Archived -> customers = customerService.getAllArchived();
+            default -> customers = customerService.getAllNonArchived();
         }
 
-        return ResponseEntity.ok(admins);
+        return ResponseEntity.ok(customers);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Admin> getById(
+    public ResponseEntity<Customer> getById(
             @Valid
             @Positive
             @PathVariable long id) {
-        Admin admin = adminService.getById(id);
+        Customer customer = customerService.getById(id);
 
-        return ResponseEntity.ok(admin);
+        return ResponseEntity.ok(customer);
     }
 
     @GetMapping("me")
-    public ResponseEntity<Admin> getMe() {
-        Admin admin = adminService.getMe();
+    public ResponseEntity<Customer> getMe() {
+        Customer customer = customerService.getMe();
 
-        return ResponseEntity.ok(admin);
+        return ResponseEntity.ok(customer);
     }
 
     @PostMapping
     public void create(@Valid @RequestBody CreatePersonRequest request) {
-        adminService.create(request);
+        customerService.create(request);
     }
 
     @PutMapping("{id}")
@@ -64,12 +65,12 @@ public class AdminController {
             @Valid
             @Positive
             @PathVariable long id, @Valid @RequestBody UpdatePersonRequest request) {
-        adminService.updateById(id, request);
+        customerService.updateById(id, request);
     }
 
     @PutMapping("me")
     public void updateMe(@RequestBody UpdatePersonRequest request) {
-        adminService.updateMe(request);
+        customerService.updateMe(request);
     }
 
     @PatchMapping("archive/{id}")
@@ -77,7 +78,7 @@ public class AdminController {
             @Valid
             @Positive
             @PathVariable long id) {
-        adminService.archive(id);
+        customerService.archive(id);
     }
 
     @DeleteMapping("{id}")
@@ -85,6 +86,6 @@ public class AdminController {
             @Valid
             @Positive
             @PathVariable long id) {
-        adminService.delete(id);
+        customerService.delete(id);
     }
 }
