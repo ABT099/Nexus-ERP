@@ -1,5 +1,6 @@
 package com.nexus.user;
 
+import com.nexus.chat.Chat;
 import com.nexus.notification.Notification;
 import jakarta.persistence.*;
 
