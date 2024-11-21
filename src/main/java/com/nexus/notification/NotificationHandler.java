@@ -1,6 +1,7 @@
 package com.nexus.notification;
 
 import jakarta.transaction.Transactional;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -12,10 +13,11 @@ import java.util.Queue;
 public class NotificationHandler {
 
     private final Queue<NotificationHolderDto> notifcationQueue = new LinkedList<>();
-
+    private final SimpMessagingTemplate messagingTemplate;
     private final NotificationService notificationService;
 
-    public NotificationHandler(NotificationService notificationService) {
+    public NotificationHandler(SimpMessagingTemplate messagingTemplate, NotificationService notificationService) {
+        this.messagingTemplate = messagingTemplate;
         this.notificationService = notificationService;
     }
 
@@ -26,7 +28,16 @@ public class NotificationHandler {
                 .map(n -> new CreateNotificationDto(n.getUserId(), n.getTitle(), n.getBody(), n.getType()))
                 .toList();
 
-        notificationService.saveAll(createNotificationDtos);
+        List<Notification> notifications = notificationService.saveAll(createNotificationDtos);
+        notifcationQueue.clear();
+
+        for (Notification notification : notifications) {
+            messagingTemplate.convertAndSendToUser(
+                    notification.getUser().getUsername(),
+                    "user/notification",
+                    notification
+            );
+        }
     }
 
     public void addNotification(NotificationHolderDto notification) {

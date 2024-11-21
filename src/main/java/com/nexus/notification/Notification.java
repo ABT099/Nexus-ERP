@@ -76,4 +76,12 @@ public class Notification extends AbstractPersistable<Long> {
     public void setType(NotificationType type) {
         this.type = type;
     }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

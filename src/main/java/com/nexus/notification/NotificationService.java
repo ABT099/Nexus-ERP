@@ -36,7 +36,7 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
-    public void saveAll(List<CreateNotificationDto> createNotificationDtos) {
+    public List<Notification> saveAll(List<CreateNotificationDto> createNotificationDtos) {
         Set<Long> userIds = createNotificationDtos.stream()
                 .map(CreateNotificationDto::userId)
                 .collect(Collectors.toSet());
@@ -55,6 +55,8 @@ public class NotificationService {
                 .collect(Collectors.toList());
 
         notificationRepository.saveAll(notifications);
+
+        return notifications;
     }
 
     public void readBatch(Set<Long> ids) {
