@@ -1,6 +1,6 @@
 package com.nexus.employee;
 
-import com.nexus.common.repository.ArchivableRepository;
+import com.nexus.common.person.PersonRepository;
 
-public interface EmployeeRepository extends ArchivableRepository<Employee, Long> {
+public interface EmployeeRepository extends PersonRepository<Employee, Long> {
 }

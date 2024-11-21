@@ -46,7 +46,7 @@ public class EventService {
     public void save(CreateEventRequest request) {
         Event event = new Event(request.name(), request.description(), request.type());
 
-        List<Admin> admins = adminService.getAllByIds(request.adminIds());
+        List<Admin> admins = adminService.findAllById(request.adminIds());
 
         for (Admin admin : admins) {
             event.addAdmin(admin);
@@ -95,7 +95,7 @@ public class EventService {
     @Transactional
     public void addAdmin(long adminId, int eventId) {
         Event event = findById(eventId);
-        Admin admin = adminService.getById(adminId);
+        Admin admin = adminService.findById(adminId);
 
         event.addAdmin(admin);
         eventRepository.save(event);
@@ -106,7 +106,7 @@ public class EventService {
     @Transactional
     public void removeAdmin(long adminId, int eventId) {
         Event event = findById(eventId);
-        Admin admin = adminService.getById(adminId);
+        Admin admin = adminService.findById(adminId);
 
         event.removeAdmin(admin);
         eventRepository.save(event);

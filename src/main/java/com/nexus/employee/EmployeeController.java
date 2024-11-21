@@ -29,9 +29,9 @@ public class EmployeeController {
         List<Employee> employees;
 
         switch (queryType) {
-            case ALL -> employees = employeeService.getAll();
-            case Archived -> employees = employeeService.getAllArchived();
-            default -> employees = employeeService.getAllNonArchived();
+            case ALL -> employees = employeeService.findAll();
+            case Archived -> employees = employeeService.findAllArchived();
+            default -> employees = employeeService.findAllNonArchived();
         }
 
         return ResponseEntity.ok(employees);
@@ -42,17 +42,17 @@ public class EmployeeController {
             @Valid
             @Positive
             @PathVariable("id") long id) {
-        return ResponseEntity.ok(employeeService.getById(id));
+        return ResponseEntity.ok(employeeService.findById(id));
     }
 
     @GetMapping("me")
     public ResponseEntity<Employee> getMe() {
-        return ResponseEntity.ok(employeeService.getMe());
+        return ResponseEntity.ok(employeeService.findMe());
     }
 
     @PostMapping
     public void create(@Valid @RequestBody CreatePersonRequest request) {
-        employeeService.create(request);
+        employeeService.save(request);
     }
 
     @PutMapping

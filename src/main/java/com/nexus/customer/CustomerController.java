@@ -29,9 +29,9 @@ public class CustomerController {
         List<Customer> customers;
 
         switch (queryType) {
-            case ALL -> customers = customerService.getAll();
-            case Archived -> customers = customerService.getAllArchived();
-            default -> customers = customerService.getAllNonArchived();
+            case ALL -> customers = customerService.findAll();
+            case Archived -> customers = customerService.findAllArchived();
+            default -> customers = customerService.findAllNonArchived();
         }
 
         return ResponseEntity.ok(customers);
@@ -42,21 +42,21 @@ public class CustomerController {
             @Valid
             @Positive
             @PathVariable long id) {
-        Customer customer = customerService.getById(id);
+        Customer customer = customerService.findById(id);
 
         return ResponseEntity.ok(customer);
     }
 
     @GetMapping("me")
     public ResponseEntity<Customer> getMe() {
-        Customer customer = customerService.getMe();
+        Customer customer = customerService.findMe();
 
         return ResponseEntity.ok(customer);
     }
 
     @PostMapping
     public void create(@Valid @RequestBody CreatePersonRequest request) {
-        customerService.create(request);
+        customerService.save(request);
     }
 
     @PutMapping("{id}")

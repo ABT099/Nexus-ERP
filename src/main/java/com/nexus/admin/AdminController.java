@@ -29,9 +29,9 @@ public class AdminController {
         List<Admin> admins;
 
         switch (archived) {
-            case ALL -> admins = adminService.getAll();
-            case Archived -> admins = adminService.getAllArchived();
-            default -> admins = adminService.getAllNonArchived();
+            case ALL -> admins = adminService.findAll();
+            case Archived -> admins = adminService.findAllArchived();
+            default -> admins = adminService.findAllNonArchived();
         }
 
         return ResponseEntity.ok(admins);
@@ -42,21 +42,21 @@ public class AdminController {
             @Valid
             @Positive
             @PathVariable long id) {
-        Admin admin = adminService.getById(id);
+        Admin admin = adminService.findById(id);
 
         return ResponseEntity.ok(admin);
     }
 
     @GetMapping("me")
     public ResponseEntity<Admin> getMe() {
-        Admin admin = adminService.getMe();
+        Admin admin = adminService.findMe();
 
         return ResponseEntity.ok(admin);
     }
 
     @PostMapping
     public void create(@Valid @RequestBody CreatePersonRequest request) {
-        adminService.create(request);
+        adminService.save(request);
     }
 
     @PutMapping("{id}")

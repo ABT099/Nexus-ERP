@@ -26,38 +26,38 @@ public class AdminService extends AbstractUserService {
         this.personService = personService;
     }
 
-    public List<Admin> getAll() {
+    public List<Admin> findAll() {
         return adminRepository.findAll();
     }
 
-    public List<Admin> getAllNonArchived() {
+    public List<Admin> findAllNonArchived() {
         return adminRepository.findAllNonArchived();
     }
 
-    public List<Admin> getAllArchived() {
+    public List<Admin> findAllArchived() {
         return adminRepository.findAllArchived();
     }
 
-    public List<Admin> getAllByIds(Iterable<Long> ids) {
+    public List<Admin> findAllById(Iterable<Long> ids) {
         return adminRepository.findAllById(ids);
     }
 
-    public Admin getById(Long id) {
+    public Admin findById(Long id) {
         return adminRepository.findById(id)
                 .orElseThrow(
                         () -> new ResourceNotFoundException("admin with id " + id + " not found")
                 );
     }
 
-    public Admin getMe() {
-        return adminRepository.findById(getUserId())
+    public Admin findMe() {
+        return adminRepository.findByUserId(getUserId())
                 .orElseThrow(
-                        () -> new ResourceNotFoundException("admin not found")
+                        () -> new ResourceNotFoundException("error with the authenticated user")
                 );
     }
 
     @Transactional
-    public void create(CreatePersonRequest request) {
+    public void save(CreatePersonRequest request) {
         User createdUser = userCreationService.create(request.username(), request.password(), UserType.ADMIN);
 
         Admin admin = new Admin(createdUser, request.firstName(), request.lastName());
@@ -66,7 +66,7 @@ public class AdminService extends AbstractUserService {
     }
 
     public void updateById(Long id, UpdatePersonRequest request) {
-        Admin admin = getById(id);
+        Admin admin = findById(id);
 
         admin = personService.updatePerson(admin, request);
 
@@ -74,15 +74,17 @@ public class AdminService extends AbstractUserService {
     }
 
     public void updateMe(UpdatePersonRequest request) {
-        Admin admin = getMe();
+        Admin admin = findMe();
 
         admin = personService.updatePerson(admin, request);
 
         adminRepository.save(admin);
     }
 
+    @Transactional
     public void archive(Long id) {
         adminRepository.archiveById(id);
+        adminRepository.archiveUserById(id);
     }
 
     public void delete(Long id) {

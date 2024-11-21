@@ -12,7 +12,10 @@ public abstract class AbstractAppUser {
     @Id
     @GeneratedValue
     private Long id;
-    @OneToOne
+    @OneToOne(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     @JoinColumn(
             name = "user_id",
             nullable = false,

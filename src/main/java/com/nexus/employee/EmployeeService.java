@@ -25,29 +25,32 @@ public class EmployeeService extends AbstractUserService {
         this.personService = personService;
     }
 
-    public List<Employee> getAll() {
+    public List<Employee> findAll() {
         return employeeRepository.findAll();
     }
 
-    public List<Employee> getAllNonArchived() {
+    public List<Employee> findAllNonArchived() {
         return employeeRepository.findAllNonArchived();
     }
 
-    public List<Employee> getAllArchived() {
+    public List<Employee> findAllArchived() {
         return employeeRepository.findAllArchived();
     }
 
-    public Employee getById(Long id) {
+    public Employee findById(Long id) {
         return employeeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("employee with id " + id + " not found"));
     }
 
-    public Employee getMe() {
-        return getById(getUserId());
+    public Employee findMe() {
+        return employeeRepository.findByUserId(getUserId())
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Error with the authenticated user")
+                );
     }
 
     @Transactional
-    public void create(CreatePersonRequest request) {
+    public void save(CreatePersonRequest request) {
         User createdUser = userCreationService.create(request.username(), request.password(), UserType.ADMIN);
 
         Employee customer = new Employee(createdUser, request.firstName(), request.lastName());
@@ -56,7 +59,7 @@ public class EmployeeService extends AbstractUserService {
     }
 
     public void updateById(Long id, UpdatePersonRequest request) {
-        Employee employee = getById(id);
+        Employee employee = findById(id);
 
         employee = personService.updatePerson(employee, request);
 
@@ -64,7 +67,7 @@ public class EmployeeService extends AbstractUserService {
     }
 
     public void updateMe(UpdatePersonRequest request) {
-        Employee employee = getMe();
+        Employee employee = findMe();
 
         employee = personService.updatePerson(employee, request);
 
@@ -73,6 +76,7 @@ public class EmployeeService extends AbstractUserService {
 
     public void archive(Long id) {
         employeeRepository.archiveById(id);
+        employeeRepository.archiveUserById(id);
     }
 
     public void delete(Long id) {

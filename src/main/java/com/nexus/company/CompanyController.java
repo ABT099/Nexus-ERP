@@ -27,9 +27,9 @@ public class CompanyController {
         List<Company> companies;
 
         switch (queryType) {
-            case ALL -> companies = companyService.getAll();
-            case Archived -> companies = companyService.getAllArchived();
-            default -> companies = companyService.getAllNonArchived();
+            case ALL -> companies = companyService.findAll();
+            case Archived -> companies = companyService.findAllArchived();
+            default -> companies = companyService.findAllNonArchived();
         }
 
         return ResponseEntity.ok(companies);
@@ -40,19 +40,19 @@ public class CompanyController {
             @Valid
             @Positive
             @PathVariable long id) {
-        Company company = companyService.getById(id);
+        Company company = companyService.findById(id);
 
         return ResponseEntity.ok(company);
     }
 
     @GetMapping("me")
     public ResponseEntity<Company> getMe() {
-        return ResponseEntity.ok(companyService.getMe());
+        return ResponseEntity.ok(companyService.findMe());
     }
 
     @PostMapping
     public void create(@Valid @RequestBody CreateCompanyRequest request) {
-        companyService.create(request);
+        companyService.save(request);
     }
 
     @PutMapping

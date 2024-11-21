@@ -22,30 +22,30 @@ public class CompanyService extends AbstractUserService {
         this.userCreationService = userCreationService;
     }
 
-    public List<Company> getAll() {
+    public List<Company> findAll() {
         return companyRepository.findAll();
     }
 
-    public List<Company> getAllNonArchived() {
+    public List<Company> findAllNonArchived() {
         return companyRepository.findAllNonArchived();
     }
 
-    public List<Company> getAllArchived() {
+    public List<Company> findAllArchived() {
         return companyRepository.findAllArchived();
     }
 
-    public Company getById(Long id) {
+    public Company findById(Long id) {
         return companyRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Company not found"));
     }
 
-    public Company getMe() {
-        return companyRepository.findById(getUserId())
+    public Company findMe() {
+        return companyRepository.findByUserId(getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     @Transactional
-    public void create(CreateCompanyRequest request) {
+    public void save(CreateCompanyRequest request) {
         User createdUser = userCreationService.create(request.username(), request.password(), UserType.CUSTOMER);
 
         Company company = new Company(createdUser, request.companyName());
@@ -54,7 +54,7 @@ public class CompanyService extends AbstractUserService {
     }
 
     public void updateById(UpdateCompanyRequest updateCompanyRequest) {
-        Company company = getById(updateCompanyRequest.id());
+        Company company = findById(updateCompanyRequest.id());
 
         if (!Objects.equals(company.getCompanyName(), updateCompanyRequest.companyName())) {
             company.setCompanyName(updateCompanyRequest.companyName());
@@ -63,7 +63,7 @@ public class CompanyService extends AbstractUserService {
     }
 
     public void updateMe(String companyName) {
-        Company company = getMe();
+        Company company = findMe();
 
         if (!Objects.equals(company.getCompanyName(), companyName)) {
             company.setCompanyName(companyName);
@@ -71,8 +71,10 @@ public class CompanyService extends AbstractUserService {
         }
     }
 
+    @Transactional
     public void archive(Long id) {
         companyRepository.archiveById(id);
+        companyRepository.archiveUserById(id);
     }
 
     public void delete(Long id) {

@@ -28,31 +28,34 @@ public class CustomerService extends AbstractUserService {
         this.personService = personService;
     }
 
-    public List<Customer> getAll() {
+    public List<Customer> findAll() {
         return customerRepository.findAll();
     }
 
-    public List<Customer> getAllNonArchived() {
+    public List<Customer> findAllNonArchived() {
         return customerRepository.findAllNonArchived();
     }
 
-    public List<Customer> getAllArchived() {
+    public List<Customer> findAllArchived() {
         return customerRepository.findAllArchived();
     }
 
-    public Customer getById(Long id) {
+    public Customer findById(Long id) {
         return customerRepository.findById(id)
                 .orElseThrow(
                         () -> new ResourceNotFoundException("customer with id " + id + " not found")
                 );
     }
 
-    public Customer getMe() {
-        return getById(getUserId());
+    public Customer findMe() {
+        return customerRepository.findByUserId(getUserId())
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Error with the authenticated user")
+                );
     }
 
     @Transactional
-    public void create(CreatePersonRequest request) {
+    public void save(CreatePersonRequest request) {
         User createdUser = userCreationService.create(request.username(), request.password(), UserType.ADMIN);
 
         Customer customer = new Customer(createdUser, request.firstName(), request.lastName());
@@ -61,7 +64,7 @@ public class CustomerService extends AbstractUserService {
     }
 
     public void updateById(Long id, UpdatePersonRequest request) {
-        Customer customer = getById(id);
+        Customer customer = findById(id);
 
         customer = personService.updatePerson(customer, request);
 
@@ -69,7 +72,7 @@ public class CustomerService extends AbstractUserService {
     }
 
     public void updateMe(UpdatePersonRequest request) {
-        Customer customer = getMe();
+        Customer customer = findMe();
 
        customer = personService.updatePerson(customer, request);
 
@@ -78,6 +81,7 @@ public class CustomerService extends AbstractUserService {
 
     public void archive(Long id) {
         customerRepository.archiveById(id);
+        customerRepository.archiveUserById(id);
     }
 
     public void delete(Long id) {
