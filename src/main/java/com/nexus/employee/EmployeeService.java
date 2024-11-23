@@ -51,7 +51,7 @@ public class EmployeeService extends AbstractUserService {
 
     @Transactional
     public void save(CreatePersonRequest request) {
-        User createdUser = userCreationService.create(request.username(), request.password(), UserType.ADMIN);
+        User createdUser = userCreationService.create(request.username(), request.password(), UserType.EMPLOYEE);
 
         Employee customer = new Employee(createdUser, request.firstName(), request.lastName());
 

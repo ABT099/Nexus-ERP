@@ -63,6 +63,7 @@ public class CustomerService extends AbstractUserService {
         customerRepository.save(customer);
     }
 
+    @Transactional
     public void updateById(Long id, UpdatePersonRequest request) {
         Customer customer = findById(id);
 
@@ -71,6 +72,7 @@ public class CustomerService extends AbstractUserService {
         customerRepository.save(customer);
     }
 
+    @Transactional
     public void updateMe(UpdatePersonRequest request) {
         Customer customer = findMe();
 
@@ -79,11 +81,13 @@ public class CustomerService extends AbstractUserService {
        customerRepository.save(customer);
     }
 
+    @Transactional
     public void archive(Long id) {
         customerRepository.archiveById(id);
         customerRepository.archiveUserById(id);
     }
 
+    @Transactional
     public void delete(Long id) {
         customerRepository.deleteById(id);
     }

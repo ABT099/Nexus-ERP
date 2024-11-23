@@ -1,6 +1,7 @@
 package com.nexus.company;
 
 import com.nexus.common.abstraction.AbstractUserService;
+import com.nexus.exception.NoUpdateException;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.user.User;
 import com.nexus.user.UserCreationService;
@@ -53,21 +54,27 @@ public class CompanyService extends AbstractUserService {
         companyRepository.save(company);
     }
 
+    @Transactional
     public void updateById(UpdateCompanyRequest updateCompanyRequest) {
         Company company = findById(updateCompanyRequest.id());
 
         if (!Objects.equals(company.getCompanyName(), updateCompanyRequest.companyName())) {
             company.setCompanyName(updateCompanyRequest.companyName());
             companyRepository.save(company);
+        } else {
+            throw new NoUpdateException("No update has been made");
         }
     }
 
+    @Transactional
     public void updateMe(String companyName) {
         Company company = findMe();
 
         if (!Objects.equals(company.getCompanyName(), companyName)) {
             company.setCompanyName(companyName);
             companyRepository.save(company);
+        } else {
+            throw new NoUpdateException("No update has been made");
         }
     }
 
@@ -77,6 +84,7 @@ public class CompanyService extends AbstractUserService {
         companyRepository.archiveUserById(id);
     }
 
+    @Transactional
     public void delete(Long id) {
         companyRepository.deleteById(id);
     }

@@ -65,6 +65,7 @@ public class AdminService extends AbstractUserService {
         adminRepository.save(admin);
     }
 
+    @Transactional
     public void updateById(Long id, UpdatePersonRequest request) {
         Admin admin = findById(id);
 
@@ -73,6 +74,7 @@ public class AdminService extends AbstractUserService {
         adminRepository.save(admin);
     }
 
+    @Transactional
     public void updateMe(UpdatePersonRequest request) {
         Admin admin = findMe();
 
@@ -87,6 +89,7 @@ public class AdminService extends AbstractUserService {
         adminRepository.archiveUserById(id);
     }
 
+    @Transactional
     public void delete(Long id) {
         adminRepository.deleteById(id);
     }
