@@ -5,12 +5,13 @@ import com.nexus.event.Event;
 import com.nexus.user.User;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 public class Admin extends AbstractPerson {
     @ManyToMany(mappedBy = "admins")
-    private List<Event> events;
+    private final List<Event> events = new ArrayList<Event>();
 
     public Admin(User user, String firstName, String lastName) {
         super(user, firstName, lastName);

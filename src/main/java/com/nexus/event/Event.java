@@ -5,6 +5,7 @@ import com.nexus.common.Status;
 import jakarta.persistence.*;
 import org.springframework.data.jpa.domain.AbstractAuditable;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class Event extends AbstractAuditable<Admin, Integer> {
             joinColumns = @JoinColumn(name = "event_id"),
             inverseJoinColumns = @JoinColumn(name = "admin_id")
     )
-    private List<Admin> admins;
+    private final List<Admin> admins = new ArrayList<>();
 
     public Event(String name, String description, EventType type) {
         this.name = name;
