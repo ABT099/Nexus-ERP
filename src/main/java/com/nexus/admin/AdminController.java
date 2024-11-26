@@ -55,7 +55,8 @@ public class AdminController {
     public ResponseEntity<Admin> getMe() {
         Admin admin = adminService.findMe();
 
-        return ResponseEntity.ok(admin);
+        return ResponseEntity
+                .ok(admin);
     }
 
     @PostMapping

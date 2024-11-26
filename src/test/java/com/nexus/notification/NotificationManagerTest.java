@@ -100,7 +100,7 @@ public class NotificationManagerTest {
     private Queue<NotificationHolderDto> extractQueue(NotificationManager manager) {
         // Reflection is used to access the private `notificationQueue` field.
         try {
-            var field = NotificationManager.class.getDeclaredField("notifcationQueue");
+            var field = NotificationManager.class.getDeclaredField("notificationQueue");
             field.setAccessible(true);
             return (Queue<NotificationHolderDto>) field.get(manager);
         } catch (NoSuchFieldException | IllegalAccessException e) {

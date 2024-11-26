@@ -1,5 +1,6 @@
 package com.nexus.admin;
 
+import com.github.javafaker.Faker;
 import com.nexus.auth.RegisterResponse;
 import com.nexus.common.person.CreatePersonRequest;
 import com.nexus.common.person.UpdatePersonRequest;
@@ -20,6 +21,8 @@ public class AdminIntegrationTest {
 
     @Autowired
     private WebTestClient webTestClient;
+
+    Faker faker = new Faker();
 
     @Test
     void canCreateAdmin() {
@@ -46,7 +49,9 @@ public class AdminIntegrationTest {
         assertNotNull(admin);
         assertEquals(admin.getId(), adminResponse.id());
 
-        UpdatePersonRequest updatePersonRequest = new UpdatePersonRequest("newFirstName", "newLastName");
+        String newFirstName = faker.name().firstName();
+        String newLastName = faker.name().lastName();
+        UpdatePersonRequest updatePersonRequest = new UpdatePersonRequest(newFirstName, newLastName);
 
         webTestClient.put()
                 .uri("/admins/{id}", adminResponse.id())
@@ -75,7 +80,9 @@ public class AdminIntegrationTest {
         assertNotNull(admin);
         assertEquals(admin.getId(), adminResponse.id());
 
-        UpdatePersonRequest updatePersonRequest = new UpdatePersonRequest("newFirstName", "newLastName");
+        String newFirstName = faker.name().firstName();
+        String newLastName = faker.name().lastName();
+        UpdatePersonRequest updatePersonRequest = new UpdatePersonRequest(newFirstName, newLastName);
 
         webTestClient.put()
                 .uri("/admins/me")
@@ -129,7 +136,12 @@ public class AdminIntegrationTest {
     }
 
     private RegisterResponse createAdmin() {
-        CreatePersonRequest createPersonRequest = new CreatePersonRequest("abdo", "towait", "abdo123", "1234a1234");
+        String firstName = faker.name().firstName();
+        String lastName = faker.name().lastName();
+        String userName = faker.name().username();
+        String password = "123124rawer";
+
+        CreatePersonRequest createPersonRequest = new CreatePersonRequest(firstName, lastName, userName, password);
 
         return webTestClient.post()
                 .uri("/admins")
