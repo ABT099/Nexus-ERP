@@ -4,9 +4,10 @@ import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.user.User;
 import com.nexus.user.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class MessageService {
@@ -14,19 +15,28 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
     private final ChatRepository chatRepository;
+    private final MessageMapper messageMapper;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public MessageService(MessageRepository messageRepository, UserRepository userRepository, ChatRepository chatRepository) {
+
+    public MessageService(MessageRepository messageRepository, UserRepository userRepository, ChatRepository chatRepository, MessageMapper messageMapper, SimpMessagingTemplate messagingTemplate) {
         this.messageRepository = messageRepository;
         this.userRepository = userRepository;
         this.chatRepository = chatRepository;
+        this.messageMapper = messageMapper;
+        this.messagingTemplate = messagingTemplate;
     }
 
-    public List<Message> findAllByChatId(Long chatId) {
-        return messageRepository.findByChatIdOrderByCreatedAtAsc(chatId);
+    public List<MessageResponse> findAllByChatId(Long chatId) {
+        List<Message> messages = messageRepository.findByChatIdOrderByCreatedAtAsc(chatId);
+
+        return messages.stream()
+                .map(messageMapper::map)
+                .toList();
     }
 
     @Transactional
-    public Message save(MessageRequest messageRequest) {
+    public void sendAndSave(MessageRequest messageRequest) {
         User user = userRepository.findById(messageRequest.senderId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -37,26 +47,50 @@ public class MessageService {
 
         messageRepository.save(message);
 
-        return message;
+        MessageResponse messageResponse = messageMapper.map(message);
+
+        messagingTemplate.convertAndSend(
+                "/queue/messages" + message.getChat().getId(),
+                messageResponse);
+
+        messagingTemplate.convertAndSend(
+                "/queue/messages" + message.getChat().getId(),
+                messageResponse);
     }
 
     @Transactional
-    public Message update(Long id, String text) {
-        Message message = findMessageById(id);
+    public void update(UpdateMessageRequest messageRequest) {
+        Message message = findMessageById(messageRequest.id());
 
-        message.setText(text);
+        if (Objects.equals(messageRequest.text(), message.getText())) {
+            return;
+        }
 
+        message.setText(messageRequest.text());
         messageRepository.save(message);
 
-        return message;
+        MessageResponse messageResponse = messageMapper.map(message);
+
+        messagingTemplate.convertAndSend(
+                "/queue/messages" + message.getChat().getId(),
+                messageResponse);
+
+        messagingTemplate.convertAndSend(
+                "/queue/messages" + message.getChat().getId(),
+                messageResponse);
     }
 
-    public Message delete(Long id) {
+    @Transactional
+    public void delete(Long id) {
         Message message = findMessageById(id);
 
         messageRepository.delete(message);
 
-        return message;
+        MessageResponse messageResponse = messageMapper.map(message);
+
+        messagingTemplate.convertAndSend(
+                "/queue/messages" + message.getChat().getId(),
+                messageResponse);
     }
 
     private Message findMessageById(Long id) {

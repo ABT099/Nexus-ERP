@@ -5,6 +5,5 @@ import jakarta.validation.constraints.Positive;
 
 public record UpdateMessageRequest(
         @Positive long id,
-        @NotEmpty String receiverUsername,
         @NotEmpty String text) {
 }
