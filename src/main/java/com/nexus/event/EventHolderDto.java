@@ -1,14 +1,16 @@
 package com.nexus.event;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.Objects;
 
-public class EventHolderDto {
+public class EventHolderDto implements Comparable<EventHolderDto> {
     private  Integer eventId;
     private  String eventName;
-    private Date date;
+    private ZonedDateTime date;
     private  boolean urgent;
 
-    public EventHolderDto(Integer eventId, String EventName, Date date, boolean urgent) {
+    public EventHolderDto(Integer eventId, String EventName, ZonedDateTime date, boolean urgent) {
         this.eventId = eventId;
         this.eventName = EventName;
         this.date = date;
@@ -22,11 +24,11 @@ public class EventHolderDto {
         this.eventId = eventId;
     }
 
-    public Date getDate() {
+    public ZonedDateTime getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(ZonedDateTime date) {
         this.date = date;
     }
 
@@ -44,5 +46,27 @@ public class EventHolderDto {
 
     public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    @Override
+    public int compareTo(EventHolderDto other) {
+        int urgentComparison = Boolean.compare(other.isUrgent(), this.isUrgent());
+        if (urgentComparison != 0) {
+            return urgentComparison;
+        }
+        return this.date.compareTo(other.getDate());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        EventHolderDto that = (EventHolderDto) obj;
+        return Objects.equals(eventId, that.eventId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(eventId);
     }
 }

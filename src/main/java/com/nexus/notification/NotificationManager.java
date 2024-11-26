@@ -1,6 +1,7 @@
 package com.nexus.notification;
 
 import jakarta.transaction.Transactional;
+import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -10,13 +11,13 @@ import java.util.List;
 import java.util.Queue;
 
 @Component
-public class NotificationHandler {
+public class NotificationManager {
 
     private final Queue<NotificationHolderDto> notifcationQueue = new LinkedList<>();
     private final SimpMessagingTemplate messagingTemplate;
     private final NotificationService notificationService;
 
-    public NotificationHandler(SimpMessagingTemplate messagingTemplate, NotificationService notificationService) {
+    public NotificationManager(SimpMessagingTemplate messagingTemplate, NotificationService notificationService) {
         this.messagingTemplate = messagingTemplate;
         this.notificationService = notificationService;
     }
@@ -28,15 +29,17 @@ public class NotificationHandler {
                 .map(n -> new CreateNotificationDto(n.getUserId(), n.getTitle(), n.getBody(), n.getType()))
                 .toList();
 
-        List<Notification> notifications = notificationService.saveAll(createNotificationDtos);
-        notifcationQueue.clear();
+        if (!createNotificationDtos.isEmpty()) {
+            List<Notification> notifications = notificationService.saveAll(createNotificationDtos);
+            notifcationQueue.clear();
 
-        for (Notification notification : notifications) {
-            messagingTemplate.convertAndSendToUser(
-                    notification.getUser().getUsername(),
-                    "user/notification",
-                    notification
-            );
+            for (Notification notification : notifications) {
+                messagingTemplate.convertAndSendToUser(
+                        notification.getUser().getUsername(),
+                        "user/notification",
+                        notification
+                );
+            }
         }
     }
 

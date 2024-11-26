@@ -15,18 +15,18 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final AdminService adminService;
-    private final EventHandler eventHandler;
+    private final EventManager eventManager;
 
-    public EventService(EventRepository eventRepository, AdminService adminService, EventHandler eventHandler) {
+    public EventService(EventRepository eventRepository, AdminService adminService, EventManager eventManager) {
         this.eventRepository = eventRepository;
         this.adminService = adminService;
-        this.eventHandler = eventHandler;
+        this.eventManager = eventManager;
     }
 
     @Transactional
     public List<Event> findAllByAdmin(long adminId) {
-        List<Event> events = Optional.ofNullable(eventRepository.findAllByAdminId(adminId))
-                .orElse(Collections.emptyList());
+        List<Event> events = new ArrayList<>(Optional.ofNullable(eventRepository.findAllByAdminId(adminId))
+                .orElse(Collections.emptyList()));
 
         events.sort(
                 Comparator.comparing(Event::isUrgent, Comparator.nullsLast(Boolean::compareTo)).reversed()
@@ -52,11 +52,11 @@ public class EventService {
             event.addAdmin(admin);
         }
 
-        eventRepository.save(event);
-
-        eventHandler.addEvent(
+        Event savedEvent = eventRepository.save(event);
+        eventManager.addEvent(
                 request.adminIds(),
-                new EventHolderDto(Objects.requireNonNull(event.getId()), event.getName(), event.getDate(), event.isUrgent()));
+                new EventHolderDto(Objects.requireNonNull(savedEvent.getId()), savedEvent.getName(), savedEvent.getDate(), savedEvent.isUrgent())
+        );
     }
 
     @Transactional
@@ -100,7 +100,7 @@ public class EventService {
         event.addAdmin(admin);
         eventRepository.save(event);
 
-        eventHandler.addEvent(adminId, new EventHolderDto(eventId, event.getName(), event.getDate(), event.isUrgent()));
+        eventManager.addEvent(adminId, new EventHolderDto(eventId, event.getName(), event.getDate(), event.isUrgent()));
     }
 
     @Transactional
@@ -111,7 +111,7 @@ public class EventService {
         event.removeAdmin(admin);
         eventRepository.save(event);
 
-        eventHandler.removeEvent(adminId, new EventHolderDto(eventId, event.getName(), event.getDate(), event.isUrgent()));
+        eventManager.removeEvent(adminId, new EventHolderDto(eventId, event.getName(), event.getDate(), event.isUrgent()));
     }
 
     @Transactional
@@ -125,9 +125,10 @@ public class EventService {
 
         EventHolderDto eventHolderDto = new EventHolderDto(event.getId(), event.getName(), event.getDate(), event.isUrgent());
 
-        eventHandler.removeEvent(adminIds, eventHolderDto);
+        eventManager.removeEvent(adminIds, eventHolderDto);
 
-        for (Admin admin : event.getAdmins()) {
+        List<Admin> adminsToRemove = new ArrayList<>(event.getAdmins());
+        for (Admin admin : adminsToRemove) {
             admin.removeEvent(event);
         }
         event.getAdmins().clear();

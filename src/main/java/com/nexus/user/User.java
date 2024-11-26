@@ -38,7 +38,7 @@ public class User {
 
     @OneToMany(
             orphanRemoval = true,
-            cascade = CascadeType.PERSIST,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
             mappedBy = "user"
     )
     private List<Notification> notifications;

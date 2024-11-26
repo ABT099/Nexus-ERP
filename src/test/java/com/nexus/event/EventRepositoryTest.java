@@ -41,8 +41,8 @@ public class EventRepositoryTest {
         adminRepository.save(admin);
 
         List<Event> events = List.of(
-                new Event("event1", "event1Desc", EventType.Meeting),
-                new Event("event2", "event2Desc", EventType.Meeting)
+                new Event("event1", "event1Desc", EventType.MEETING),
+                new Event("event2", "event2Desc", EventType.MEETING)
         );
 
         eventRepository.saveAll(events);
@@ -65,8 +65,8 @@ public class EventRepositoryTest {
     void updateUrgentToTrue() {
         // Arrange
         List<Event> events = List.of(
-                new Event("event1", "event1Desc", EventType.Meeting),
-                new Event("event2", "event2Desc", EventType.Meeting)
+                new Event("event1", "event1Desc", EventType.MEETING),
+                new Event("event2", "event2Desc", EventType.MEETING)
         );
 
         eventRepository.saveAll(events);

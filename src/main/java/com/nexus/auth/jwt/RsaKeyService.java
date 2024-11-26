@@ -21,6 +21,7 @@ public class RsaKeyService {
             keyGen.initialize(2024);
             var key = keyGen.generateKeyPair();
             this.rsaKey = key.getPrivate();
+            System.out.println("jwt key generated!");
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("Error generating RSA key pair", e);
         }

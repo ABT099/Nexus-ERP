@@ -1,6 +1,6 @@
 package com.nexus.event;
 
-import com.nexus.notification.NotificationHandler;
+import com.nexus.notification.NotificationManager;
 import com.nexus.notification.NotificationHolderDto;
 import com.nexus.notification.NotificationType;
 import org.springframework.scheduling.annotation.Async;
@@ -17,19 +17,23 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 @Component
-public class EventHandler {
+public class EventManager {
     private static final Map<Long, ConcurrentSkipListSet<EventHolderDto>> adminEvents = new ConcurrentHashMap<>();
 
     private static final Comparator<EventHolderDto> EVENT_COMPARATOR =
             Comparator.comparing(EventHolderDto::isUrgent).reversed()
                     .thenComparing(EventHolderDto::getDate);
 
-    private final NotificationHandler notificationHandler;
+    private final NotificationManager notificationManager;
     private final EventRepository eventRepository;
 
-    public EventHandler(NotificationHandler notificationHandler, EventRepository eventRepository) {
-        this.notificationHandler = notificationHandler;
+    public EventManager(NotificationManager notificationManager, EventRepository eventRepository) {
+        this.notificationManager = notificationManager;
         this.eventRepository = eventRepository;
+    }
+
+    public static Map<Long, ConcurrentSkipListSet<EventHolderDto>> getAdminEvents() {
+        return adminEvents;
     }
 
     @Async
@@ -66,7 +70,7 @@ public class EventHandler {
 
         ConcurrentSkipListSet<EventHolderDto> events = adminEvents.get(adminId);
 
-        updateUrgentStatus(adminEvents.get(adminId), now);
+        updateUrgentStatus(events, now);
         sendReminder(adminId, events);
     }
 
@@ -131,10 +135,10 @@ public class EventHandler {
                         "Reminder for the event: " + event.getEventName() + " scheduled for: " + dayDescription + " at " + eventTime.toString(),
                         NotificationType.REMINDER
                 );
-                notificationHandler.addNotification(notification);
+                notificationManager.addNotification(notification);
             }
         }
 
-        notificationHandler.flush();
+        notificationManager.flush();
     }
 }

@@ -5,6 +5,7 @@ import com.nexus.user.User;
 import com.nexus.user.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,19 +45,16 @@ public class NotificationService {
         Map<Long, User> usersMap = userRepository.findAllById(userIds).stream()
                 .collect(Collectors.toMap(User::getId, user -> user));
 
-        List<Notification> notifications = createNotificationDtos.stream()
-                .map(dto -> {
-                    User user = usersMap.get(dto.userId());
-                    if (user == null) {
-                        throw new ResourceNotFoundException("User not found for ID: " + dto.userId());
-                    }
-                    return new Notification(user, dto.title(), dto.body(), dto.type());
-                })
-                .collect(Collectors.toList());
+        List<Notification> notifications = new ArrayList<>(createNotificationDtos.size());
+        for (CreateNotificationDto dto : createNotificationDtos) {
+            User user = usersMap.get(dto.userId());
+            if (user == null) {
+                throw new ResourceNotFoundException("User not found for ID: " + dto.userId());
+            }
+            notifications.add(new Notification(user, dto.title(), dto.body(), dto.type()));
+        }
 
-        notificationRepository.saveAll(notifications);
-
-        return notifications;
+        return notificationRepository.saveAll(notifications);
     }
 
     public void readBatch(Set<Long> ids) {

@@ -31,7 +31,7 @@ public class MessageService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Chat chat = chatRepository.findById(messageRequest.chatId())
-                .orElseThrow(() -> new RuntimeException("Chat not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Chat not found"));
 
         Message message = new Message(user, chat, messageRequest.text());
 

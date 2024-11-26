@@ -5,6 +5,7 @@ import com.nexus.common.Status;
 import jakarta.persistence.*;
 import org.springframework.data.jpa.domain.AbstractAuditable;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,7 +29,7 @@ public class Event extends AbstractAuditable<Admin, Integer> {
     @Enumerated(EnumType.STRING)
     private Status status = Status.PENDING;
     @Temporal(TemporalType.TIMESTAMP)
-    private Date date;
+    private ZonedDateTime date;
     @Column(nullable = false)
     private boolean urgent = false;
 
@@ -47,6 +48,10 @@ public class Event extends AbstractAuditable<Admin, Integer> {
     }
 
     public Event() {}
+
+    public void setId(Integer id) {
+        super.setId(id);
+    }
 
     public String getName() {
         return name;
@@ -93,15 +98,17 @@ public class Event extends AbstractAuditable<Admin, Integer> {
     }
 
     public void removeAdmin(Admin admin) {
-        admins.remove(admin);
-        admin.removeEvent(this);
+        if (admins.contains(admin)) {
+            admins.remove(admin);
+            admin.removeEvent(this);
+        }
     }
 
-    public Date getDate() {
+    public ZonedDateTime getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(ZonedDateTime date) {
         this.date = date;
     }
 

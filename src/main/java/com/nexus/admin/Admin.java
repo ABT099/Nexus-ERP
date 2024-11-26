@@ -32,7 +32,9 @@ public class Admin extends AbstractPerson {
     }
 
     public void removeEvent(Event event) {
-        events.remove(event);
-        event.removeAdmin(this);
+        if (events.contains(event)) {
+            events.remove(event);
+            event.removeAdmin(this);
+        }
     }
 }
