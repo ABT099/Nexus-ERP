@@ -1,11 +1,11 @@
 package com.nexus.company;
 
-import com.nexus.AbstractAuthMockTest;
-import com.nexus.common.person.UpdatePersonRequest;
+import com.nexus.abstraction.AbstractAuthMockTest;
 import com.nexus.exception.NoUpdateException;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.user.User;
 import com.nexus.user.UserCreationService;
+import com.nexus.user.UserDto;
 import com.nexus.user.UserType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -124,8 +124,8 @@ public class CompanyServiceTest extends AbstractAuthMockTest {
     @Test
     void save_shouldSaveCompany() {
         CreateCompanyRequest request = new CreateCompanyRequest("companyName", "username", "password");
-        User user = new User();
-        when(userCreationService.create(request.username(), request.password(), UserType.CUSTOMER)).thenReturn(user);
+        UserDto userDto = new UserDto(new User(), "token");
+        when(userCreationService.create(request.username(), request.password(), UserType.CUSTOMER)).thenReturn(userDto);
 
         companyService.save(request);
 

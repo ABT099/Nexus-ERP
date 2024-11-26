@@ -20,13 +20,7 @@ public abstract class AbstractUserService {
     protected Long getUserId() {
         Authentication authentication = getAuthentication();
 
-        Long userId = (Long) authentication.getCredentials();
-
-        if (userId == null) {
-            throw new RuntimeException("Username is null");
-        }
-
-        return userId;
+        return Long.parseLong(authentication.getCredentials().toString());
     }
 
     private static Authentication getAuthentication() {

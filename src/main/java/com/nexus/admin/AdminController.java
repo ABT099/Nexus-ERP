@@ -1,14 +1,18 @@
 package com.nexus.admin;
 
+import com.nexus.auth.RegisterResponse;
 import com.nexus.common.ArchivableQueryType;
 import com.nexus.common.person.CreatePersonRequest;
 import com.nexus.common.person.UpdatePersonRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+import org.antlr.v4.runtime.misc.Pair;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/admins")
@@ -55,8 +59,12 @@ public class AdminController {
     }
 
     @PostMapping
-    public void create(@Valid @RequestBody CreatePersonRequest request) {
-        adminService.save(request);
+    public ResponseEntity<RegisterResponse> create(@Valid @RequestBody CreatePersonRequest request) {
+        Pair<Long, String> result = adminService.save(request);
+
+        return ResponseEntity
+                .created(URI.create("/admins/" + result.a))
+                .body(new RegisterResponse(result.a, result.b));
     }
 
     @PutMapping("{id}")

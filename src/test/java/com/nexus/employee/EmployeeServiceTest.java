@@ -1,12 +1,13 @@
 package com.nexus.employee;
 
-import com.nexus.AbstractAuthMockTest;
+import com.nexus.abstraction.AbstractAuthMockTest;
 import com.nexus.common.person.CreatePersonRequest;
 import com.nexus.common.person.PersonService;
 import com.nexus.common.person.UpdatePersonRequest;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.user.User;
 import com.nexus.user.UserCreationService;
+import com.nexus.user.UserDto;
 import com.nexus.user.UserType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -122,9 +123,9 @@ public class EmployeeServiceTest extends AbstractAuthMockTest {
 
     @Test
     void save() {
-        CreatePersonRequest request = new CreatePersonRequest("username", "password", "firstName", "lastName");
-        User user = new User();
-        when(userCreationService.create(request.username(), request.password(), UserType.EMPLOYEE)).thenReturn(user);
+        CreatePersonRequest request = new CreatePersonRequest("firstName", "password", "firstName123", "lastName");
+        UserDto userDto = new UserDto(new User(), "token");
+        when(userCreationService.create(request.username(), request.password(), UserType.EMPLOYEE)).thenReturn(userDto);
 
         employeeService.save(request);
 

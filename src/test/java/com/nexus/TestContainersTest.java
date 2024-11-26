@@ -1,5 +1,6 @@
 package com.nexus;
 
+import com.nexus.abstraction.AbstractTestContainer;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

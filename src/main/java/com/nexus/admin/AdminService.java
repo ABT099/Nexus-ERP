@@ -4,11 +4,13 @@ import com.nexus.common.person.PersonService;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.user.User;
 import com.nexus.user.UserCreationService;
+import com.nexus.user.UserDto;
 import com.nexus.user.UserType;
 import com.nexus.common.abstraction.AbstractUserService;
 import com.nexus.common.person.CreatePersonRequest;
 import com.nexus.common.person.UpdatePersonRequest;
 import jakarta.transaction.Transactional;
+import org.antlr.v4.runtime.misc.Pair;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -57,12 +59,14 @@ public class AdminService extends AbstractUserService {
     }
 
     @Transactional
-    public void save(CreatePersonRequest request) {
-        User createdUser = userCreationService.create(request.username(), request.password(), UserType.ADMIN);
+    public Pair<Long, String> save(CreatePersonRequest request) {
+        UserDto userDto = userCreationService.create(request.username(), request.password(), UserType.ADMIN);
 
-        Admin admin = new Admin(createdUser, request.firstName(), request.lastName());
+        Admin admin = new Admin(userDto.user(), request.firstName(), request.lastName());
 
         adminRepository.save(admin);
+
+        return new Pair<>(admin.getId(), userDto.token());
     }
 
     @Transactional

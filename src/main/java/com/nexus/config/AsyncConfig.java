@@ -4,13 +4,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import java.util.concurrent.Executor;
 
 @Configuration
 public class AsyncConfig {
 
     @Bean
-    public Executor taskExecutor() {
+    public ThreadPoolTaskExecutor taskExecutor() {
         int availableProcessors = Runtime.getRuntime().availableProcessors();
         int maxPoolSize = availableProcessors * 2;
 

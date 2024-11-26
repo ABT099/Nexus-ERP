@@ -7,6 +7,7 @@ import com.nexus.common.person.PersonService;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.user.User;
 import com.nexus.user.UserCreationService;
+import com.nexus.user.UserDto;
 import com.nexus.user.UserType;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -56,9 +57,9 @@ public class CustomerService extends AbstractUserService {
 
     @Transactional
     public void save(CreatePersonRequest request) {
-        User createdUser = userCreationService.create(request.username(), request.password(), UserType.ADMIN);
+        UserDto userDto = userCreationService.create(request.username(), request.password(), UserType.CUSTOMER);
 
-        Customer customer = new Customer(createdUser, request.firstName(), request.lastName());
+        Customer customer = new Customer(userDto.user(), request.firstName(), request.lastName());
 
         customerRepository.save(customer);
     }
