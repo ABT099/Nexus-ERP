@@ -1,13 +1,15 @@
 package com.nexus.company;
 
+import com.nexus.admin.Admin;
+import com.nexus.admin.AdminRepository;
+import com.nexus.admin.AdminService;
 import com.nexus.common.abstraction.AbstractUserService;
 import com.nexus.exception.NoUpdateException;
 import com.nexus.exception.ResourceNotFoundException;
-import com.nexus.user.User;
-import com.nexus.user.UserCreationService;
-import com.nexus.user.UserDto;
-import com.nexus.user.UserType;
+import com.nexus.user.*;
 import jakarta.transaction.Transactional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,10 +19,12 @@ import java.util.Objects;
 public class CompanyService extends AbstractUserService {
 
     private final CompanyRepository companyRepository;
+    private final AdminService adminService;
     private final UserCreationService userCreationService;
 
-    public CompanyService(CompanyRepository companyRepository, UserCreationService userCreationService) {
+    public CompanyService(CompanyRepository companyRepository, AdminService adminService, UserCreationService userCreationService) {
         this.companyRepository = companyRepository;
+        this.adminService = adminService;
         this.userCreationService = userCreationService;
     }
 
@@ -47,12 +51,16 @@ public class CompanyService extends AbstractUserService {
     }
 
     @Transactional
-    public void save(CreateCompanyRequest request) {
+    public Long save(CreateCompanyRequest request) {
+        adminService.findMe();
+
         UserDto userDto = userCreationService.create(request.username(), request.password(), UserType.CUSTOMER);
 
         Company company = new Company(userDto.user(), request.companyName());
 
         companyRepository.save(company);
+
+        return company.getId();
     }
 
     @Transactional

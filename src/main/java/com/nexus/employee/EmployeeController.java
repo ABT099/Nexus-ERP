@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -51,11 +52,13 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public void create(@Valid @RequestBody CreatePersonRequest request) {
-        employeeService.save(request);
+    public ResponseEntity<Long> create(@Valid @RequestBody CreatePersonRequest request) {
+        Long id = employeeService.save(request);
+
+        return ResponseEntity.created(URI.create("employees/" + id)).body(id);
     }
 
-    @PutMapping
+    @PutMapping("me")
     public void updateMe(@RequestBody UpdatePersonRequest request) {
         employeeService.updateMe(request);
     }

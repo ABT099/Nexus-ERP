@@ -31,7 +31,6 @@ public class EventService {
         events.sort(
                 Comparator.comparing(Event::isUrgent, Comparator.nullsLast(Boolean::compareTo)).reversed()
                         .thenComparing(Event::getDate, Comparator.nullsLast(Comparator.naturalOrder()))
-                        .thenComparing(Event::getId, Comparator.nullsLast(Comparator.naturalOrder()))
         );
 
         return events;

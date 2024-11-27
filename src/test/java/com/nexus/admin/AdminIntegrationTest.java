@@ -2,8 +2,8 @@ package com.nexus.admin;
 
 import com.github.javafaker.Faker;
 import com.nexus.auth.RegisterResponse;
-import com.nexus.common.person.CreatePersonRequest;
 import com.nexus.common.person.UpdatePersonRequest;
+import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,11 +22,18 @@ public class AdminIntegrationTest {
     @Autowired
     private WebTestClient webTestClient;
 
-    Faker faker = new Faker();
+    private Faker faker;
+    private AdminCreationService adminCreationService;
+
+    @PostConstruct
+    public void init() {
+        faker = new Faker();
+        adminCreationService = new AdminCreationService(webTestClient, faker);
+    }
 
     @Test
     void canCreateAdmin() {
-        RegisterResponse adminResponse = createAdmin();
+        RegisterResponse adminResponse = adminCreationService.createAdmin();
 
         assertNotNull(adminResponse);
         assertTrue(adminResponse.id() > 0);
@@ -39,7 +46,7 @@ public class AdminIntegrationTest {
 
     @Test
     void canUpdateAdminById() {
-        RegisterResponse adminResponse = createAdmin();
+        RegisterResponse adminResponse = adminCreationService.createAdmin();
 
         assertNotNull(adminResponse);
         assertTrue(adminResponse.id() > 0);
@@ -71,7 +78,7 @@ public class AdminIntegrationTest {
 
     @Test
     void canUpdateAdminWhenMe() {
-        RegisterResponse adminResponse = createAdmin();
+        RegisterResponse adminResponse = adminCreationService.createAdmin();
 
         assertNotNull(adminResponse);
         assertTrue(adminResponse.id() > 0);
@@ -102,7 +109,7 @@ public class AdminIntegrationTest {
 
     @Test
     void canArchiveAdmin() {
-        RegisterResponse adminResponse = createAdmin();
+        RegisterResponse adminResponse = adminCreationService.createAdmin();
 
         assertNotNull(adminResponse);
         assertTrue(adminResponse.id() > 0);
@@ -123,7 +130,7 @@ public class AdminIntegrationTest {
 
     @Test
     void canDeleteAdmin() {
-        RegisterResponse adminResponse = createAdmin();
+        RegisterResponse adminResponse = adminCreationService.createAdmin();
         assertNotNull(adminResponse);
         assertTrue(adminResponse.id() > 0);
 
@@ -133,26 +140,6 @@ public class AdminIntegrationTest {
                 .header("Authorization", "Bearer " + adminResponse.token())
                 .exchange()
                 .expectStatus().isOk();
-    }
-
-    private RegisterResponse createAdmin() {
-        String firstName = faker.name().firstName();
-        String lastName = faker.name().lastName();
-        String userName = faker.name().username();
-        String password = "123124rawer";
-
-        CreatePersonRequest createPersonRequest = new CreatePersonRequest(firstName, lastName, userName, password);
-
-        return webTestClient.post()
-                .uri("/admins")
-                .accept(APPLICATION_JSON)
-                .contentType(APPLICATION_JSON)
-                .body(Mono.just(createPersonRequest), CreatePersonRequest.class)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectBody(RegisterResponse.class)
-                .returnResult()
-                .getResponseBody();
     }
 
     private Admin getAdmin(RegisterResponse adminResponse) {
