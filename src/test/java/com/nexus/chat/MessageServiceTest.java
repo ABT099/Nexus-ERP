@@ -8,7 +8,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,43 +23,57 @@ public class MessageServiceTest {
 
     @Mock
     private MessageRepository messageRepository;
-
+    @Mock
+    private SimpMessagingTemplate simpMessagingTemplate;
     @Mock
     private UserRepository userRepository;
-
     @Mock
     private ChatRepository chatRepository;
-
+    @Mock
+    private MessageMapper messageMapper;
     @InjectMocks
     private MessageService messageService;
 
     @Test
     void findAllByChatId_shouldReturnMessagesByChatId() {
         // Arrange
+        User user = new User();
+        Chat chat = new Chat("ad");
+        Message message = new Message(user, chat, "text");
+        Message message2 = new Message(user, chat, "text");
+
         List<Message> messages = List.of(
-                new Message(),
-                new Message()
+                message,
+                message2
+        );
+
+        List<MessageResponse> r = List.of(
+                new MessageResponse(1L, user.getId(), chat.getId(), message.getText(), ZonedDateTime.now()),
+                new MessageResponse(1L, user.getId(), chat.getId(), message2.getText(), ZonedDateTime.now())
         );
 
         when(messageRepository.findByChatIdOrderByCreatedAtAsc(1L)).thenReturn(messages);
+        when(messageMapper.map(message)).thenReturn(r.get(0));
+        when(messageMapper.map(message2)).thenReturn(r.get(1));
 
         // Act
-        List<Message> actual = messageService.findAllByChatId(1L);
+        List<MessageResponse> responses = messageService.findAllByChatId(1L);
 
         // Assert
-        assertIterableEquals(messages, actual);
+        assertEquals(messages.get(0).getText(), responses.get(0).text()); // Corrected from getFirst()
+        assertEquals(messages.get(1).getText(), responses.get(1).text()); // Corrected from getFirst()
         verify(messageRepository).findByChatIdOrderByCreatedAtAsc(1L);
     }
 
     @Test
     void save_shouldSaveMessage() {
         // Arrange
-        MessageRequest request = new MessageRequest(1L, 1L, "red", "text");
+        MessageRequest request = new MessageRequest(1L, 1L, "text");
         when(userRepository.findById(1L)).thenReturn(Optional.of(new User()));
         when(chatRepository.findById(1L)).thenReturn(Optional.of(new Chat()));
 
         // Act
-        messageService.save(request);
+        messageService.sendAndSave(request);
 
         // Assert
         verify(userRepository).findById(1L);
@@ -68,14 +84,14 @@ public class MessageServiceTest {
     @Test
     void save_shouldThrowException_whenChatNotFound() {
         // Arrange
-        MessageRequest request = new MessageRequest(1L, 1L, "red", "text");
+        MessageRequest request = new MessageRequest(1L, 1L, "text");
         when(userRepository.findById(1L)).thenReturn(Optional.of(new User()));
         when(chatRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(
                 ResourceNotFoundException.class,
-                () -> messageService.save(request)
+                () -> messageService.sendAndSave(request)
         );
 
         // Verify
@@ -86,13 +102,14 @@ public class MessageServiceTest {
 
     @Test
     void update_shouldUpdateMessage() {
-        Message message = new Message();
-        message.setText("oldText");
+        Message message = createMessage();
 
         when(messageRepository.findById(1L)).thenReturn(Optional.of(message));
 
         String newText = "newText";
-        messageService.update(1L, newText);
+        UpdateMessageRequest request = new UpdateMessageRequest(1L, newText);
+
+        messageService.update(request);
 
         assertEquals(newText, message.getText());
         verify(messageRepository).findById(1L);
@@ -104,10 +121,12 @@ public class MessageServiceTest {
         // Arrange
         when(messageRepository.findById(1L)).thenReturn(Optional.empty());
 
+        UpdateMessageRequest request = new UpdateMessageRequest(1L, "newText");
+
         // Act & Assert
         assertThrows(
                 ResourceNotFoundException.class,
-                () -> messageService.update(1L, "newText")
+                () -> messageService.update(request)
         );
 
         // Verify
@@ -118,14 +137,13 @@ public class MessageServiceTest {
     @Test
     void delete_shouldDeleteMessage_whenMessageExists() {
         // Arrange
-        Message message = new Message();
+        Message message = createMessage();
         when(messageRepository.findById(1L)).thenReturn(Optional.of(message));
 
         // Act
-        Message deletedMessage = messageService.delete(1L);
+        messageService.delete(1L);
 
         // Assert
-        assertEquals(message, deletedMessage);
         verify(messageRepository).findById(1L);
         verify(messageRepository).delete(message);
     }
@@ -144,5 +162,15 @@ public class MessageServiceTest {
         // Verify
         verify(messageRepository).findById(1L);
         verifyNoMoreInteractions(messageRepository);
+    }
+
+    private Message createMessage() {
+        Chat chat = new Chat("ad");
+        Message message = new Message();
+
+        message.setChat(chat);
+        message.setText("text");
+
+        return message;
     }
 }
