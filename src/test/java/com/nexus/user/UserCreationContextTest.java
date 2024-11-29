@@ -13,11 +13,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
-class UserCreationServiceTest {
-
+public class UserCreationContextTest {
     @Mock
     private UserRepository userRepository;
     @Mock
@@ -25,7 +26,7 @@ class UserCreationServiceTest {
     @Mock
     private AuthenticationService authenticationService;
     @InjectMocks
-    private UserCreationService userCreationService;
+    private UserCreationContext userCreationContext;
 
     @Test
     void create_shouldCreateUserAndChat_whenUsernameIsUnique() {
@@ -40,7 +41,7 @@ class UserCreationServiceTest {
         when(authenticationService.getToken(loginRequest)).thenReturn("token");
 
         // Act
-        UserDto createdUser = userCreationService.create(username, password, userType);
+        UserDto createdUser = userCreationContext.create(username, password, userType);
 
         // Assert
         assertNotNull(createdUser);
@@ -65,7 +66,7 @@ class UserCreationServiceTest {
         // Act & Assert
         assertThrows(
                 DuplicateResourceException.class,
-                () -> userCreationService.create(username, password, userType));
+                () -> userCreationContext.create(username, password, userType));
 
         verify(userRepository, never()).save(any(User.class));
         verify(chatRepository, never()).save(any(Chat.class));

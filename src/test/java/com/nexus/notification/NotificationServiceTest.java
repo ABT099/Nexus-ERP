@@ -2,7 +2,7 @@ package com.nexus.notification;
 
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.user.User;
-import com.nexus.user.UserRepository;
+import com.nexus.user.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,7 +22,7 @@ public class NotificationServiceTest {
     @Mock
     private NotificationRepository notificationRepository;
     @Mock
-    private UserRepository userRepository;
+    private UserService userService;
     @InjectMocks
     private NotificationService notificationService;
 
@@ -50,7 +50,7 @@ public class NotificationServiceTest {
         // Arrange
         CreateNotificationDto dto = new CreateNotificationDto(1L, "title", "body", NotificationType.REMINDER);
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(new User()));
+        when(userService.findById(1L)).thenReturn(new User());
 
         // Act
         notificationService.save(dto);
@@ -63,7 +63,7 @@ public class NotificationServiceTest {
     void save_shouldThrowException_whenUserNotFound() {
         CreateNotificationDto dto = new CreateNotificationDto(1L, "title", "body", NotificationType.REMINDER);
 
-        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+        when(userService.findById(1L)).thenThrow(ResourceNotFoundException.class);
 
         assertThrows(
                 ResourceNotFoundException.class,
@@ -88,7 +88,7 @@ public class NotificationServiceTest {
             return user;
         }).collect(Collectors.toList());
 
-        when(userRepository.findAllById(ids)).thenReturn(users);
+        when(userService.findAllById(ids)).thenReturn(users);
         when(notificationRepository.saveAll(anyList())).thenAnswer(invocation -> invocation.getArgument(0));
 
         List<Notification> result = notificationService.saveAll(dtos);
@@ -98,7 +98,7 @@ public class NotificationServiceTest {
         assertEquals("title1", result.getFirst().getTitle());
         assertEquals("body1", result.getFirst().getBody());
 
-        verify(userRepository).findAllById(ids);
+        verify(userService).findAllById(ids);
         verify(notificationRepository).saveAll(anyList());
     }
 
@@ -113,13 +113,13 @@ public class NotificationServiceTest {
         User user = new User();
         user.setId(1L);
         List<User> users = List.of(user);
-        when(userRepository.findAllById(ids)).thenReturn(List.of(user));
+        when(userService.findAllById(ids)).thenReturn(List.of(user));
 
-        when(userRepository.findAllById(ids)).thenReturn(users);
+        when(userService.findAllById(ids)).thenReturn(users);
 
         assertThrows(ResourceNotFoundException.class, () -> notificationService.saveAll(dtos));
 
-        verify(userRepository).findAllById(ids);
+        verify(userService).findAllById(ids);
         verify(notificationRepository, never()).saveAll(anyList());
     }
 

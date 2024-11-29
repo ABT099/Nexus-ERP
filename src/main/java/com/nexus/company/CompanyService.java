@@ -1,15 +1,11 @@
 package com.nexus.company;
 
-import com.nexus.admin.Admin;
-import com.nexus.admin.AdminRepository;
 import com.nexus.admin.AdminService;
 import com.nexus.common.abstraction.AbstractUserService;
 import com.nexus.exception.NoUpdateException;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.user.*;
 import jakarta.transaction.Transactional;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,12 +16,12 @@ public class CompanyService extends AbstractUserService {
 
     private final CompanyRepository companyRepository;
     private final AdminService adminService;
-    private final UserCreationService userCreationService;
+    private final UserCreationContext userCreationContext;
 
-    public CompanyService(CompanyRepository companyRepository, AdminService adminService, UserCreationService userCreationService) {
+    public CompanyService(CompanyRepository companyRepository, AdminService adminService, UserCreationContext userCreationContext) {
         this.companyRepository = companyRepository;
         this.adminService = adminService;
-        this.userCreationService = userCreationService;
+        this.userCreationContext = userCreationContext;
     }
 
     public List<Company> findAll() {
@@ -54,7 +50,7 @@ public class CompanyService extends AbstractUserService {
     public Long save(CreateCompanyRequest request) {
         adminService.findMe();
 
-        UserDto userDto = userCreationService.create(request.username(), request.password(), UserType.CUSTOMER);
+        UserDto userDto = userCreationContext.create(request.username(), request.password(), UserType.CUSTOMER);
 
         Company company = new Company(userDto.user(), request.companyName());
 

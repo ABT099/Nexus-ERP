@@ -3,6 +3,7 @@ package com.nexus.chat;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.user.User;
 import com.nexus.user.UserRepository;
+import com.nexus.user.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,7 +27,7 @@ public class MessageServiceTest {
     @Mock
     private SimpMessagingTemplate simpMessagingTemplate;
     @Mock
-    private UserRepository userRepository;
+    private UserService userService;
     @Mock
     private ChatRepository chatRepository;
     @Mock
@@ -69,14 +70,14 @@ public class MessageServiceTest {
     void save_shouldSaveMessage() {
         // Arrange
         MessageRequest request = new MessageRequest(1L, 1L, "text");
-        when(userRepository.findById(1L)).thenReturn(Optional.of(new User()));
+        when(userService.findById(1L)).thenReturn(new User());
         when(chatRepository.findById(1L)).thenReturn(Optional.of(new Chat()));
 
         // Act
         messageService.sendAndSave(request);
 
         // Assert
-        verify(userRepository).findById(1L);
+        verify(userService).findById(1L);
         verify(chatRepository).findById(1L);
         verify(messageRepository).save(any(Message.class));
     }
@@ -85,7 +86,7 @@ public class MessageServiceTest {
     void save_shouldThrowException_whenChatNotFound() {
         // Arrange
         MessageRequest request = new MessageRequest(1L, 1L, "text");
-        when(userRepository.findById(1L)).thenReturn(Optional.of(new User()));
+        when(userService.findById(1L)).thenReturn(new User());
         when(chatRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Act & Assert
@@ -95,7 +96,7 @@ public class MessageServiceTest {
         );
 
         // Verify
-        verify(userRepository).findById(1L);
+        verify(userService).findById(1L);
         verify(chatRepository).findById(1L);
         verifyNoInteractions(messageRepository);
     }

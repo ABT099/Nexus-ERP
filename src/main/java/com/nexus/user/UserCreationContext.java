@@ -6,20 +6,18 @@ import com.nexus.chat.Chat;
 import com.nexus.chat.ChatRepository;
 import com.nexus.exception.DuplicateResourceException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
-public class UserCreationService {
-
-    private final UserRepository userRepository;
+@Component
+public class UserCreationContext {
     private final ChatRepository chatRepository;
+    private final UserRepository userRepository;
     private final AuthenticationService authenticationService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
-
-    public UserCreationService(UserRepository userRepository, ChatRepository chatRepository, AuthenticationService authenticationService) {
-        this.userRepository = userRepository;
+    public UserCreationContext(ChatRepository chatRepository, UserRepository userRepository, AuthenticationService authenticationService) {
         this.chatRepository = chatRepository;
+        this.userRepository = userRepository;
         this.authenticationService = authenticationService;
     }
 

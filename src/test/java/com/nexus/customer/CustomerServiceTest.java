@@ -1,14 +1,13 @@
 package com.nexus.customer;
 
-import com.nexus.abstraction.AbstractAuthMockTest;
+import com.nexus.AbstractAuthMockTest;
+import com.nexus.admin.Admin;
+import com.nexus.admin.AdminService;
 import com.nexus.common.person.CreatePersonRequest;
 import com.nexus.common.person.PersonService;
 import com.nexus.common.person.UpdatePersonRequest;
 import com.nexus.exception.ResourceNotFoundException;
-import com.nexus.user.User;
-import com.nexus.user.UserCreationService;
-import com.nexus.user.UserDto;
-import com.nexus.user.UserType;
+import com.nexus.user.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,7 +29,9 @@ public class CustomerServiceTest extends AbstractAuthMockTest {
     @Mock
     private CustomerRepository customerRepository;
     @Mock
-    private UserCreationService userCreationService;
+    private UserCreationContext userCreationContext;
+    @Mock
+    private AdminService adminService;
     @Mock
     private PersonService<Customer> personService;
     @InjectMocks
@@ -142,11 +143,12 @@ public class CustomerServiceTest extends AbstractAuthMockTest {
     void save() {
         CreatePersonRequest request = new CreatePersonRequest("firstName", "lastname", "thisIs1", "password234");
         UserDto userDto = new UserDto(new User(), "token");
-        when(userCreationService.create(request.username(), request.password(), UserType.CUSTOMER)).thenReturn(userDto);
+        when(userCreationContext.create(request.username(), request.password(), UserType.CUSTOMER)).thenReturn(userDto);
+        when(adminService.findMe()).thenReturn(new Admin());
 
         customerService.save(request);
 
-        verify(userCreationService).create(request.username(), request.password(), UserType.CUSTOMER);
+        verify(userCreationContext).create(request.username(), request.password(), UserType.CUSTOMER);
         verify(customerRepository).save(any(Customer.class));
     }
 

@@ -6,8 +6,8 @@ import com.nexus.common.person.CreatePersonRequest;
 import com.nexus.common.person.UpdatePersonRequest;
 import com.nexus.common.person.PersonService;
 import com.nexus.exception.ResourceNotFoundException;
-import com.nexus.user.User;
-import com.nexus.user.UserCreationService;
+import com.nexus.user.UserCreationContext;
+import com.nexus.user.UserService;
 import com.nexus.user.UserDto;
 import com.nexus.user.UserType;
 import jakarta.transaction.Transactional;
@@ -19,15 +19,16 @@ import java.util.List;
 public class CustomerService extends AbstractUserService {
 
     private final CustomerRepository customerRepository;
-    private final UserCreationService userCreationService;
+    private final UserCreationContext userCreationContext;
     private final PersonService<Customer> personService;
     private final AdminService adminService;
 
     public CustomerService(CustomerRepository customerRepository,
-                           UserCreationService userCreationService,
-                           PersonService<Customer> personService, AdminService adminService) {
+                           UserCreationContext userCreationContext,
+                           PersonService<Customer> personService,
+                           AdminService adminService) {
         this.customerRepository = customerRepository;
-        this.userCreationService = userCreationService;
+        this.userCreationContext = userCreationContext;
         this.personService = personService;
         this.adminService = adminService;
     }
@@ -62,7 +63,7 @@ public class CustomerService extends AbstractUserService {
     public Long save(CreatePersonRequest request) {
         adminService.findMe();
 
-        UserDto userDto = userCreationService.create(request.username(), request.password(), UserType.CUSTOMER);
+        UserDto userDto = userCreationContext.create(request.username(), request.password(), UserType.CUSTOMER);
 
         Customer customer = new Customer(userDto.user(), request.firstName(), request.lastName());
 

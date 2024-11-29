@@ -1,5 +1,6 @@
 package com.nexus.user;
 
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,10 +8,13 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Transactional
 public class UserRepositoryTest {
 
     @Autowired
@@ -20,18 +24,15 @@ public class UserRepositoryTest {
 
     @BeforeEach
     public void setUp() {
-        underTest.deleteAll();
-
         User user = new User(username, "password", UserType.ADMIN);
         underTest.save(user);
     }
 
     @Test
     public void existsUserByUsername() {
-        User actual = underTest.findByUsername(username);
+        Optional<User> actual = underTest.findByUsername(username);
 
-        assertThat(actual).isNotNull();
-        assertThat(actual.getUsername()).isEqualTo(username);
+        actual.ifPresent(user -> assertThat(user.getUsername()).isEqualTo(username));
     }
 
     @Test

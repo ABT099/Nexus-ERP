@@ -2,8 +2,8 @@ package com.nexus.admin;
 
 import com.nexus.common.person.PersonService;
 import com.nexus.exception.ResourceNotFoundException;
-import com.nexus.user.User;
-import com.nexus.user.UserCreationService;
+import com.nexus.user.UserCreationContext;
+import com.nexus.user.UserService;
 import com.nexus.user.UserDto;
 import com.nexus.user.UserType;
 import com.nexus.common.abstraction.AbstractUserService;
@@ -19,12 +19,12 @@ import java.util.List;
 public class AdminService extends AbstractUserService {
 
     private final AdminRepository adminRepository;
-    private final UserCreationService userCreationService;
+    private final UserCreationContext userCreationContext;
     private final PersonService<Admin> personService;
 
-    public AdminService(AdminRepository adminRepository, UserCreationService userCreationService, PersonService<Admin> personService) {
+    public AdminService(AdminRepository adminRepository, UserCreationContext userCreationContext, PersonService<Admin> personService) {
         this.adminRepository = adminRepository;
-        this.userCreationService = userCreationService;
+        this.userCreationContext = userCreationContext;
         this.personService = personService;
     }
 
@@ -60,7 +60,7 @@ public class AdminService extends AbstractUserService {
 
     @Transactional
     public Pair<Long, String> save(CreatePersonRequest request) {
-        UserDto userDto = userCreationService.create(request.username(), request.password(), UserType.ADMIN);
+        UserDto userDto = userCreationContext.create(request.username(), request.password(), UserType.ADMIN);
 
         Admin admin = new Admin(userDto.user(), request.firstName(), request.lastName());
 

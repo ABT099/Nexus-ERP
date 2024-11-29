@@ -1,25 +1,25 @@
 package com.nexus.chat;
 
-import com.github.javafaker.Faker;
+import com.nexus.config.TestContainerConfig;
 import com.nexus.user.User;
 import com.nexus.user.UserRepository;
 import com.nexus.user.UserType;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.boot.test.context.SpringBootTest.*;
 import static org.springframework.http.MediaType.*;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@ContextConfiguration(initializers = TestContainerConfig.class)
+@Transactional
 public class MessageIntegrationTest {
 
     @Autowired

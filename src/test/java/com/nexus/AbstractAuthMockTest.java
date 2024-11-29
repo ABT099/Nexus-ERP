@@ -1,4 +1,4 @@
-package com.nexus.abstraction;
+package com.nexus;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;

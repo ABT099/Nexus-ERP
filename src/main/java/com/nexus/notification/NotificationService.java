@@ -2,7 +2,7 @@ package com.nexus.notification;
 
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.user.User;
-import com.nexus.user.UserRepository;
+import com.nexus.user.UserService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,11 +14,11 @@ import java.util.stream.Collectors;
 @Service
 public class NotificationService {
     private final NotificationRepository notificationRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public NotificationService(NotificationRepository notificationRepository, UserRepository userRepository) {
+    public NotificationService(NotificationRepository notificationRepository, UserService userService) {
         this.notificationRepository = notificationRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     public List<Notification> findAllByUserId(long userId) {
@@ -26,8 +26,8 @@ public class NotificationService {
     }
 
     public void save(CreateNotificationDto createNotificationDto) {
-        User user = userRepository.findById(createNotificationDto.userId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        User user = userService.findById(createNotificationDto.userId());
+
         Notification notification = new Notification(
                 user,
                 createNotificationDto.title(),
@@ -42,7 +42,7 @@ public class NotificationService {
                 .map(CreateNotificationDto::userId)
                 .collect(Collectors.toSet());
 
-        Map<Long, User> usersMap = userRepository.findAllById(userIds).stream()
+        Map<Long, User> usersMap = userService.findAllById(userIds).stream()
                 .collect(Collectors.toMap(User::getId, user -> user));
 
         List<Notification> notifications = new ArrayList<>(createNotificationDtos.size());

@@ -17,7 +17,7 @@ public class NexusApplication {
 	}
 
 //	@Bean
-//	CommandLineRunner commandLineRunner(UserCreationService uCR) {
+//	CommandLineRunner commandLineRunner(UserService uCR) {
 //		return args -> {
 //			uCR.create("abdo", "1234@a", UserType.SUPER_USER);
 //		};

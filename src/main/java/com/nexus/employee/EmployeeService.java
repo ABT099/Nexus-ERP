@@ -6,7 +6,8 @@ import com.nexus.common.person.CreatePersonRequest;
 import com.nexus.common.person.PersonService;
 import com.nexus.common.person.UpdatePersonRequest;
 import com.nexus.exception.ResourceNotFoundException;
-import com.nexus.user.UserCreationService;
+import com.nexus.user.UserCreationContext;
+import com.nexus.user.UserService;
 import com.nexus.user.UserDto;
 import com.nexus.user.UserType;
 import jakarta.transaction.Transactional;
@@ -17,13 +18,17 @@ import java.util.List;
 @Service
 public class EmployeeService extends AbstractUserService {
     private final EmployeeRepository employeeRepository;
-    private final UserCreationService userCreationService;
+    private final UserCreationContext userCreationContext;
     private final PersonService<Employee> personService;
     private final AdminService adminService;
 
-    public EmployeeService(EmployeeRepository employeeRepository, UserCreationService userCreationService, PersonService<Employee> personService, AdminService adminService) {
+    public EmployeeService(
+            EmployeeRepository employeeRepository,
+            UserCreationContext userCreationContext,
+            PersonService<Employee> personService,
+            AdminService adminService) {
         this.employeeRepository = employeeRepository;
-        this.userCreationService = userCreationService;
+        this.userCreationContext = userCreationContext;
         this.personService = personService;
         this.adminService = adminService;
     }
@@ -56,7 +61,7 @@ public class EmployeeService extends AbstractUserService {
     public Long save(CreatePersonRequest request) {
         adminService.findMe();
 
-        UserDto userDto = userCreationService.create(request.username(), request.password(), UserType.EMPLOYEE);
+        UserDto userDto = userCreationContext.create(request.username(), request.password(), UserType.EMPLOYEE);
 
         Employee employee = new Employee(userDto.user(), request.firstName(), request.lastName());
 

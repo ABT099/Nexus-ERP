@@ -2,7 +2,7 @@ package com.nexus.chat;
 
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.user.User;
-import com.nexus.user.UserRepository;
+import com.nexus.user.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -13,15 +13,15 @@ import java.util.Objects;
 public class MessageService {
 
     private final MessageRepository messageRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final ChatRepository chatRepository;
     private final MessageMapper messageMapper;
     private final SimpMessagingTemplate messagingTemplate;
 
 
-    public MessageService(MessageRepository messageRepository, UserRepository userRepository, ChatRepository chatRepository, MessageMapper messageMapper, SimpMessagingTemplate messagingTemplate) {
+    public MessageService(MessageRepository messageRepository, UserService userService, ChatRepository chatRepository, MessageMapper messageMapper, SimpMessagingTemplate messagingTemplate) {
         this.messageRepository = messageRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
         this.chatRepository = chatRepository;
         this.messageMapper = messageMapper;
         this.messagingTemplate = messagingTemplate;
@@ -37,8 +37,7 @@ public class MessageService {
 
     @Transactional
     public void sendAndSave(MessageRequest messageRequest) {
-        User user = userRepository.findById(messageRequest.senderId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userService.findById(messageRequest.senderId());
 
         Chat chat = chatRepository.findById(messageRequest.chatId())
                 .orElseThrow(() -> new ResourceNotFoundException("Chat not found"));

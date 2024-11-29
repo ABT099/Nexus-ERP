@@ -3,6 +3,7 @@ package com.nexus.employee;
 import com.nexus.user.User;
 import com.nexus.user.UserRepository;
 import com.nexus.user.UserType;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Transactional
 class EmployeeRepositoryTest {
 
     @Autowired
@@ -33,10 +35,6 @@ class EmployeeRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        // Clear repositories before each test
-        userRepository.deleteAll();
-        employeeRepository.deleteAll();
-
         // Create and save a primary user and employee
         user = new User("employee", "password", UserType.EMPLOYEE);
         userRepository.save(user);

@@ -3,6 +3,7 @@ package com.nexus.company;
 import com.nexus.user.User;
 import com.nexus.user.UserRepository;
 import com.nexus.user.UserType;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Transactional
 public class CompanyRepositoryTest {
 
     @Autowired
@@ -33,10 +35,6 @@ public class CompanyRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        // Clear existing data in the database
-        userRepository.deleteAll();
-        companyRepository.deleteAll();
-
         // Create and save a new user and company
         user = new User("customer", "password", UserType.CUSTOMER);
         userRepository.save(user);
