@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,7 +40,7 @@ public class MessageServiceTest {
     void findAllByChatId_shouldReturnMessagesByChatId() {
         // Arrange
         User user = new User();
-        Chat chat = new Chat("ad");
+        Chat chat = new Chat();
         Message message = new Message(user, chat, "text");
         Message message2 = new Message(user, chat, "text");
 
@@ -49,8 +50,8 @@ public class MessageServiceTest {
         );
 
         List<MessageResponse> r = List.of(
-                new MessageResponse(1L, user.getId(), chat.getId(), message.getText(), ZonedDateTime.now()),
-                new MessageResponse(1L, user.getId(), chat.getId(), message2.getText(), ZonedDateTime.now())
+                new MessageResponse(1L, user.getId(), chat.getId(), message.getText(), Date.from(ZonedDateTime.now().toInstant())),
+                new MessageResponse(1L, user.getId(), chat.getId(), message2.getText(), Date.from(ZonedDateTime.now().toInstant()))
         );
 
         when(messageRepository.findByChatIdOrderByCreatedAtAsc(1L)).thenReturn(messages);
@@ -166,7 +167,7 @@ public class MessageServiceTest {
     }
 
     private Message createMessage() {
-        Chat chat = new Chat("ad");
+        Chat chat = new Chat();
         Message message = new Message();
 
         message.setChat(chat);

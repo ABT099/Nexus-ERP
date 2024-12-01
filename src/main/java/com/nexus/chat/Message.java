@@ -5,12 +5,12 @@ import jakarta.persistence.*;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import java.time.ZonedDateTime;
+import java.util.Date;
 
 @Entity
 public class Message extends AbstractPersistable<Long> {
     @ManyToOne(
             optional = false,
-            cascade = CascadeType.PERSIST,
             fetch = FetchType.EAGER
     )
     @JoinColumn(
@@ -22,7 +22,6 @@ public class Message extends AbstractPersistable<Long> {
 
     @ManyToOne(
             optional = false,
-            cascade = CascadeType.PERSIST,
             fetch = FetchType.LAZY
     )
     @JoinColumn(
@@ -33,7 +32,7 @@ public class Message extends AbstractPersistable<Long> {
     private Chat chat;
     private String text;
     @Temporal(TemporalType.TIMESTAMP)
-    private ZonedDateTime createdAt = ZonedDateTime.now();
+    private Date createdAt = Date.from(ZonedDateTime.now().toInstant());
 
     public Message(User sender, Chat chat, String text) {
         this.sender = sender;
@@ -67,11 +66,11 @@ public class Message extends AbstractPersistable<Long> {
         this.text = text;
     }
 
-    public ZonedDateTime getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(ZonedDateTime createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 }

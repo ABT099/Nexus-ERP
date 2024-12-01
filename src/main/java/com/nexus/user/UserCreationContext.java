@@ -2,21 +2,17 @@ package com.nexus.user;
 
 import com.nexus.auth.AuthenticationService;
 import com.nexus.auth.LoginRequest;
-import com.nexus.chat.Chat;
-import com.nexus.chat.ChatRepository;
 import com.nexus.exception.DuplicateResourceException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserCreationContext {
-    private final ChatRepository chatRepository;
     private final UserRepository userRepository;
     private final AuthenticationService authenticationService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
-    public UserCreationContext(ChatRepository chatRepository, UserRepository userRepository, AuthenticationService authenticationService) {
-        this.chatRepository = chatRepository;
+    public UserCreationContext(UserRepository userRepository, AuthenticationService authenticationService) {
         this.userRepository = userRepository;
         this.authenticationService = authenticationService;
     }
@@ -31,7 +27,6 @@ public class UserCreationContext {
         User user = new User(username, hashedPassword, userType);
 
         userRepository.save(user);
-        chatRepository.save(new Chat(username));
 
         String token  = authenticationService.getToken(new LoginRequest(username, password));
 

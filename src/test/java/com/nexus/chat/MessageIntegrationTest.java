@@ -1,10 +1,8 @@
 package com.nexus.chat;
 
+import com.github.javafaker.Faker;
 import com.nexus.config.TestContainerConfig;
-import com.nexus.user.User;
-import com.nexus.user.UserRepository;
-import com.nexus.user.UserType;
-import jakarta.transaction.Transactional;
+import com.nexus.user.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,61 +17,92 @@ import static org.springframework.http.MediaType.*;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(initializers = TestContainerConfig.class)
-@Transactional
 public class MessageIntegrationTest {
 
     @Autowired
     private WebTestClient webClient;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ChatRepository chatRepository;
+    private UserCreationContext userCreationContext;
 
     @Autowired
     private MessageRepository messageRepository;
 
     @Autowired
-    private MessageService messageService;
+    private ChatRepository chatRepository;
+
+    Faker faker = new Faker();
 
     @BeforeEach
-    void setUp() {
-        userRepository.deleteAll();
-        messageRepository.deleteAll();
+    public void setup() {
+        String username = faker.name().username();
+        String password = faker.internet().password();
+        UserDto userDto = userCreationContext.create(username, password, UserType.SUPER_USER);
 
-        User user = new User("abdo", "te123455", UserType.SUPER_USER);
-        userRepository.save(user);
-
-        Chat chat = new Chat("chat");
+        Chat chat = new Chat();
         chatRepository.save(chat);
 
-        MessageRequest request = new MessageRequest(user.getId(), chat.getId(), "Hello World");
-        messageService.sendAndSave(request);
+        Message message = new Message(
+                userDto.user(),
+                chat,
+                "text"
+        );
+
+        messageRepository.save(message);
+
+
+        assertNotNull(message.getId());
+        assertNotNull(chat.getId());
+        assertNotNull(userDto.token());
+
+        messageId = message.getId();
+        token = userDto.token();
+        chatId = chat.getId();
     }
+
+    private Long messageId;
+    private Long chatId;
+    private String token;
 
     @Test
     void canUpdateMessage() {
-        UpdateMessageRequest updateRequest = new UpdateMessageRequest(1, "newText");
+        String newText = "new text";
+
+        UpdateMessageRequest updateRequest = new UpdateMessageRequest(messageId, newText);
 
         webClient.put()
                 .uri("/messages")
                 .contentType(APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
                 .body(Mono.just(updateRequest), UpdateMessageRequest.class)
                 .exchange()
                 .expectStatus().isOk();
 
         webClient.get()
-                .uri("/messages/{chatId}", 1L)
+                .uri("/messages/{chatId}", chatId)
+                .header("Authorization", "Bearer " + token)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBodyList(MessageResponse.class)
                 .value(messages -> assertTrue(messages.stream()
-                        .anyMatch(msg -> msg.id().equals(1L) && msg.text().equals("newText"))));
+                        .anyMatch(msg -> msg.id().equals(messageId) && msg.text().equals(newText))));
     }
 
     @Test
     void canDeleteMessage() {
+        webClient.delete()
+                .uri("/messages/{id}", messageId)
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus().isOk();
 
+        webClient.get()
+                .uri("/messages/{chatId}", chatId)
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(MessageResponse.class)
+                .value(messages -> assertTrue(messages.stream()
+                        .noneMatch(msg -> msg.id().equals(messageId))));
     }
 }

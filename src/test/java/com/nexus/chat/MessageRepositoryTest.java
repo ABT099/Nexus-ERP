@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,7 +37,7 @@ public class MessageRepositoryTest {
 
         userRepository.save(user);
 
-        Chat chat = chatRepository.save(new Chat("chat"));
+        Chat chat = chatRepository.save(new Chat());
 
         chatRepository.save(chat);
 
@@ -46,9 +47,9 @@ public class MessageRepositoryTest {
                 new Message(user, chat, "Message 3")
         );
 
-        messages.getFirst().setCreatedAt(ZonedDateTime.now().minusMinutes(3));
-        messages.get(1).setCreatedAt(ZonedDateTime.now().minusMinutes(2));
-        messages.get(2).setCreatedAt(ZonedDateTime.now().minusMinutes(1));
+        messages.getFirst().setCreatedAt(Date.from(ZonedDateTime.now().minusDays(1).toInstant()));
+        messages.get(1).setCreatedAt(Date.from(ZonedDateTime.now().minusDays(1).toInstant()));
+        messages.get(2).setCreatedAt(Date.from(ZonedDateTime.now().minusDays(1).toInstant()));
 
         messageRepository.saveAll(messages);
 
@@ -60,8 +61,8 @@ public class MessageRepositoryTest {
 
         for (int i = 0; i < actual.size() - 1; i++) {
             assertTrue(
-                    actual.get(i).getCreatedAt().isBefore(actual.get(i + 1).getCreatedAt()) ||
-                            actual.get(i).getCreatedAt().isEqual(actual.get(i + 1).getCreatedAt()),
+                    actual.get(i).getCreatedAt().compareTo(actual.get(i + 1).getCreatedAt()) < 0 ||
+                            actual.get(i).getCreatedAt().compareTo(actual.get(i + 1).getCreatedAt()) == 0,
                     "Messages are not ordered by createdAt in ascending order."
             );
         }

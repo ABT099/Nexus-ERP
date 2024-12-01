@@ -22,14 +22,12 @@ public class UserCreationContextTest {
     @Mock
     private UserRepository userRepository;
     @Mock
-    private ChatRepository chatRepository;
-    @Mock
     private AuthenticationService authenticationService;
     @InjectMocks
     private UserCreationContext userCreationContext;
 
     @Test
-    void create_shouldCreateUserAndChat_whenUsernameIsUnique() {
+    void create_shouldCreateUser_whenUsernameIsUnique() {
         // Arrange
         String username = "test";
         String password = "test";
@@ -51,7 +49,6 @@ public class UserCreationContextTest {
         assertEquals("token", createdUser.token());
 
         verify(userRepository, times(1)).save(any(User.class));
-        verify(chatRepository, times(1)).save(any(Chat.class));
     }
 
     @Test
@@ -69,6 +66,5 @@ public class UserCreationContextTest {
                 () -> userCreationContext.create(username, password, userType));
 
         verify(userRepository, never()).save(any(User.class));
-        verify(chatRepository, never()).save(any(Chat.class));
     }
 }
