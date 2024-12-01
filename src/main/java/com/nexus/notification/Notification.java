@@ -9,7 +9,7 @@ import java.util.Date;
 
 @Entity
 public class Notification extends AbstractPersistable<Long> {
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(
             name = "user_id",
             nullable = false,

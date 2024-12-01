@@ -27,7 +27,7 @@ public class NotificationController {
     }
 
     @PatchMapping
-    public void readBatch(Set<Long> ids) {
+    public void readBatch(@RequestBody Set<Long> ids) {
         notificationService.readBatch(ids);
     }
 }
