@@ -3,10 +3,12 @@ package com.nexus.common.abstraction;
 import com.nexus.user.User;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Date;
 
 @MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)
 public abstract class AbstractAppUser {
 
     @Id

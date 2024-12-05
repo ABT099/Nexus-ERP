@@ -1,9 +1,10 @@
 package com.nexus.event;
 
-import com.nexus.validation.EnumValue;
+import com.nexus.validation.AfterNow;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.ZonedDateTime;
 import java.util.Set;
 
 public record CreateEventRequest(
@@ -14,6 +15,8 @@ public record CreateEventRequest(
         @NotEmpty
         String description,
         @NotNull
-        @EnumValue(enumClass = EventType.class)
-        EventType type
+        EventType type,
+        @NotNull
+        @AfterNow
+        ZonedDateTime date
 ) { }

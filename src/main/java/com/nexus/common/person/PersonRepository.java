@@ -1,6 +1,6 @@
 package com.nexus.common.person;
 
-import com.nexus.common.repository.ArchivableRepository;
+import com.nexus.common.ArchivableRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.query.Param;

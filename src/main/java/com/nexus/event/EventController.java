@@ -1,10 +1,12 @@
 package com.nexus.event;
 
+import com.nexus.zoned.Zoned;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -17,6 +19,7 @@ public class EventController {
         this.eventService = eventService;
     }
 
+    @Zoned
     @GetMapping("/admin/{adminId}")
     public ResponseEntity<List<Event>> getAllByAdmin(
             @Valid
@@ -25,6 +28,7 @@ public class EventController {
         return ResponseEntity.ok(eventService.findAllByAdmin(adminId));
     }
 
+    @Zoned
     @GetMapping("{id}")
     public ResponseEntity<Event> getById(
             @Valid
@@ -34,8 +38,10 @@ public class EventController {
     }
 
     @PostMapping
-    public void create(@Valid CreateEventRequest request) {
-        eventService.save(request);
+    public ResponseEntity<Integer> create(@Valid @RequestBody CreateEventRequest request) {
+        int id = eventService.save(request);
+        return ResponseEntity.created(URI.create("events/" + id))
+                .body(id);
     }
 
     @PutMapping("{id}")
@@ -43,7 +49,7 @@ public class EventController {
             @Valid
             @Positive
             @PathVariable int id,
-            UpdateEventRequest request) {
+            @Valid @RequestBody UpdateEventRequest request) {
         eventService.update(id, request);
     }
 

@@ -1,16 +1,22 @@
 package com.nexus.event;
 
 import com.nexus.common.Status;
-import com.nexus.validation.EnumValue;
+import com.nexus.validation.AfterNow;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
+import java.time.ZonedDateTime;
 
 public record UpdateEventRequest(
         @NotEmpty
         String name,
         @NotEmpty
         String description,
-        @EnumValue(enumClass = EventType.class)
+        @NotNull
         EventType type,
-        @EnumValue(enumClass = Status.class)
-        Status status
+        @NotNull
+        Status status,
+        @NotNull
+        @AfterNow
+        ZonedDateTime date
 ) { }

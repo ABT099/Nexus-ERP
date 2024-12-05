@@ -8,12 +8,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Constraint(validatedBy = EnumValueValidator.class)
-@Target({ElementType.FIELD, ElementType.PARAMETER})
+@Constraint(validatedBy = AfterNowValidator.class)
+@Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface EnumValue {
-    String message() default "Invalid value. Must match one of the enum values.";
+public @interface AfterNow {
+    String message() default "The date must be in the future";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
-    Class<? extends Enum<?>> enumClass();
 }

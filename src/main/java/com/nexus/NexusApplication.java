@@ -16,10 +16,4 @@ public class NexusApplication {
 		SpringApplication.run(NexusApplication.class, args);
 	}
 
-//	@Bean
-//	CommandLineRunner commandLineRunner(UserService uCR) {
-//		return args -> {
-//			uCR.create("abdo", "1234@a", UserType.SUPER_USER);
-//		};
-//	}
 }

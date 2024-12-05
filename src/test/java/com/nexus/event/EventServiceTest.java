@@ -35,8 +35,8 @@ public class EventServiceTest {
     @Test
     void findAllByAdmin_shouldReturnSortedEvents() {
         List<Event> events = List.of(
-                new Event("Event1", "Description1", EventType.MEETING),
-                new Event("Event2", "Description2", EventType.MEETING)
+                new Event("Event1", "Description1", EventType.MEETING, ZonedDateTime.now().plusDays(1)),
+                new Event("Event2", "Description2", EventType.MEETING, ZonedDateTime.now().plusDays(1))
         );
 
         events.getFirst().setDate(ZonedDateTime.now().plusDays(1));
@@ -51,7 +51,7 @@ public class EventServiceTest {
 
     @Test
     void findById_shouldReturnEvent_whenEventExists() {
-        Event event = new Event("Event1", "Description1", EventType.MEETING);
+        Event event = new Event("Event1", "Description1", EventType.MEETING, ZonedDateTime.now().plusDays(1));
         when(eventRepository.findById(1)).thenReturn(Optional.of(event));
 
         Event result = eventService.findById(1);
@@ -68,12 +68,12 @@ public class EventServiceTest {
 
     @Test
     void save_shouldSaveEvent() {
-        CreateEventRequest request = new CreateEventRequest(Set.of(2L, (1L)), "Event1", "Description1", EventType.MEETING);
+        CreateEventRequest request = new CreateEventRequest(Set.of(2L, (1L)), "Event1", "Description1", EventType.MEETING, ZonedDateTime.now().plusDays(1));
 
         List<Admin> admins = List.of(new Admin(), new Admin());
         when(adminService.findAllById(request.adminIds())).thenReturn(admins);
 
-        Event event = new Event("Event1", "Description1", EventType.MEETING);
+        Event event = new Event("Event1", "Description1", EventType.MEETING, ZonedDateTime.now().plusDays(1));
         event.setId(1);
 
         doReturn(event).when(eventRepository).save(any(Event.class));
@@ -86,8 +86,8 @@ public class EventServiceTest {
 
     @Test
     void update_shouldUpdateEvent_whenChangesMade() {
-        UpdateEventRequest request = new UpdateEventRequest("UpdatedEvent", "UpdatedDescription", EventType.MEETING, Status.PENDING);
-        Event event = new Event("Event1", "Description1", EventType.MEETING);
+        UpdateEventRequest request = new UpdateEventRequest("UpdatedEvent", "UpdatedDescription", EventType.MEETING, Status.PENDING, ZonedDateTime.now().plusDays(2));
+        Event event = new Event("Event1", "Description1", EventType.MEETING, ZonedDateTime.now().plusDays(1));
         when(eventRepository.findById(1)).thenReturn(Optional.of(event));
 
         eventService.update(1, request);
@@ -97,8 +97,8 @@ public class EventServiceTest {
 
     @Test
     void update_shouldThrowException_whenNoChangesMade() {
-        UpdateEventRequest request = new UpdateEventRequest("Event1", "Description1", EventType.MEETING, Status.PENDING);
-        Event event = new Event("Event1", "Description1", EventType.MEETING);
+        UpdateEventRequest request = new UpdateEventRequest("Event1", "Description1", EventType.MEETING, Status.PENDING, ZonedDateTime.now().plusDays(1));
+        Event event = new Event("Event1", "Description1", EventType.MEETING, ZonedDateTime.now().plusDays(1));
         when(eventRepository.findById(1)).thenReturn(Optional.of(event));
 
         assertThrows(NoUpdateException.class, () -> eventService.update(1, request));
@@ -106,7 +106,7 @@ public class EventServiceTest {
 
     @Test
     void addAdmin_shouldAddAdminToEvent() {
-        Event event = new Event("Event1", "Description1", EventType.MEETING);
+        Event event = new Event("Event1", "Description1", EventType.MEETING, ZonedDateTime.now().plusDays(1));
         Admin admin = new Admin();
         when(eventRepository.findById(1)).thenReturn(Optional.of(event));
         when(adminService.findById(1L)).thenReturn(admin);
@@ -119,7 +119,7 @@ public class EventServiceTest {
 
     @Test
     void removeAdmin_shouldRemoveAdminFromEvent() {
-        Event event = new Event("Event1", "Description1", EventType.MEETING);
+        Event event = new Event("Event1", "Description1", EventType.MEETING, ZonedDateTime.now().plusDays(1));
         Admin admin = new Admin();
         when(eventRepository.findById(1)).thenReturn(Optional.of(event));
         when(adminService.findById(1L)).thenReturn(admin);
@@ -132,7 +132,7 @@ public class EventServiceTest {
 
     @Test
     void remove_shouldDeleteEvent() {
-        Event event = new Event("Event1", "Description1", EventType.MEETING);
+        Event event = new Event("Event1", "Description1", EventType.MEETING, ZonedDateTime.now().plusDays(1));
         Admin admin = new Admin();
         event.addAdmin(admin);
         when(eventRepository.findById(1)).thenReturn(Optional.of(event));

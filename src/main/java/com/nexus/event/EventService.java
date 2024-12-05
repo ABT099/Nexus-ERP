@@ -42,8 +42,8 @@ public class EventService {
     }
 
     @Transactional
-    public void save(CreateEventRequest request) {
-        Event event = new Event(request.name(), request.description(), request.type());
+    public Integer save(CreateEventRequest request) {
+        Event event = new Event(request.name(), request.description(), request.type(), request.date());
 
         List<Admin> admins = adminService.findAllById(request.adminIds());
 
@@ -56,6 +56,8 @@ public class EventService {
                 request.adminIds(),
                 new EventHolderDto(Objects.requireNonNull(savedEvent.getId()), savedEvent.getName(), savedEvent.getDate(), savedEvent.isUrgent())
         );
+
+        return savedEvent.getId();
     }
 
     @Transactional
@@ -81,6 +83,11 @@ public class EventService {
 
         if (!Objects.equals(event.getType(), request.type())) {
             event.setType(request.type());
+            updated = true;
+        }
+
+        if (!Objects.equals(event.getDate(), request.date())) {
+            event.setDate(request.date());
             updated = true;
         }
 

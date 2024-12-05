@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,8 +44,8 @@ public class EventRepositoryTest {
         adminRepository.save(admin);
 
         List<Event> events = List.of(
-                new Event("event1", "event1Desc", EventType.MEETING),
-                new Event("event2", "event2Desc", EventType.MEETING)
+                new Event("event1", "event1Desc", EventType.MEETING, ZonedDateTime.now().plusDays(1)),
+                new Event("event2", "event2Desc", EventType.MEETING, ZonedDateTime.now().plusDays(1))
         );
 
         eventRepository.saveAll(events);
@@ -67,8 +68,8 @@ public class EventRepositoryTest {
     void updateUrgentToTrue() {
         // Arrange
         List<Event> events = List.of(
-                new Event("event1", "event1Desc", EventType.MEETING),
-                new Event("event2", "event2Desc", EventType.MEETING)
+                new Event("event1", "event1Desc", EventType.MEETING, ZonedDateTime.now().plusDays(1)),
+                new Event("event2", "event2Desc", EventType.MEETING, ZonedDateTime.now().plusDays(1))
         );
 
         eventRepository.saveAll(events);

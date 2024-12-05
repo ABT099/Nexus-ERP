@@ -25,7 +25,7 @@ public class EventManager {
 
     private static final Comparator<EventHolderDto> EVENT_COMPARATOR =
             Comparator.comparing(EventHolderDto::isUrgent).reversed()
-                    .thenComparing(EventHolderDto::getDate);
+                    .thenComparing(EventHolderDto::getDate, Comparator.nullsLast(Comparator.naturalOrder()));
 
     private final NotificationManager notificationManager;
     private final EventRepository eventRepository;

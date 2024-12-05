@@ -2,8 +2,10 @@ package com.nexus.event;
 
 import com.nexus.admin.Admin;
 import com.nexus.common.Status;
+import com.nexus.user.User;
 import jakarta.persistence.*;
 import org.springframework.data.jpa.domain.AbstractAuditable;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -11,7 +13,8 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-public class Event extends AbstractAuditable<Admin, Integer> {
+@EntityListeners(AuditingEntityListener.class)
+public class Event extends AbstractAuditable<User, Integer>  {
     @Column(
             nullable = false,
             columnDefinition = "text"
@@ -41,10 +44,11 @@ public class Event extends AbstractAuditable<Admin, Integer> {
     )
     private final List<Admin> admins = new ArrayList<>();
 
-    public Event(String name, String description, EventType type) {
+    public Event(String name, String description, EventType type, ZonedDateTime date) {
         this.name = name;
         this.description = description;
         this.type = type;
+        this.date = date;
     }
 
     public Event() {}
