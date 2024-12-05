@@ -1,6 +1,5 @@
 package com.nexus.user;
 
-import com.nexus.chat.Chat;
 import com.nexus.notification.Notification;
 import jakarta.persistence.*;
 
@@ -34,7 +33,7 @@ public class User {
     @Column(columnDefinition = "text")
     private String avatarUrl;
     @Column(nullable = false)
-    private boolean archived = false;
+    private final boolean archived = false;
 
     @OneToMany(
             orphanRemoval = true,
@@ -79,10 +78,6 @@ public class User {
         return userType;
     }
 
-    public void setUserType(UserType userType) {
-        this.userType = userType;
-    }
-
     public String getAvatarUrl() {
         return avatarUrl;
     }
@@ -93,9 +88,5 @@ public class User {
 
     public boolean isArchived() {
         return archived;
-    }
-
-    public void setArchived(boolean archived) {
-        this.archived = archived;
     }
 }

@@ -8,10 +8,7 @@ import jakarta.persistence.Entity;
 @Entity
 public class Company extends AbstractAppUser {
 
-    @Column(
-            unique = true,
-            columnDefinition = "text"
-    )
+    @Column(columnDefinition = "text")
     private String companyName;
 
     public Company(User user, String companyName) {
