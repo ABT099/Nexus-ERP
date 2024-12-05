@@ -33,7 +33,7 @@ public class User {
     @Column(columnDefinition = "text")
     private String avatarUrl;
     @Column(nullable = false)
-    private final boolean archived = false;
+    private boolean archived;
 
     @OneToMany(
             orphanRemoval = true,
@@ -41,6 +41,11 @@ public class User {
             mappedBy = "user"
     )
     private List<Notification> notifications;
+
+    @PrePersist
+    private void prePersist() {
+        archived = false;
+    }
 
     public User(String username, String password, UserType userType) {
         this.username = username;

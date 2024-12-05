@@ -25,14 +25,16 @@ public class ZonedInterceptor {
 
     @Pointcut("@annotation(Zoned)")
     public void zonedMethod() {}
+
     @Before("zonedMethod()")
     public void applyZoneBeforeMethod(JoinPoint joinPoint) {
         zoneFilter.setApplyFilter(true);
+        ZoneId targetZone = timeZoneHolder.getTimeZone();
 
-        for (Object arg : joinPoint.getArgs()) {
+        for (int i = 0; i < joinPoint.getArgs().length; i++) {
+            Object arg = joinPoint.getArgs()[i];
             if (arg instanceof ZonedDateTime original) {
-                ZoneId targetZone = timeZoneHolder.getTimeZone();
-                arg = original.withZoneSameInstant(targetZone);
+                joinPoint.getArgs()[i] = original.withZoneSameInstant(targetZone);
             }
         }
     }

@@ -10,8 +10,11 @@ import java.util.List;
 
 @Entity
 public class Admin extends AbstractPerson {
-    @ManyToMany(mappedBy = "admins")
-    private final List<Event> events = new ArrayList<Event>();
+    @ManyToMany(
+            mappedBy = "admins",
+            fetch = FetchType.LAZY
+    )
+    private final List<Event> events = new ArrayList<>();
 
     public Admin(User user, String firstName, String lastName) {
         super(user, firstName, lastName);

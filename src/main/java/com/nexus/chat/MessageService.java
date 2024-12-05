@@ -48,13 +48,7 @@ public class MessageService {
 
         MessageResponse messageResponse = messageMapper.map(message);
 
-        messagingTemplate.convertAndSend(
-                "/queue/messages" + message.getChat().getId(),
-                messageResponse);
-
-        messagingTemplate.convertAndSend(
-                "/queue/messages" + message.getChat().getId(),
-                messageResponse);
+        sendToQueue(message, messageResponse);
     }
 
     @Transactional
@@ -70,13 +64,7 @@ public class MessageService {
 
         MessageResponse messageResponse = messageMapper.map(message);
 
-        messagingTemplate.convertAndSend(
-                "/queue/messages" + message.getChat().getId(),
-                messageResponse);
-
-        messagingTemplate.convertAndSend(
-                "/queue/messages" + message.getChat().getId(),
-                messageResponse);
+        sendToQueue(message, messageResponse);
     }
 
     @Transactional
@@ -87,9 +75,7 @@ public class MessageService {
 
         MessageResponse messageResponse = messageMapper.map(message);
 
-        messagingTemplate.convertAndSend(
-                "/queue/messages" + message.getChat().getId(),
-                messageResponse);
+        sendToQueue(message, messageResponse);
     }
 
     private Message findMessageById(Long id) {
@@ -97,5 +83,11 @@ public class MessageService {
                 .orElseThrow(
                         () -> new ResourceNotFoundException("message with id: " + id + " not found")
                 );
+    }
+
+    private void sendToQueue(Message message, MessageResponse messageResponse) {
+        messagingTemplate.convertAndSend(
+                "/queue/messages" + message.getChat().getId(),
+                messageResponse);
     }
 }

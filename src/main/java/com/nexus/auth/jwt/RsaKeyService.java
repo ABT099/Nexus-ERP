@@ -18,7 +18,7 @@ public class RsaKeyService {
     private void generateKey() {
         try {
             KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-            keyGen.initialize(2024);
+            keyGen.initialize(2048);
             var key = keyGen.generateKeyPair();
             this.rsaKey = key.getPrivate();
             System.out.println("jwt key generated!");

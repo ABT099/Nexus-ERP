@@ -10,7 +10,7 @@ public interface CompanyRepository extends ArchivableRepository<Company, Long> {
 
     @Query("""
     select c from Company c
-    join c.user u
+    join fetch c.user u
     where u.id = :userId
     """)
     Optional<Company> findByUserId(@Param("userId") Long userId);

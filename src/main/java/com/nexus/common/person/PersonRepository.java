@@ -12,7 +12,7 @@ public interface PersonRepository<T, ID> extends ArchivableRepository<T, ID> {
 
     @Query("""
     SELECT e FROM #{#entityName} e
-    join e.user u
+    join fetch e.user u
     where u.id = :userId
     """)
     Optional<T> findByUserId(@Param("userId") Long userId);

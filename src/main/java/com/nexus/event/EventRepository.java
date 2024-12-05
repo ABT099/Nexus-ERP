@@ -1,5 +1,6 @@
 package com.nexus.event;
 
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,12 +11,13 @@ import java.util.List;
 public interface EventRepository extends JpaRepository<Event, Integer> {
     @Query("""
         SELECT e FROM Event e
-        join e.admins a
+        join fetch e.admins a
         where a.id = :adminId
     """)
     List<Event> findAllByAdminId(long adminId);
 
     @Modifying
+    @Transactional
     @Query("""
     UPDATE Event e
     SET e.urgent = true

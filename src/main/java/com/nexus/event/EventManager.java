@@ -4,9 +4,7 @@ import com.nexus.notification.NotificationManager;
 import com.nexus.notification.NotificationHolderDto;
 import com.nexus.notification.NotificationType;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -17,7 +15,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.stream.Collectors;
+import java.util.concurrent.Executor;
 
 @Component
 public class EventManager {
@@ -29,10 +27,9 @@ public class EventManager {
 
     private final NotificationManager notificationManager;
     private final EventRepository eventRepository;
+    private final Executor taskExecutor;
 
-    private final ThreadPoolTaskExecutor taskExecutor;
-
-    public EventManager(NotificationManager notificationManager, EventRepository eventRepository, @Qualifier("taskExecutor") ThreadPoolTaskExecutor taskExecutor) {
+    public EventManager(NotificationManager notificationManager, EventRepository eventRepository, @Qualifier("taskExecutor") Executor taskExecutor) {
         this.notificationManager = notificationManager;
         this.eventRepository = eventRepository;
         this.taskExecutor = taskExecutor;
@@ -46,37 +43,27 @@ public class EventManager {
     public void scheduledUrgentCheck() {
         taskExecutor.execute(() -> {
             Instant now = Instant.now();
-            for (Map.Entry<Long, ConcurrentSkipListSet<EventHolderDto>> entry : adminEvents.entrySet()) {
-                ConcurrentSkipListSet<EventHolderDto> events = entry.getValue();
-                updateUrgentStatus(events, now);
-            }
+            adminEvents.forEach((adminId, events) -> updateUrgentStatus(events, now));
         });
     }
 
     public void addEvent(Set<Long> adminIds, EventHolderDto event) {
         taskExecutor.execute(() -> {
             Instant now = Instant.now();
-
-            for (Long adminId : adminIds) {
-                adminEvents.computeIfAbsent(adminId, id -> new ConcurrentSkipListSet<>(EVENT_COMPARATOR))
-                        .add(event);
-
+            adminIds.forEach(adminId -> {
+                adminEvents.computeIfAbsent(adminId, id -> new ConcurrentSkipListSet<>(EVENT_COMPARATOR)).add(event);
                 ConcurrentSkipListSet<EventHolderDto> events = adminEvents.get(adminId);
-
                 updateUrgentStatus(events, now);
                 sendReminder(adminId, events);
-            }
+            });
         });
     }
 
     public void addEvent(Long adminId, EventHolderDto event) {
         taskExecutor.execute(() -> {
             Instant now = Instant.now();
-            adminEvents.computeIfAbsent(adminId, id -> new ConcurrentSkipListSet<>(EVENT_COMPARATOR))
-                    .add(event);
-
+            adminEvents.computeIfAbsent(adminId, id -> new ConcurrentSkipListSet<>(EVENT_COMPARATOR)).add(event);
             ConcurrentSkipListSet<EventHolderDto> events = adminEvents.get(adminId);
-
             updateUrgentStatus(events, now);
             sendReminder(adminId, events);
         });
@@ -84,7 +71,7 @@ public class EventManager {
 
     public void removeEvent(Set<Long> adminIds, EventHolderDto event) {
         taskExecutor.execute(() -> {
-            for (Long adminId : adminIds) {
+            adminIds.forEach(adminId -> {
                 ConcurrentSkipListSet<EventHolderDto> events = adminEvents.get(adminId);
                 if (events != null) {
                     events.remove(event);
@@ -92,7 +79,7 @@ public class EventManager {
                         adminEvents.remove(adminId);
                     }
                 }
-            }
+            });
         });
     }
 
@@ -112,19 +99,16 @@ public class EventManager {
         if (events == null) return;
 
         Set<Integer> eventIdsToUpdate = new HashSet<>();
-
-        Iterator<EventHolderDto> iterator = events.iterator();
-        while (iterator.hasNext()) {
-            EventHolderDto event = iterator.next();
+        events.removeIf(event -> {
             long hoursDifference = ChronoUnit.HOURS.between(event.getDate().toInstant(), now);
-
-            if (hoursDifference > 0 && hoursDifference < 24 && !event.isUrgent()) {
+            if (hoursDifference < 0) {
+                return true;
+            } else if (hoursDifference > 0 && hoursDifference < 24 && !event.isUrgent()) {
                 event.setUrgent(true);
                 eventIdsToUpdate.add(event.getEventId());
-            } else if (hoursDifference < 0) {
-                iterator.remove();
             }
-        }
+            return false;
+        });
 
         if (!eventIdsToUpdate.isEmpty()) {
             eventRepository.updateUrgentToTrue(eventIdsToUpdate);
@@ -135,23 +119,20 @@ public class EventManager {
         LocalDate today = LocalDate.now();
         LocalDate tomorrow = today.plusDays(1);
 
-        List<NotificationHolderDto> notifications = events.stream()
-                .filter(event -> {
-                    LocalDate eventDay = event.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                    return eventDay.equals(today) || eventDay.equals(tomorrow);
-                })
-                .map(event -> {
-                    LocalDate eventDay = event.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                    LocalTime eventTime = event.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
-                    String dayDescription = eventDay.equals(today) ? "today" : "tomorrow";
-                    return new NotificationHolderDto(
-                            adminId,
-                            "Event Reminder",
-                            "Reminder for the event: " + event.getEventName() + " scheduled for: " + dayDescription + " at " + eventTime.toString(),
-                            NotificationType.REMINDER
-                    );
-                })
-                .toList();
+        List<NotificationHolderDto> notifications = new ArrayList<>();
+        for (EventHolderDto event : events) {
+            LocalDate eventDay = event.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            if (eventDay.equals(today) || eventDay.equals(tomorrow)) {
+                LocalTime eventTime = event.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+                String dayDescription = eventDay.equals(today) ? "today" : "tomorrow";
+                notifications.add(new NotificationHolderDto(
+                        adminId,
+                        "Event Reminder",
+                        "Reminder for the event: " + event.getEventName() + " scheduled for: " + dayDescription + " at " + eventTime,
+                        NotificationType.REMINDER
+                ));
+            }
+        }
 
         if (!notifications.isEmpty()) {
             notifications.forEach(notificationManager::addNotification);

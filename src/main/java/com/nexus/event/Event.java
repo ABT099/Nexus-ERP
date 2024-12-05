@@ -9,7 +9,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -36,7 +35,9 @@ public class Event extends AbstractAuditable<User, Integer>  {
     @Column(nullable = false)
     private boolean urgent = false;
 
-    @ManyToMany
+    @ManyToMany(
+            fetch = FetchType.LAZY
+    )
     @JoinTable(
             name = "admins_events",
             joinColumns = @JoinColumn(name = "event_id"),
@@ -118,9 +119,5 @@ public class Event extends AbstractAuditable<User, Integer>  {
 
     public boolean isUrgent() {
         return urgent;
-    }
-
-    public void setUrgent(boolean urgent) {
-        this.urgent = urgent;
     }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     @Query("""
         select n from Notification n
-        join n.user u
+        join fetch n.user u
         where u.id = :userId
     """)
     List<Notification> findAllByUserId(long userId);

@@ -16,6 +16,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CountDownLatch;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -36,21 +37,29 @@ class EventManagerTest {
     @BeforeEach
     void setUp() {
         EventManager.getAdminEvents().clear();
-        doAnswer(invocation -> {
+        lenient().doAnswer(invocation -> {
             ((Runnable) invocation.getArguments()[0]).run();  // Execute the task synchronously in the test
             return null;  // Void return type
         }).when(taskExecutor).execute(any(Runnable.class));
     }
 
     @Test
-    void addEvent_addsEventAndSendsReminder() {
+    void addEvent_addsEventAndSendsReminder() throws InterruptedException {
         // Arrange
         Long adminId = 1L;
         Instant now = Instant.now().plusSeconds(3600);
         EventHolderDto event = new EventHolderDto(1, "Test Event", now.atZone(ZoneId.systemDefault()), false);
+        CountDownLatch latch = new CountDownLatch(1);
+
+        doAnswer(invocation -> {
+            ((Runnable) invocation.getArguments()[0]).run();
+            latch.countDown();
+            return null;
+        }).when(taskExecutor).execute(any(Runnable.class));
 
         // Act
         eventManager.addEvent(adminId, event);
+        latch.await();  // Wait for the async task to complete
 
         // Assert
         ConcurrentSkipListSet<EventHolderDto> events = EventManager.getAdminEvents().get(adminId);
