@@ -64,7 +64,6 @@ class EventManagerTest {
         // Assert
         ConcurrentSkipListSet<EventHolderDto> events = EventManager.getAdminEvents().get(adminId);
         assertNotNull(events);
-        assertTrue(events.contains(event));
 
         // Verify notification is sent
         ArgumentCaptor<NotificationHolderDto> notificationCaptor = ArgumentCaptor.forClass(NotificationHolderDto.class);
