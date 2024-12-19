@@ -1,6 +1,6 @@
 package com.nexus.admin;
 
-import com.nexus.common.person.PersonRepository;
+import com.nexus.person.PersonRepository;
 
 public interface AdminRepository extends PersonRepository<Admin, Long> {
 }

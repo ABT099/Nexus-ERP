@@ -8,8 +8,8 @@ import org.springframework.data.jpa.domain.AbstractAuditable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -43,7 +43,7 @@ public class Event extends AbstractAuditable<User, Integer>  {
             joinColumns = @JoinColumn(name = "event_id"),
             inverseJoinColumns = @JoinColumn(name = "admin_id")
     )
-    private final List<Admin> admins = new ArrayList<>();
+    private final Set<Admin> admins = new HashSet<>();
 
     public Event(String name, String description, EventType type, ZonedDateTime date) {
         this.name = name;
@@ -90,16 +90,14 @@ public class Event extends AbstractAuditable<User, Integer>  {
         this.status = status;
     }
 
-    public List<Admin> getAdmins() {
+    public Set<Admin> getAdmins() {
         return admins;
     }
 
 
     public void addAdmin(Admin admin) {
-        if (!admins.contains(admin)) {
-            admins.add(admin);
-            admin.addEvent(this);
-        }
+        admins.add(admin);
+        admin.addEvent(this);
     }
 
     public void removeAdmin(Admin admin) {

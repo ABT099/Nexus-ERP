@@ -2,7 +2,7 @@ package com.nexus.admin;
 
 import com.github.javafaker.Faker;
 import com.nexus.auth.RegisterResponse;
-import com.nexus.common.person.UpdatePersonRequest;
+import com.nexus.person.UpdatePersonRequest;
 import com.nexus.config.TestContainerConfig;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;

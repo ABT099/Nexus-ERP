@@ -1,6 +1,6 @@
-package com.nexus.common.person;
+package com.nexus.person;
 
-import com.nexus.common.abstraction.AbstractPerson;
+import com.nexus.abstraction.AbstractPerson;
 import com.nexus.exception.NoUpdateException;
 import org.springframework.stereotype.Service;
 

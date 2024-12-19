@@ -1,8 +1,8 @@
 package com.nexus;
 
-import com.nexus.common.abstraction.AbstractPerson;
-import com.nexus.common.person.PersonService;
-import com.nexus.common.person.UpdatePersonRequest;
+import com.nexus.abstraction.AbstractPerson;
+import com.nexus.person.PersonService;
+import com.nexus.person.UpdatePersonRequest;
 import com.nexus.exception.NoUpdateException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

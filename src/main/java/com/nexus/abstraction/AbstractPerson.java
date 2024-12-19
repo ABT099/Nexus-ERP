@@ -1,4 +1,4 @@
-package com.nexus.common.abstraction;
+package com.nexus.abstraction;
 
 import com.nexus.user.User;
 import jakarta.persistence.Column;

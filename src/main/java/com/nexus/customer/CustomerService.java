@@ -1,13 +1,12 @@
 package com.nexus.customer;
 
 import com.nexus.admin.AdminService;
-import com.nexus.common.abstraction.AbstractUserService;
-import com.nexus.common.person.CreatePersonRequest;
-import com.nexus.common.person.UpdatePersonRequest;
-import com.nexus.common.person.PersonService;
+import com.nexus.abstraction.AbstractUserService;
+import com.nexus.person.CreatePersonRequest;
+import com.nexus.person.UpdatePersonRequest;
+import com.nexus.person.PersonService;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.user.UserCreationContext;
-import com.nexus.user.UserService;
 import com.nexus.user.UserDto;
 import com.nexus.user.UserType;
 import jakarta.transaction.Transactional;

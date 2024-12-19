@@ -1,21 +1,9 @@
-package com.nexus.common.abstraction;
+package com.nexus.abstraction;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-public abstract class AbstractUserService {
-
-    protected String getUsername() {
-        Authentication authentication = getAuthentication();
-
-        String username = authentication.getName();
-
-        if (username == null) {
-            throw new RuntimeException("Username is null");
-        }
-
-        return username;
-    }
+public abstract class UserContext {
 
     protected Long getUserId() {
         Authentication authentication = getAuthentication();

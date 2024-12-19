@@ -1,8 +1,8 @@
 package com.nexus.customer;
 
 import com.nexus.common.ArchivableQueryType;
-import com.nexus.common.person.CreatePersonRequest;
-import com.nexus.common.person.UpdatePersonRequest;
+import com.nexus.person.CreatePersonRequest;
+import com.nexus.person.UpdatePersonRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;

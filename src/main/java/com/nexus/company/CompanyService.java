@@ -1,7 +1,7 @@
 package com.nexus.company;
 
 import com.nexus.admin.AdminService;
-import com.nexus.common.abstraction.AbstractUserService;
+import com.nexus.abstraction.AbstractUserService;
 import com.nexus.exception.NoUpdateException;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.user.*;

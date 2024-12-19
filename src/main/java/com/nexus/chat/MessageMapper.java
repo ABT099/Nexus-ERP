@@ -1,6 +1,6 @@
 package com.nexus.chat;
 
-import com.nexus.common.Mapper;
+import com.nexus.utils.Mapper;
 import org.springframework.stereotype.Component;
 
 @Component

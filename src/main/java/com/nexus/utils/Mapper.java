@@ -1,4 +1,4 @@
-package com.nexus.common;
+package com.nexus.utils;
 
 @FunctionalInterface
 public interface Mapper<Source, DTO> {

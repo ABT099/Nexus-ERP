@@ -1,4 +1,4 @@
-package com.nexus.common.person;
+package com.nexus.person;
 
 import jakarta.validation.constraints.NotEmpty;
 import org.hibernate.validator.constraints.Length;

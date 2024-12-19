@@ -1,6 +1,6 @@
 package com.nexus.customer;
 
-import com.nexus.common.abstraction.AbstractPerson;
+import com.nexus.abstraction.AbstractPerson;
 import com.nexus.user.User;
 import jakarta.persistence.Entity;
 

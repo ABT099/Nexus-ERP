@@ -1,6 +1,8 @@
 package com.nexus.user;
 
 import com.nexus.notification.Notification;
+import com.nexus.payment.Payment;
+import com.nexus.project.Project;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -41,6 +43,20 @@ public class User {
             mappedBy = "user"
     )
     private List<Notification> notifications;
+
+    @OneToMany(
+            orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
+            mappedBy = "payer"
+    )
+    private List<Payment> payments;
+
+    @OneToMany(
+            orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
+            mappedBy = "owner"
+    )
+    private List<Project> projects;
 
     @PrePersist
     private void prePersist() {

@@ -1,12 +1,12 @@
 package com.nexus.admin;
 
-import com.nexus.common.abstraction.AbstractPerson;
+import com.nexus.abstraction.AbstractPerson;
 import com.nexus.event.Event;
 import com.nexus.user.User;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Admin extends AbstractPerson {
@@ -14,7 +14,7 @@ public class Admin extends AbstractPerson {
             mappedBy = "admins",
             fetch = FetchType.LAZY
     )
-    private final List<Event> events = new ArrayList<>();
+    private final Set<Event> events = new HashSet<>();
 
     public Admin(User user, String firstName, String lastName) {
         super(user, firstName, lastName);
@@ -23,15 +23,13 @@ public class Admin extends AbstractPerson {
         super();
     }
 
-    public List<Event> getEvents() {
+    public Set<Event> getEvents() {
         return events;
     }
 
     public void addEvent(Event event) {
-        if (!events.contains(event)) {
-            events.add(event);
-            event.addAdmin(this);
-        }
+        events.add(event);
+        event.addAdmin(this);
     }
 
     public void removeEvent(Event event) {

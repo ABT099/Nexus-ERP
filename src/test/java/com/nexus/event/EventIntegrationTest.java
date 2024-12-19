@@ -3,8 +3,8 @@ package com.nexus.event;
 import com.github.javafaker.Faker;
 import com.nexus.auth.RegisterResponse;
 import com.nexus.common.Status;
-import com.nexus.common.abstraction.AbstractAppUser;
-import com.nexus.common.person.CreatePersonRequest;
+import com.nexus.abstraction.AbstractAppUser;
+import com.nexus.person.CreatePersonRequest;
 import com.nexus.config.TestContainerConfig;
 import com.nexus.user.UserCreationContext;
 import com.nexus.user.UserDto;
@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(initializers = TestContainerConfig.class)

@@ -1,9 +1,9 @@
 package com.nexus.admin;
 
 import com.nexus.AbstractAuthMockTest;
-import com.nexus.common.person.CreatePersonRequest;
-import com.nexus.common.person.PersonService;
-import com.nexus.common.person.UpdatePersonRequest;
+import com.nexus.person.CreatePersonRequest;
+import com.nexus.person.PersonService;
+import com.nexus.person.UpdatePersonRequest;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.user.*;
 import org.junit.jupiter.api.Test;
