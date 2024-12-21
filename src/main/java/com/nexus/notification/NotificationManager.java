@@ -1,28 +1,31 @@
 package com.nexus.notification;
 
+import com.nexus.exception.ResourceNotFoundException;
+import com.nexus.user.User;
+import com.nexus.user.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class NotificationManager {
 
     private final Queue<NotificationHolderDto> notificationQueue = new LinkedList<>();
     private final SimpMessagingTemplate messagingTemplate;
-    private final NotificationService notificationService;
+    private final NotificationRepository notificationRepository;
+    private final UserService userService;
 
     private static final int BATCH_SIZE = 50;
 
-    public NotificationManager(SimpMessagingTemplate messagingTemplate, NotificationService notificationService) {
+    public NotificationManager(SimpMessagingTemplate messagingTemplate, NotificationRepository notificationRepository, UserService userService) {
         this.messagingTemplate = messagingTemplate;
-        this.notificationService = notificationService;
+        this.notificationRepository = notificationRepository;
+        this.userService = userService;
     }
 
     @Transactional
@@ -62,7 +65,7 @@ public class NotificationManager {
     }
 
     private void processBatch(List<CreateNotificationDto> createNotificationDtos) {
-        List<Notification> notifications = notificationService.saveAll(createNotificationDtos);
+        List<Notification> notifications = saveAll(createNotificationDtos);
 
         for (Notification notification : notifications) {
             messagingTemplate.convertAndSendToUser(
@@ -71,5 +74,25 @@ public class NotificationManager {
                     notification
             );
         }
+    }
+
+    private List<Notification> saveAll(List<CreateNotificationDto> createNotificationDtos) {
+        Set<Long> userIds = createNotificationDtos.stream()
+                .map(CreateNotificationDto::userId)
+                .collect(Collectors.toSet());
+
+        Map<Long, User> usersMap = userService.findAllById(userIds).stream()
+                .collect(Collectors.toMap(User::getId, user -> user));
+
+        List<Notification> notifications = new ArrayList<>(createNotificationDtos.size());
+        for (CreateNotificationDto dto : createNotificationDtos) {
+            User user = usersMap.get(dto.userId());
+            if (user == null) {
+                throw new ResourceNotFoundException("User not found for ID: " + dto.userId());
+            }
+            notifications.add(new Notification(user, dto.title(), dto.body(), dto.type()));
+        }
+
+        return notificationRepository.saveAll(notifications);
     }
 }

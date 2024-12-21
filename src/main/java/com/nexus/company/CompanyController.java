@@ -1,6 +1,13 @@
 package com.nexus.company;
 
+import com.nexus.abstraction.UserContext;
 import com.nexus.common.ArchivableQueryType;
+import com.nexus.exception.ResourceNotFoundException;
+import com.nexus.user.UserCreationContext;
+import com.nexus.user.UserDto;
+import com.nexus.user.UserType;
+import com.nexus.utils.UpdateHandler;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
@@ -11,12 +18,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("companies")
-public class CompanyController {
+public class CompanyController extends UserContext {
 
-    private final CompanyService companyService;
+    private final CompanyRepository companyRepository;
+    private final UserCreationContext userCreationContext;
 
-    public CompanyController(CompanyService companyService) {
-        this.companyService = companyService;
+    public CompanyController(CompanyRepository companyRepository, UserCreationContext userCreationContext) {
+        this.companyRepository = companyRepository;
+        this.userCreationContext = userCreationContext;
     }
 
     @GetMapping
@@ -28,61 +37,73 @@ public class CompanyController {
         List<Company> companies;
 
         switch (queryType) {
-            case ALL -> companies = companyService.findAll();
-            case Archived -> companies = companyService.findAllArchived();
-            default -> companies = companyService.findAllNonArchived();
+            case ALL -> companies = companyRepository.findAll();
+            case Archived -> companies = companyRepository.findAllArchived();
+            default -> companies = companyRepository.findAllNonArchived();
         }
 
         return ResponseEntity.ok(companies);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Company> getById(
-            @Valid
-            @Positive
-            @PathVariable long id) {
-        Company company = companyService.findById(id);
-
-        return ResponseEntity.ok(company);
+    public ResponseEntity<Company> getById(@Valid @Positive @PathVariable long id) {
+        return ResponseEntity.ok(findById(id));
     }
 
     @GetMapping("me")
     public ResponseEntity<Company> getMe() {
-        return ResponseEntity.ok(companyService.findMe());
+        return ResponseEntity.ok(findFromAuth());
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity<Long> create(@Valid @RequestBody CreateCompanyRequest request) {
-       Long id = companyService.save(request);
+        UserDto userDto = userCreationContext.create(request.username(), request.password(), UserType.CUSTOMER);
 
-       return ResponseEntity.created(URI.create("/companies/" + id)).body(id);
+        Company company = new Company(userDto.user(), request.companyName());
+
+        companyRepository.save(company);
+
+        return ResponseEntity.created(URI.create("/companies/" + company.getId())).body(company.getId());
     }
 
     @PutMapping
-    public void updateById(
-            @Valid
-            @RequestBody UpdateCompanyRequest request) {
-        companyService.updateById(request);
+    public void updateById(@Valid @RequestBody UpdateCompanyRequest request) {
+        Company company = findById(request.id());
+
+        UpdateHandler.updateEntity(company, tracker -> {
+            tracker.updateField(company::getCompanyName, request.companyName(), company::setCompanyName);
+        }, () -> companyRepository.save(company));
     }
 
     @PutMapping("me")
     public void updateMe(@RequestBody String companyName) {
-        companyService.updateMe(companyName);
+        Company company = findFromAuth();
+
+        UpdateHandler.updateEntity(company, tracker -> {
+            tracker.updateField(company::getCompanyName, companyName, company::setCompanyName);
+        }, () -> companyRepository.save(company));
     }
 
     @PatchMapping("archive/{id}")
-    public void archive(
-            @Valid
-            @Positive
-            @PathVariable long id) {
-        companyService.archive(id);
+    @Transactional
+    public void archive(@Valid @Positive @PathVariable long id) {
+        companyRepository.archiveById(id);
+        companyRepository.archiveUserById(id);
     }
 
     @DeleteMapping("{id}")
-    public void delete(
-            @Valid
-            @Positive
-            @PathVariable long id) {
-        companyService.delete(id);
+    public void delete(@Valid @Positive @PathVariable long id) {
+        companyRepository.deleteById(id);
+    }
+
+    private Company findById(Long id) {
+        return companyRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Company not found"));
+    }
+
+    private Company findFromAuth() {
+        return companyRepository.findByUserId(getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 }

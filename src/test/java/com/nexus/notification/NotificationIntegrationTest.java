@@ -25,7 +25,7 @@ public class NotificationIntegrationTest {
     private WebTestClient webClient;
 
     @Autowired
-    private NotificationService notificationService;
+    private NotificationRepository notificationRepository;
 
     @Autowired
     private UserCreationContext userContext;
@@ -33,8 +33,9 @@ public class NotificationIntegrationTest {
     @Test
     void canReadAllNotifications() {
         UserDto userDto = userContext.create("abdo", "password", UserType.SUPER_USER);
-        CreateNotificationDto createNotificationDto = new CreateNotificationDto(userDto.user().getId(), "title", "body", NotificationType.REMINDER);
-        notificationService.save(createNotificationDto);
+        Notification notification = new Notification(userDto.user(), "title", "body", NotificationType.REMINDER);
+
+        notificationRepository.save(notification);
 
         List<Notification> notificationsResult = webClient.get().uri("/notifications/user/{id}", userDto.user().getId())
                 .header("Authorization", "Bearer " + userDto.token())

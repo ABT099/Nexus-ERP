@@ -4,7 +4,7 @@ import com.github.javafaker.Faker;
 import com.nexus.auth.RegisterResponse;
 import com.nexus.common.Status;
 import com.nexus.abstraction.AbstractAppUser;
-import com.nexus.person.CreatePersonRequest;
+import com.nexus.common.person.CreatePersonRequest;
 import com.nexus.config.TestContainerConfig;
 import com.nexus.user.UserCreationContext;
 import com.nexus.user.UserDto;

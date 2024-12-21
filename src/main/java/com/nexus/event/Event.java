@@ -101,10 +101,8 @@ public class Event extends AbstractAuditable<User, Integer>  {
     }
 
     public void removeAdmin(Admin admin) {
-        if (admins.contains(admin)) {
-            admins.remove(admin);
-            admin.removeEvent(this);
-        }
+        admins.remove(admin);
+        admin.removeEvent(this);
     }
 
     public ZonedDateTime getDate() {

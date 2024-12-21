@@ -29,13 +29,9 @@ public class Admin extends AbstractPerson {
 
     public void addEvent(Event event) {
         events.add(event);
-        event.addAdmin(this);
     }
 
     public void removeEvent(Event event) {
-        if (events.contains(event)) {
-            events.remove(event);
-            event.removeAdmin(this);
-        }
+        events.remove(event);
     }
 }

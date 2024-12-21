@@ -14,7 +14,6 @@ public record UpdateEventRequest(
         String description,
         @NotNull
         EventType type,
-        @NotNull
         Status status,
         @NotNull
         @AfterNow

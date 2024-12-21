@@ -43,18 +43,18 @@ public class EventRepositoryTest {
         Admin admin = new Admin(user, "first", "last");
         adminRepository.save(admin);
 
+        adminRepository.save(admin);
+
         List<Event> events = List.of(
                 new Event("event1", "event1Desc", EventType.MEETING, ZonedDateTime.now().plusDays(1)),
                 new Event("event2", "event2Desc", EventType.MEETING, ZonedDateTime.now().plusDays(1))
         );
 
-        eventRepository.saveAll(events);
-
         for (Event event : events) {
-            admin.addEvent(event);
+            event.addAdmin(admin);
         }
 
-        adminRepository.save(admin);
+        eventRepository.saveAll(events);
 
         // Act
         List<Event> actual = eventRepository.findAllByAdminId(admin.getId());

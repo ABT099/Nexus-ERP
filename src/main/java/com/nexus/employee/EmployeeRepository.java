@@ -1,6 +1,6 @@
 package com.nexus.employee;
 
-import com.nexus.person.PersonRepository;
+import com.nexus.common.AuthenticatedEntityRepository;
 
-public interface EmployeeRepository extends PersonRepository<Employee, Long> {
+public interface EmployeeRepository extends AuthenticatedEntityRepository<Employee, Long> {
 }

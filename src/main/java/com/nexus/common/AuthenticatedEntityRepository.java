@@ -1,6 +1,5 @@
-package com.nexus.person;
+package com.nexus.common;
 
-import com.nexus.common.ArchivableRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.query.Param;
@@ -8,8 +7,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 @NoRepositoryBean
-public interface PersonRepository<T, ID> extends ArchivableRepository<T, ID> {
-
+public interface AuthenticatedEntityRepository<T, ID> extends ArchivableRepository<T, ID> {
     @Query("""
     SELECT e FROM #{#entityName} e
     join fetch e.user u

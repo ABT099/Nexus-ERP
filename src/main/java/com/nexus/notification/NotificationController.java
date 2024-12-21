@@ -12,10 +12,10 @@ import java.util.Set;
 @RequestMapping("notifications")
 public class NotificationController {
 
-    private final NotificationService notificationService;
+    private final NotificationRepository notificationRepository;
 
-    public NotificationController(NotificationService notificationService) {
-        this.notificationService = notificationService;
+    public NotificationController(NotificationRepository notificationRepository) {
+        this.notificationRepository = notificationRepository;
     }
 
     @GetMapping("/user/{id}")
@@ -23,11 +23,21 @@ public class NotificationController {
             @Valid
             @Positive
             @PathVariable long id) {
-        return ResponseEntity.ok(notificationService.findAllByUserId(id));
+        return ResponseEntity.ok(notificationRepository.findAllByUserId(id));
     }
 
     @PatchMapping
     public void readBatch(@RequestBody Set<Long> ids) {
-        notificationService.readBatch(ids);
+        List<Notification> notifications = notificationRepository.findAllById(ids);
+
+        if (notifications.isEmpty()) {
+            return;
+        }
+
+        for (Notification notification : notifications) {
+            notification.setRead(true);
+        }
+
+        notificationRepository.saveAll(notifications);
     }
 }

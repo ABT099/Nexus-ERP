@@ -1,4 +1,4 @@
-package com.nexus.person;
+package com.nexus.common.person;
 
 import com.nexus.abstraction.AbstractPerson;
 import com.nexus.exception.NoUpdateException;

@@ -1,12 +1,18 @@
 package com.nexus.admin;
 
+import com.nexus.abstraction.UserContext;
 import com.nexus.auth.RegisterResponse;
 import com.nexus.common.ArchivableQueryType;
-import com.nexus.person.CreatePersonRequest;
-import com.nexus.person.UpdatePersonRequest;
+import com.nexus.exception.ResourceNotFoundException;
+import com.nexus.common.person.CreatePersonRequest;
+import com.nexus.common.person.PersonService;
+import com.nexus.common.person.UpdatePersonRequest;
+import com.nexus.user.UserCreationContext;
+import com.nexus.user.UserDto;
+import com.nexus.user.UserType;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
-import org.antlr.v4.runtime.misc.Pair;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,11 +21,18 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admins")
-public class AdminController {
-    private final AdminService adminService;
+public class AdminController extends UserContext {
 
-    public AdminController(AdminService adminService) {
-        this.adminService = adminService;
+    private final AdminRepository adminRepository;
+    private final UserCreationContext userCreationContext;
+    private final PersonService<Admin> personService;
+    private final AdminFinder adminFinder;
+
+    public AdminController(AdminRepository adminRepository, UserCreationContext userCreationContext, PersonService<Admin> personService, AdminFinder adminFinder) {
+        this.adminRepository = adminRepository;
+        this.userCreationContext = userCreationContext;
+        this.personService = personService;
+        this.adminFinder = adminFinder;
     }
 
     @GetMapping
@@ -32,67 +45,72 @@ public class AdminController {
         List<Admin> admins;
 
         switch (archived) {
-            case ALL -> admins = adminService.findAll();
-            case Archived -> admins = adminService.findAllArchived();
-            default -> admins = adminService.findAllNonArchived();
+            case ALL -> admins = adminRepository.findAll();
+            case Archived -> admins = adminRepository.findAllArchived();
+            default -> admins = adminRepository.findAllNonArchived();
         }
 
         return ResponseEntity.ok(admins);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Admin> getById(
-            @Valid
-            @Positive
-            @PathVariable long id) {
-        Admin admin = adminService.findById(id);
-
-        return ResponseEntity.ok(admin);
+    public ResponseEntity<Admin> getById(@Valid @Positive @PathVariable long id) {
+        return ResponseEntity.ok(adminFinder.findById(id));
     }
 
     @GetMapping("me")
     public ResponseEntity<Admin> getMe() {
-        Admin admin = adminService.findMe();
-
         return ResponseEntity
-                .ok(admin);
+                .ok(findFromAuth());
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity<RegisterResponse> create(@Valid @RequestBody CreatePersonRequest request) {
-        Pair<Long, String> result = adminService.save(request);
+        UserDto userDto = userCreationContext.create(request.username(), request.password(), UserType.ADMIN);
+
+        Admin admin = new Admin(userDto.user(), request.firstName(), request.lastName());
+
+        adminRepository.save(admin);
 
         return ResponseEntity
-                .created(URI.create("/admins/" + result.a))
-                .body(new RegisterResponse(result.a, result.b));
+                .created(URI.create("/admins/" + admin.getId()))
+                .body(new RegisterResponse(admin.getId(), userDto.token()));
     }
 
     @PutMapping("{id}")
-    public void updateById(
-            @Valid
-            @Positive
-            @PathVariable long id, @Valid @RequestBody UpdatePersonRequest request) {
-        adminService.updateById(id, request);
+    public void updateById(@Valid @Positive @PathVariable long id, @Valid @RequestBody UpdatePersonRequest request) {
+        Admin admin = adminFinder.findById(id);
+
+        admin = personService.updatePerson(admin, request);
+
+        adminRepository.save(admin);
     }
 
     @PutMapping("me")
     public void updateMe(@RequestBody UpdatePersonRequest request) {
-        adminService.updateMe(request);
+        Admin admin = findFromAuth();
+
+        admin = personService.updatePerson(admin, request);
+
+        adminRepository.save(admin);
     }
 
     @PatchMapping("archive/{id}")
-    public void archive(
-            @Valid
-            @Positive
-            @PathVariable long id) {
-        adminService.archive(id);
+    @Transactional
+    public void archive(@Valid @Positive @PathVariable long id) {
+        adminRepository.archiveById(id);
+        adminRepository.archiveUserById(id);
     }
 
     @DeleteMapping("{id}")
-    public void delete(
-            @Valid
-            @Positive
-            @PathVariable long id) {
-        adminService.delete(id);
+    public void delete(@Valid @Positive @PathVariable long id) {
+        adminRepository.deleteById(id);
+    }
+
+    private Admin findFromAuth() {
+        return adminRepository.findByUserId(getUserId()).orElseThrow(
+                () -> new ResourceNotFoundException("User not found")
+        );
     }
 }

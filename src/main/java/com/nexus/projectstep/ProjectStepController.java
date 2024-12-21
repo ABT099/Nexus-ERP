@@ -2,7 +2,7 @@ package com.nexus.projectstep;
 
 import com.nexus.common.Status;
 import com.nexus.employee.Employee;
-import com.nexus.employee.EmployeeService;
+import com.nexus.employee.EmployeeFinder;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.project.Project;
 import com.nexus.project.ProjectFinder;
@@ -21,12 +21,12 @@ public class ProjectStepController {
 
     private final ProjectStepRepository projectStepRepository;
     private final ProjectFinder projectFinder;
-    private final EmployeeService employeeService;
+    private final EmployeeFinder employeeFinder;
 
-    public ProjectStepController(ProjectStepRepository projectStepRepository, ProjectFinder projectFinder, EmployeeService employeeService) {
+    public ProjectStepController(ProjectStepRepository projectStepRepository, ProjectFinder projectFinder, EmployeeFinder employeeFinder) {
         this.projectStepRepository = projectStepRepository;
         this.projectFinder = projectFinder;
-        this.employeeService = employeeService;
+        this.employeeFinder = employeeFinder;
     }
 
     @GetMapping("by-project/{id}")
@@ -81,7 +81,7 @@ public class ProjectStepController {
     @PatchMapping("{id}/employees/{employeeId}")
     public void addEmployee(@Valid @Positive @PathVariable int id, @Valid @Positive @PathVariable long employeeId) {
         ProjectStep step = findById(id);
-        Employee employee = employeeService.findById(employeeId);
+        Employee employee = employeeFinder.findById(employeeId);
 
         step.addEmployee(employee);
         step.getProject().getEmployees().add(employee);
@@ -92,7 +92,7 @@ public class ProjectStepController {
     @DeleteMapping("{id}/employees/{employeeId}")
     public void removeEmployee(@Valid @Positive @PathVariable int id, @Valid @Positive @PathVariable long employeeId) {
         ProjectStep step = findById(id);
-        Employee employee = employeeService.findById(employeeId);
+        Employee employee = employeeFinder.findById(employeeId);
 
         step.removeEmployee(employee);
         step.getProject().getEmployees().add(employee);

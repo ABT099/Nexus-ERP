@@ -2,7 +2,7 @@ package com.nexus.admin;
 
 import com.github.javafaker.Faker;
 import com.nexus.auth.RegisterResponse;
-import com.nexus.person.CreatePersonRequest;
+import com.nexus.common.person.CreatePersonRequest;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
