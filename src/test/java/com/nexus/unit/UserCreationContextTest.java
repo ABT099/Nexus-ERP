@@ -1,10 +1,9 @@
-package com.nexus.user;
+package com.nexus.unit;
 
 import com.nexus.auth.AuthenticationService;
 import com.nexus.auth.LoginRequest;
-import com.nexus.chat.Chat;
-import com.nexus.chat.ChatRepository;
 import com.nexus.exception.DuplicateResourceException;
+import com.nexus.user.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

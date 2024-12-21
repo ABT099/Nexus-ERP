@@ -1,5 +1,8 @@
-package com.nexus.user;
+package com.nexus.repository;
 
+import com.nexus.user.User;
+import com.nexus.user.UserRepository;
+import com.nexus.user.UserType;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

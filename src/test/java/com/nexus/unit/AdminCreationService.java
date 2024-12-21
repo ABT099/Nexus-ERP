@@ -1,4 +1,4 @@
-package com.nexus.admin;
+package com.nexus.unit;
 
 import com.github.javafaker.Faker;
 import com.nexus.auth.RegisterResponse;

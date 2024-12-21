@@ -1,6 +1,9 @@
-package com.nexus.user;
+package com.nexus.unit;
 
 import com.nexus.exception.ResourceNotFoundException;
+import com.nexus.user.User;
+import com.nexus.user.UserRepository;
+import com.nexus.user.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

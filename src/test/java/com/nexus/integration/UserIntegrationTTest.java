@@ -1,6 +1,8 @@
-package com.nexus.user;
+package com.nexus.integration;
 
 import com.nexus.config.TestContainerConfig;
+import com.nexus.user.UserCreationContext;
+import com.nexus.user.UserType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

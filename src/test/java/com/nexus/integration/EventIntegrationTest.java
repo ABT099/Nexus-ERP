@@ -1,4 +1,4 @@
-package com.nexus.event;
+package com.nexus.integration;
 
 import com.github.javafaker.Faker;
 import com.nexus.auth.RegisterResponse;
@@ -6,6 +6,10 @@ import com.nexus.common.Status;
 import com.nexus.abstraction.AbstractAppUser;
 import com.nexus.common.person.CreatePersonRequest;
 import com.nexus.config.TestContainerConfig;
+import com.nexus.event.CreateEventRequest;
+import com.nexus.event.Event;
+import com.nexus.event.EventType;
+import com.nexus.event.UpdateEventRequest;
 import com.nexus.user.UserCreationContext;
 import com.nexus.user.UserDto;
 import com.nexus.user.UserType;

@@ -1,9 +1,12 @@
-package com.nexus.company;
+package com.nexus.integration;
 
 import com.github.javafaker.Faker;
-import com.nexus.admin.AdminCreationService;
+import com.nexus.unit.AdminCreationService;
 import com.nexus.auth.LoginRequest;
 import com.nexus.auth.RegisterResponse;
+import com.nexus.company.Company;
+import com.nexus.company.CreateCompanyRequest;
+import com.nexus.company.UpdateCompanyRequest;
 import com.nexus.config.TestContainerConfig;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;

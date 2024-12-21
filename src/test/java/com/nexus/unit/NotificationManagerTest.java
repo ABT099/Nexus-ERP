@@ -1,5 +1,6 @@
-package com.nexus.notification;
+package com.nexus.unit;
 
+import com.nexus.notification.*;
 import com.nexus.user.User;
 import com.nexus.user.UserService;
 import org.junit.jupiter.api.Test;

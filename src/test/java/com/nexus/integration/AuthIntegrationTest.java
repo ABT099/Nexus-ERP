@@ -1,13 +1,10 @@
-package com.nexus.auth;
+package com.nexus.integration;
 
 import com.github.javafaker.Faker;
+import com.nexus.auth.LoginRequest;
 import com.nexus.config.TestContainerConfig;
 import com.nexus.user.UserCreationContext;
-import com.nexus.user.UserDto;
-import com.nexus.user.UserRepository;
 import com.nexus.user.UserType;
-import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

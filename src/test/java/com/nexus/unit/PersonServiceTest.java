@@ -1,4 +1,4 @@
-package com.nexus;
+package com.nexus.unit;
 
 import com.nexus.abstraction.AbstractPerson;
 import com.nexus.common.person.PersonService;

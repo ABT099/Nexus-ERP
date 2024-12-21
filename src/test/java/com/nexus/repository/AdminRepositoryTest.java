@@ -1,5 +1,7 @@
-package com.nexus.admin;
+package com.nexus.repository;
 
+import com.nexus.admin.Admin;
+import com.nexus.admin.AdminRepository;
 import com.nexus.user.User;
 import com.nexus.user.UserRepository;
 import com.nexus.user.UserType;

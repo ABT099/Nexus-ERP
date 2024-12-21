@@ -1,6 +1,8 @@
-package com.nexus.admin;
+package com.nexus.integration;
 
 import com.github.javafaker.Faker;
+import com.nexus.admin.Admin;
+import com.nexus.unit.AdminCreationService;
 import com.nexus.auth.RegisterResponse;
 import com.nexus.common.person.UpdatePersonRequest;
 import com.nexus.config.TestContainerConfig;

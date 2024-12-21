@@ -1,6 +1,10 @@
-package com.nexus.chat;
+package com.nexus.repository;
 
 
+import com.nexus.chat.Chat;
+import com.nexus.chat.ChatRepository;
+import com.nexus.chat.Message;
+import com.nexus.chat.MessageRepository;
 import com.nexus.user.User;
 import com.nexus.user.UserRepository;
 import com.nexus.user.UserType;

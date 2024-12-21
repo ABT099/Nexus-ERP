@@ -1,6 +1,9 @@
-package com.nexus.notification;
+package com.nexus.integration;
 
 import com.nexus.config.TestContainerConfig;
+import com.nexus.notification.Notification;
+import com.nexus.notification.NotificationRepository;
+import com.nexus.notification.NotificationType;
 import com.nexus.user.UserCreationContext;
 import com.nexus.user.UserDto;
 import com.nexus.user.UserType;

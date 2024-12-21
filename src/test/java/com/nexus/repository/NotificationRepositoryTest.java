@@ -1,6 +1,9 @@
-package com.nexus.notification;
+package com.nexus.repository;
 
 
+import com.nexus.notification.Notification;
+import com.nexus.notification.NotificationRepository;
+import com.nexus.notification.NotificationType;
 import com.nexus.user.User;
 import com.nexus.user.UserRepository;
 import com.nexus.user.UserType;

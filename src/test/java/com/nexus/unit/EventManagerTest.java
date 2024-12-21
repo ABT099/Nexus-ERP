@@ -1,5 +1,8 @@
-package com.nexus.event;
+package com.nexus.unit;
 
+import com.nexus.event.EventHolderDto;
+import com.nexus.event.EventManager;
+import com.nexus.event.EventRepository;
 import com.nexus.notification.NotificationManager;
 import com.nexus.notification.NotificationHolderDto;
 import com.nexus.notification.NotificationType;

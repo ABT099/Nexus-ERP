@@ -1,6 +1,7 @@
-package com.nexus.chat;
+package com.nexus.integration;
 
 import com.github.javafaker.Faker;
+import com.nexus.chat.*;
 import com.nexus.config.TestContainerConfig;
 import com.nexus.user.*;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,5 +1,7 @@
-package com.nexus.customer;
+package com.nexus.repository;
 
+import com.nexus.customer.Customer;
+import com.nexus.customer.CustomerRepository;
 import com.nexus.user.User;
 import com.nexus.user.UserRepository;
 import com.nexus.user.UserType;
