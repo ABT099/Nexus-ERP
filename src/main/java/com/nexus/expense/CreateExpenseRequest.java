@@ -7,15 +7,14 @@ import java.time.ZonedDateTime;
 
 public final class CreateExpenseRequest extends CreateFinancialRequest {
 
-    public CreateExpenseRequest(double Amount, ZonedDateTime paymentDate, @Nullable Integer projectId, @Nullable Integer expenseCategoryId) {
-        super(Amount, paymentDate, projectId);
+    public CreateExpenseRequest(double amount, ZonedDateTime paymentDate, @Nullable Integer projectId, Integer expenseCategoryId) {
+        super(amount, paymentDate, projectId);
         this.expenseCategoryId = expenseCategoryId;
     }
 
-    @Nullable
     private final Integer expenseCategoryId;
 
-    public Integer expenseCategoryId() {
+    public Integer getExpenseCategoryId() {
         return expenseCategoryId;
     }
 }

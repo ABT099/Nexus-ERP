@@ -1,24 +1,17 @@
 package com.nexus.integration;
 
-import com.github.javafaker.Faker;
 import com.nexus.auth.RegisterResponse;
 import com.nexus.common.Status;
 import com.nexus.abstraction.AbstractAppUser;
 import com.nexus.common.person.CreatePersonRequest;
-import com.nexus.config.TestContainerConfig;
 import com.nexus.event.CreateEventRequest;
 import com.nexus.event.Event;
 import com.nexus.event.EventType;
 import com.nexus.event.UpdateEventRequest;
-import com.nexus.user.UserCreationContext;
-import com.nexus.user.UserDto;
-import com.nexus.user.UserType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
@@ -28,34 +21,21 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ContextConfiguration(initializers = TestContainerConfig.class)
-public class EventIntegrationTest {
+public class EventIntegrationTest extends AuthenticatedIntegrationTest {
 
     @Autowired
     private WebTestClient webClient;
-
-    @Autowired
-    private UserCreationContext userContext;
-
-    Faker faker = new Faker();
-
     private int eventId;
-    private String token;
 
     @BeforeEach
     public void setup() {
-        String username = faker.name().username();
-        String password = faker.internet().password();
+        createUser();
 
-
-        UserDto userDto = userContext.create(username, password, UserType.SUPER_USER);
-
-        CreateEventRequest request = new CreateEventRequest(Set.of(userDto.user().getId()), "event name", "event description", EventType.MEETING, ZonedDateTime.now().plusDays(2));
+        CreateEventRequest request = new CreateEventRequest(Set.of(user.getId()), "event name", "event description", EventType.MEETING, ZonedDateTime.now().plusDays(2));
 
         Integer id = webClient.post()
                 .uri("/events")
-                .header("Authorization", "Bearer " + userDto.token())
+                .header("Authorization", token)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(request), CreateEventRequest.class)
@@ -69,7 +49,6 @@ public class EventIntegrationTest {
         assertTrue(id > 0);
 
         eventId = id;
-        token = userDto.token();
     }
 
     @Test
@@ -82,7 +61,7 @@ public class EventIntegrationTest {
 
         webClient.put()
                 .uri("/events/{id}", eventId)
-                .header("Authorization", "Bearer " + token)
+                .header("Authorization", token)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(request), UpdateEventRequest.class)
@@ -102,14 +81,14 @@ public class EventIntegrationTest {
     void canDeleteEvent() {
         webClient.delete()
                 .uri("/events/{id}", eventId)
-                .header("Authorization", "Bearer " + token)
+                .header("Authorization", token)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk();
 
        webClient.get()
                 .uri("/events/{id}", eventId)
-                .header("Authorization", "Bearer " + token)
+                .header("Authorization", token)
                 .exchange()
                 .expectStatus().isNotFound();
     }
@@ -120,7 +99,7 @@ public class EventIntegrationTest {
 
         webClient.patch()
                 .uri("/events/{eventId}/add-admin/{adminId}", eventId, adminId)
-                .header("Authorization", "Bearer " + token)
+                .header("Authorization", token)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -140,7 +119,7 @@ public class EventIntegrationTest {
 
         webClient.patch()
                 .uri("/events/{eventId}/remove-admin/{adminId}", eventId, adminId)
-                .header("Authorization", "Bearer " + token)
+                .header("Authorization", token)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -158,7 +137,7 @@ public class EventIntegrationTest {
 
         return webClient.get()
                 .uri("/events/{id}", eventId)
-                .header("Authorization", "Bearer " + token)
+                .header("Authorization", token)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(Event.class)

@@ -1,38 +1,27 @@
 package com.nexus.integration;
 
-import com.nexus.config.TestContainerConfig;
-import com.nexus.user.UserCreationContext;
-import com.nexus.user.UserType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ContextConfiguration(initializers = TestContainerConfig.class)
-public class UserIntegrationTTest {
-    private String token;
+public class UserIntegrationTTest extends AuthenticatedIntegrationTest {
 
     @Autowired
     private WebTestClient webClient;
 
-    @Autowired
-    private UserCreationContext creationContext;
-
     @BeforeEach
     public void setUp() {
-        token = creationContext.create("user", "password", UserType.SUPER_USER).token();
+        createUser();
     }
 
     @Test
     void canChangeUsername() {
         webClient.patch()
                 .uri("/users/username")
-                .header("Authorization", "Bearer " + token)
+                .header("Authorization", token)
                 .accept(MediaType.APPLICATION_JSON)
                 .body(Mono.just("newUsername"), String.class)
                 .exchange()
@@ -43,7 +32,7 @@ public class UserIntegrationTTest {
     void canChangePassword() {
         webClient.patch()
                 .uri("/users/password")
-                .header("Authorization", "Bearer " + token)
+                .header("Authorization", token)
                 .accept(MediaType.APPLICATION_JSON)
                 .body(Mono.just("newPassword"), String.class)
                 .exchange()

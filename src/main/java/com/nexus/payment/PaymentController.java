@@ -44,12 +44,12 @@ public class PaymentController {
 
         Payment payment;
 
-        if (request.projectId() != null) {
-            Project project = projectFinder.findById(request.projectId());
+        if (request.getProjectId() != null) {
+            Project project = projectFinder.findById(request.getProjectId());
 
-            payment = new Payment(request.amount(), request.paymentDate(), project, payer);
+            payment = new Payment(request.getAmount(), request.getPaymentDate(), project, payer);
         } else {
-            payment = new Payment(request.amount(), request.paymentDate(), payer);
+            payment = new Payment(request.getAmount(), request.getPaymentDate(), payer);
         }
 
         paymentRepository.save(payment);
@@ -62,8 +62,8 @@ public class PaymentController {
         Payment payment = findById(id);
 
         UpdateHandler.updateEntity(payment, tracker -> {
-            tracker.updateField(payment::getAmount, request.amount(), payment::setAmount);
-            tracker.updateField(payment::getPaymentDate, request.paymentDate(), payment::setPaymentDate);
+            tracker.updateField(payment::getAmount, request.getAmount(), payment::setAmount);
+            tracker.updateField(payment::getPaymentDate, request.getPaymentDate(), payment::setPaymentDate);
         }, () -> paymentRepository.save(payment));
     }
 

@@ -16,11 +16,11 @@ public abstract class FinancialRequest {
     }
 
     @Positive
-    public double amount() {
+    public double getAmount() {
         return amount;
     }
 
-    public ZonedDateTime paymentDate() {
+    public ZonedDateTime getPaymentDate() {
         return paymentDate;
     }
 }

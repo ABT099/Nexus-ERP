@@ -1,14 +1,17 @@
 package com.nexus.expensecategory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nexus.expense.Expense;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 public class ExpenseCategory {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     @Column(
@@ -26,7 +29,8 @@ public class ExpenseCategory {
             mappedBy = "expenseCategory",
             fetch = FetchType.LAZY
     )
-    private List<Expense> expenses;
+    @JsonIgnore
+    private List<Expense> expenses = new ArrayList<>();
 
     public ExpenseCategory(String name, String description) {
         this.name = name;

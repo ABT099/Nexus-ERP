@@ -33,7 +33,7 @@ public class UpdateHandler {
         private boolean changed = false;
 
         public <V> void updateField(Supplier<V> currentValue, V newValue, Consumer<V> updateAction) {
-            if (!Objects.equals(currentValue.get(), newValue)) {
+            if (newValue != null && !Objects.equals(currentValue.get(), newValue)) {
                 updateAction.accept(newValue);
                 this.changed = true;
             }

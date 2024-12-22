@@ -12,7 +12,7 @@ public final class UpdateExpenseRequest extends FinancialRequest {
         this.expenseCategoryId = expenseCategoryId;
     }
 
-    public Integer expenseCategoryId() {
+    public Integer getExpenseCategoryId() {
         return expenseCategoryId;
     }
 }

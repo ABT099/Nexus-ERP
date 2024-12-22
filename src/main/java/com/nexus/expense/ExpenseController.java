@@ -34,25 +34,26 @@ public class ExpenseController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Expense> getById(
-            @Valid
-            @Positive
-            @PathVariable int id) {
-        return ResponseEntity.ok(findById(id));
+    public ResponseEntity<Expense> getById(@Valid @Positive @PathVariable int id) {
+        Expense expense = findById(id);
+
+        System.out.println(expense);
+
+        return ResponseEntity.ok(expense);
     }
 
     @PostMapping
     public ResponseEntity<Integer> create(@Valid @RequestBody CreateExpenseRequest request) {
-        ExpenseCategory expenseCategory = expenseCategoryFinder.findById(request.expenseCategoryId());
+        ExpenseCategory expenseCategory = expenseCategoryFinder.findById(request.getExpenseCategoryId());
 
         Expense expense;
 
-        if (request.projectId() != null) {
-            Project project = projectFinder.findById(request.projectId());
+        if (request.getProjectId() != null) {
+            Project project = projectFinder.findById(request.getProjectId());
 
-            expense = new Expense(request.amount(), request.paymentDate(), project, expenseCategory);
+            expense = new Expense(request.getAmount(), request.getPaymentDate(), project, expenseCategory);
         } else {
-            expense = new Expense(request.amount(), request.paymentDate(), expenseCategory);
+            expense = new Expense(request.getAmount(), request.getPaymentDate(), expenseCategory);
         }
 
         expenseRepository.save(expense);
@@ -67,13 +68,13 @@ public class ExpenseController {
         UpdateHandler.updateEntity(expense, tracker -> {
             tracker.updateField(
                     expense.getExpenseCategory()::getId,
-                    request.expenseCategoryId(),
+                    request.getExpenseCategoryId(),
                     cId -> {
                         ExpenseCategory eCategory = expenseCategoryFinder.findById(cId);
                         expense.setExpenseCategory(eCategory);
                     });
-            tracker.updateField(expense::getAmount, request.amount(), expense::setAmount);
-            tracker.updateField(expense::getPaymentDate, request.paymentDate(), expense::setPaymentDate);
+            tracker.updateField(expense::getAmount, request.getAmount(), expense::setAmount);
+            tracker.updateField(expense::getPaymentDate, request.getPaymentDate(), expense::setPaymentDate);
         }, () -> expenseRepository.save(expense));
     }
 
