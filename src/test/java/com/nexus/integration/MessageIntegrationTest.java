@@ -4,16 +4,12 @@ import com.nexus.chat.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.MediaType.*;
 
 public class MessageIntegrationTest extends AuthenticatedIntegrationTest {
-
-    @Autowired
-    private WebTestClient webClient;
 
     @Autowired
     private MessageRepository messageRepository;
@@ -52,7 +48,7 @@ public class MessageIntegrationTest extends AuthenticatedIntegrationTest {
 
         UpdateMessageRequest updateRequest = new UpdateMessageRequest(messageId, newText);
 
-        webClient.put()
+        webTestClient.put()
                 .uri("/messages")
                 .contentType(APPLICATION_JSON)
                 .header("Authorization", token)
@@ -60,7 +56,7 @@ public class MessageIntegrationTest extends AuthenticatedIntegrationTest {
                 .exchange()
                 .expectStatus().isOk();
 
-        webClient.get()
+        webTestClient.get()
                 .uri("/messages/{chatId}", chatId)
                 .header("Authorization", token)
                 .exchange()
@@ -72,13 +68,13 @@ public class MessageIntegrationTest extends AuthenticatedIntegrationTest {
 
     @Test
     void canDeleteMessage() {
-        webClient.delete()
+        webTestClient.delete()
                 .uri("/messages/{id}", messageId)
                 .header("Authorization", token)
                 .exchange()
                 .expectStatus().isOk();
 
-        webClient.get()
+        webTestClient.get()
                 .uri("/messages/{chatId}", chatId)
                 .header("Authorization", token)
                 .exchange()

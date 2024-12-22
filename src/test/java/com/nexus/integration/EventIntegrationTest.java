@@ -10,9 +10,7 @@ import com.nexus.event.EventType;
 import com.nexus.event.UpdateEventRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import java.time.ZonedDateTime;
@@ -23,8 +21,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class EventIntegrationTest extends AuthenticatedIntegrationTest {
 
-    @Autowired
-    private WebTestClient webClient;
     private int eventId;
 
     @BeforeEach
@@ -33,7 +29,7 @@ public class EventIntegrationTest extends AuthenticatedIntegrationTest {
 
         CreateEventRequest request = new CreateEventRequest(Set.of(user.getId()), "event name", "event description", EventType.MEETING, ZonedDateTime.now().plusDays(2));
 
-        Integer id = webClient.post()
+        Integer id = webTestClient.post()
                 .uri("/events")
                 .header("Authorization", token)
                 .accept(MediaType.APPLICATION_JSON)
@@ -59,7 +55,7 @@ public class EventIntegrationTest extends AuthenticatedIntegrationTest {
 
         UpdateEventRequest request = new UpdateEventRequest("newName", "newDescription", EventType.MEETING, Status.PENDING, ZonedDateTime.now().plusDays(2));
 
-        webClient.put()
+        webTestClient.put()
                 .uri("/events/{id}", eventId)
                 .header("Authorization", token)
                 .accept(MediaType.APPLICATION_JSON)
@@ -79,14 +75,14 @@ public class EventIntegrationTest extends AuthenticatedIntegrationTest {
 
     @Test
     void canDeleteEvent() {
-        webClient.delete()
+        webTestClient.delete()
                 .uri("/events/{id}", eventId)
                 .header("Authorization", token)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk();
 
-       webClient.get()
+       webTestClient.get()
                 .uri("/events/{id}", eventId)
                 .header("Authorization", token)
                 .exchange()
@@ -97,7 +93,7 @@ public class EventIntegrationTest extends AuthenticatedIntegrationTest {
     void canAddAdmin() {
         Long adminId = createAdmin();
 
-        webClient.patch()
+        webTestClient.patch()
                 .uri("/events/{eventId}/add-admin/{adminId}", eventId, adminId)
                 .header("Authorization", token)
                 .accept(MediaType.APPLICATION_JSON)
@@ -117,7 +113,7 @@ public class EventIntegrationTest extends AuthenticatedIntegrationTest {
     void canRemoveAdmin() {
         Long adminId = createAdmin();
 
-        webClient.patch()
+        webTestClient.patch()
                 .uri("/events/{eventId}/remove-admin/{adminId}", eventId, adminId)
                 .header("Authorization", token)
                 .accept(MediaType.APPLICATION_JSON)
@@ -135,7 +131,7 @@ public class EventIntegrationTest extends AuthenticatedIntegrationTest {
 
     private Event getEvent() {
 
-        return webClient.get()
+        return webTestClient.get()
                 .uri("/events/{id}", eventId)
                 .header("Authorization", token)
                 .exchange()
@@ -152,7 +148,7 @@ public class EventIntegrationTest extends AuthenticatedIntegrationTest {
         String password = faker.internet().password();
 
         CreatePersonRequest request = new CreatePersonRequest(firstName, lastName, username, password);
-        RegisterResponse response =  webClient.post()
+        RegisterResponse response =  webTestClient.post()
                 .uri("/admins")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)

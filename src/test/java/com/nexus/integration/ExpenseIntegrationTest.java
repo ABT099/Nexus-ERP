@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import java.time.ZonedDateTime;
@@ -17,9 +16,6 @@ import java.time.ZonedDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ExpenseIntegrationTest extends AuthenticatedIntegrationTest {
-
-    @Autowired
-    private WebTestClient webTestClient;
 
     @Autowired
     private ExpenseCategoryRepository expenseCategoryRepo;

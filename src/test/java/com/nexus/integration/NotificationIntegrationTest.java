@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -15,9 +14,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class NotificationIntegrationTest extends AuthenticatedIntegrationTest {
-
-    @Autowired
-    private WebTestClient webClient;
 
     @Autowired
     private NotificationRepository notificationRepository;
@@ -30,7 +26,7 @@ public class NotificationIntegrationTest extends AuthenticatedIntegrationTest {
 
         notificationRepository.save(notification);
 
-        List<Notification> notificationsResult = webClient.get().uri("/notifications/user/{id}", user.getId())
+        List<Notification> notificationsResult = webTestClient.get().uri("/notifications/user/{id}", user.getId())
                 .header("Authorization", token)
                 .exchange()
                 .expectStatus().isOk()
@@ -43,14 +39,14 @@ public class NotificationIntegrationTest extends AuthenticatedIntegrationTest {
         assertFalse(notificationsResult.isEmpty());
 
 
-        webClient.patch()
+        webTestClient.patch()
                 .uri("/notifications")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", token)
                 .body(Mono.just(notificationsResult.stream().map(AbstractPersistable::getId).toList()), List.class).exchange().expectStatus().isOk();
 
-        List<Notification> read = webClient.get().uri("/notifications/user/{id}", user.getId())
+        List<Notification> read = webTestClient.get().uri("/notifications/user/{id}", user.getId())
                 .header("Authorization", token)
                 .exchange()
                 .expectStatus().isOk()
