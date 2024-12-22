@@ -6,6 +6,7 @@ import com.nexus.project.Project;
 import jakarta.persistence.*;
 
 import java.time.ZonedDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -23,7 +24,7 @@ public class ProjectStep extends AbstractWorkItem {
             joinColumns = @JoinColumn(name = "step_id"),
             inverseJoinColumns = @JoinColumn(name = "employee_id")
     )
-    private Set<Employee> employees;
+    private Set<Employee> employees = new HashSet<>();
 
     public ProjectStep(Project project, String name, String description, ZonedDateTime startDate, ZonedDateTime expectedEndDate) {
         super(name, description, startDate, expectedEndDate);
