@@ -11,6 +11,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -29,7 +31,7 @@ public class Project extends AbstractWorkItem {
             orphanRemoval = true,
             fetch = FetchType.LAZY
     )
-    private List<ProjectStep> steps;
+    private List<ProjectStep> steps = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -37,20 +39,20 @@ public class Project extends AbstractWorkItem {
             joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "file_id")
     )
-    private Set<File> files;
+    private Set<File> files = new HashSet<>();
     @OneToMany(
             mappedBy = "project",
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.LAZY)
-    private List<Payment> payments;
+    private List<Payment> payments = new ArrayList<>();
 
     @OneToMany(
             mappedBy = "project",
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.LAZY)
-    private List<Expense> expenses;
+    private List<Expense> expenses = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -58,7 +60,7 @@ public class Project extends AbstractWorkItem {
             joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "employee_id")
     )
-    private Set<Employee> employees;
+    private Set<Employee> employees = new HashSet<>();
 
     @Positive
     private double price;
@@ -97,9 +99,11 @@ public class Project extends AbstractWorkItem {
 
     public void addFile(File file) {
         files.add(file);
+        file.getProjects().add(this);
     }
 
     public void removeFile(File file) {
         files.remove(file);
+        file.getProjects().remove(this);
     }
 }

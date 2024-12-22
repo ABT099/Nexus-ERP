@@ -29,14 +29,6 @@ public class File extends AbstractAuditable<User, Integer> {
         this.url = url;
     }
 
-    public File(String name, String description, String type, String url, Project project) {
-        this.name = name;
-        this.description = description;
-        this.type = type;
-        this.url = url;
-        projects.add(project);
-    }
-
     public File() {}
 
     public String getName() {
@@ -69,5 +61,9 @@ public class File extends AbstractAuditable<User, Integer> {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public Set<Project> getProjects() {
+        return projects;
     }
 }

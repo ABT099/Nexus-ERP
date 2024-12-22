@@ -1,6 +1,8 @@
 package com.nexus.file;
 
 import com.nexus.exception.ResourceNotFoundException;
+import com.nexus.project.Project;
+import com.nexus.project.ProjectFinder;
 import com.nexus.utils.UpdateHandler;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -17,10 +19,12 @@ public class FileController {
 
     private final FileRepository fileRepository;
     private final FileService fileService;
+    private final ProjectFinder projectFinder;
 
-    public FileController(FileRepository fileRepository, FileService fileService) {
+    public FileController(FileRepository fileRepository, FileService fileService, ProjectFinder projectFinder) {
         this.fileRepository = fileRepository;
         this.fileService = fileService;
+        this.projectFinder = projectFinder;
     }
 
     @GetMapping("by-project/{id}")
@@ -41,6 +45,12 @@ public class FileController {
 
         try {
             File file = getFile(request);
+
+            if (request.projectId() != null) {
+                Project project = projectFinder.findById(request.projectId());
+
+                project.addFile(file);
+            }
 
             fileRepository.saveAndFlush(file);
 
