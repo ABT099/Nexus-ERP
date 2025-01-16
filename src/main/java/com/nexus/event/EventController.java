@@ -76,7 +76,7 @@ public class EventController {
     ) {
         Event event = findById(id);
 
-        UpdateHandler.updateEntity(event, tracker -> {
+        UpdateHandler.updateEntity(tracker -> {
             tracker.updateField(event::getName, request.name(), event::setName);
             tracker.updateField(event::getDescription, request.description(), event::setDescription);
             tracker.updateField(event::getType, request.type(), event::setType);
@@ -89,7 +89,7 @@ public class EventController {
     public void updateStatus(@Valid @Positive @PathVariable int id, @RequestBody Status status) {
         Event event = findById(id);
 
-        UpdateHandler.updateEntity(event, tracker -> {
+        UpdateHandler.updateEntity(tracker -> {
             tracker.updateField(event::getStatus, status, event::setStatus);
         }, () -> eventRepository.save(event));
     }

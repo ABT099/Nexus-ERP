@@ -80,7 +80,7 @@ public class ProjectController extends UserContext {
     public void update(@Valid @RequestBody UpdateProjectRequest request) {
         Project project = projectFinder.findById(request.id());
 
-        UpdateHandler.updateEntity(project, tracker -> {
+        UpdateHandler.updateEntity(tracker -> {
             tracker.updateField(project::getPrice, request.price(), project::setPrice);
             tracker.updateField(project::getName, request.name(), project::setName);
             tracker.updateField(project::getDescription, request.description(), project::setDescription);
@@ -99,7 +99,7 @@ public class ProjectController extends UserContext {
     public void updateStatus(@Valid @Positive @PathVariable int id, Status status) {
         Project project = projectFinder.findById(id);
 
-        UpdateHandler.updateEntity(project, tracker -> {
+        UpdateHandler.updateEntity(tracker -> {
             tracker.updateField(project::getStatus, status, project::setStatus);
         }, () -> projectRepository.save(project));
     }

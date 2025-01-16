@@ -64,7 +64,7 @@ public class FileController {
     public void update(@Valid @RequestBody UpdateFileRequest request) {
         File file = fileService.findById(request.id());
 
-        UpdateHandler.updateEntity(file, tracker -> {
+        UpdateHandler.updateEntity(tracker -> {
             tracker.updateField(file::getName, request.name(), file::setName);
             tracker.updateField(file::getDescription, request.description(), file::setDescription);
         }, () -> fileRepository.saveAndFlush(file));

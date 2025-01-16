@@ -44,7 +44,7 @@ public class ExpenseCategoryController {
     public void update(@Valid @Positive @PathVariable int id, @Valid @RequestBody ExpenseCategoryRequest request) {
         ExpenseCategory eCategory = finder.findById(id);
 
-        UpdateHandler.updateEntity(eCategory, tracker -> {
+        UpdateHandler.updateEntity(tracker -> {
             tracker.updateField(eCategory::getName, request.name(), eCategory::setName);
             tracker.updateField(eCategory::getDescription, request.description(), eCategory::setDescription);
         }, () -> repository.save(eCategory));

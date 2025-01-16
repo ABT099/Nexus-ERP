@@ -71,7 +71,7 @@ public class CompanyController extends UserContext {
     public void updateById(@Valid @RequestBody UpdateCompanyRequest request) {
         Company company = findById(request.id());
 
-        UpdateHandler.updateEntity(company, tracker -> {
+        UpdateHandler.updateEntity(tracker -> {
             tracker.updateField(company::getCompanyName, request.companyName(), company::setCompanyName);
         }, () -> companyRepository.save(company));
     }
@@ -80,7 +80,7 @@ public class CompanyController extends UserContext {
     public void updateMe(@RequestBody String companyName) {
         Company company = findFromAuth();
 
-        UpdateHandler.updateEntity(company, tracker -> {
+        UpdateHandler.updateEntity(tracker -> {
             tracker.updateField(company::getCompanyName, companyName, company::setCompanyName);
         }, () -> companyRepository.save(company));
     }

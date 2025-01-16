@@ -10,12 +10,11 @@ public class UpdateHandler {
     /**
      * Updates fields of an entity and saves it if any changes were made.
      *
-     * @param entity       The entity being updated.
      * @param updateLogic  A Consumer that defines the fields to update.
      * @param saveAction   The action to save the updated entity.
      * @param <T>          The type of the entity.
      */
-    public static <T> void updateEntity(T entity, Consumer<ChangeTracker> updateLogic, Runnable saveAction) {
+    public static <T> void updateEntity( Consumer<ChangeTracker> updateLogic, Runnable saveAction) {
         ChangeTracker tracker = new ChangeTracker();
         updateLogic.accept(tracker);
 

@@ -64,7 +64,7 @@ public class ProjectStepController {
     public void update(@Valid @RequestBody UpdateProjectStepRequest request) {
         ProjectStep step = findById(request.id());
 
-        UpdateHandler.updateEntity(step, tracker -> {
+        UpdateHandler.updateEntity(tracker -> {
             tracker.updateField(step::getName, request.name(), step::setName);
             tracker.updateField(step::getDescription, request.description(), step::setDescription);
             tracker.updateField(step::getStartDate, request.startDate(), step::setStartDate);
@@ -106,7 +106,7 @@ public class ProjectStepController {
             @RequestBody Status status
     ) {
         ProjectStep step = findById(id);
-        UpdateHandler.updateEntity(step, tracker -> {
+        UpdateHandler.updateEntity(tracker -> {
             tracker.updateField(step::getStatus, status, step::setStatus);
         }, () -> projectStepRepository.save(step));
     }

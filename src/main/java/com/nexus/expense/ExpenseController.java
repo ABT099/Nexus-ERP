@@ -65,7 +65,7 @@ public class ExpenseController {
     public void update(@Valid @Positive @PathVariable int id, @Valid @RequestBody UpdateExpenseRequest request) {
         Expense expense = findById(id);
 
-        UpdateHandler.updateEntity(expense, tracker -> {
+        UpdateHandler.updateEntity(tracker -> {
             tracker.updateField(
                     expense.getExpenseCategory()::getId,
                     request.getExpenseCategoryId(),

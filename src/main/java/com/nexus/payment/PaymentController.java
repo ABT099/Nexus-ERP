@@ -61,7 +61,7 @@ public class PaymentController {
     public void update(@Valid @Positive @PathVariable int id, @Valid @RequestBody UpdatePaymentRequest request) {
         Payment payment = findById(id);
 
-        UpdateHandler.updateEntity(payment, tracker -> {
+        UpdateHandler.updateEntity(tracker -> {
             tracker.updateField(payment::getAmount, request.getAmount(), payment::setAmount);
             tracker.updateField(payment::getPaymentDate, request.getPaymentDate(), payment::setPaymentDate);
         }, () -> paymentRepository.save(payment));
