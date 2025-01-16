@@ -33,13 +33,10 @@ public abstract class AuthenticatedIntegrationTest {
 
         UserDto userDto = userContext.create(username, password, UserType.SUPER_USER);
 
-        token = userDto.token();
         user = userDto.user();
-
-
-        assertNotNull(token);
         assertNotNull(user);
 
-        token = "Bearer " + token;
+        token = "Bearer " + userDto.token();
+        assertNotNull(token);
     }
 }

@@ -93,6 +93,8 @@ public class EventIntegrationTest extends AuthenticatedIntegrationTest {
     void canAddAdmin() {
         Long adminId = createAdmin();
 
+        System.out.println(token);
+
         webTestClient.patch()
                 .uri("/events/{eventId}/add-admin/{adminId}", eventId, adminId)
                 .header("Authorization", token)
@@ -163,7 +165,7 @@ public class EventIntegrationTest extends AuthenticatedIntegrationTest {
         assertNotNull(response.id());
         assertTrue(response.id() > 0);
 
-        token = response.token();
+        token = "Bearer " + response.token();
 
         return response.id();
     }
