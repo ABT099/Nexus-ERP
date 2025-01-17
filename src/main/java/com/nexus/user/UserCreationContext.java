@@ -22,7 +22,7 @@ public class UserCreationContext {
 
     public UserDto create(String username, String password, UserType userType) {
         if (userRepository.existsByUsername(username)) {
-            LOGGER.warn("Username {} already exists", username);
+            LOGGER.error("Username {} already exists", username);
             throw new DuplicateResourceException("Username already exists");
         }
 

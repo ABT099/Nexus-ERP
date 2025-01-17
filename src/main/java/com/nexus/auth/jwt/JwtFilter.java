@@ -6,6 +6,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +21,7 @@ import java.io.IOException;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
+    private static final Logger LOG = LoggerFactory.getLogger(JwtFilter.class);
     private final JwtService jwtService;
     private final ApplicationContext context;
 
@@ -41,7 +44,7 @@ public class JwtFilter extends OncePerRequestFilter {
             userId = jwtService.extractClaim(token, Claims::getId);
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (username != null && userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = context.getBean(PrincipalService.class).loadUserByUsername(username);
 
             if (jwtService.validate(token, userDetails)) {
@@ -50,6 +53,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 userToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(userToken);
+            } else {
+                LOG.warn("Invalid token used for user {}", username);
             }
         }
 

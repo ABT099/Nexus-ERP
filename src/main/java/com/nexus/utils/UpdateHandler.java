@@ -1,8 +1,6 @@
 package com.nexus.utils;
 
 import com.nexus.exception.NoUpdateException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -32,14 +30,11 @@ public class UpdateHandler {
      */
     public static class ChangeTracker {
         private boolean changed = false;
-        private static final Logger LOGGER = LoggerFactory.getLogger(ChangeTracker.class);
 
         public <V> void updateField(Supplier<V> currentValue, V newValue, Consumer<V> updateAction) {
             if (newValue != null && !Objects.equals(currentValue.get(), newValue)) {
                 updateAction.accept(newValue);
                 this.changed = true;
-
-                LOGGER.debug("old value of: {} changed to: {}", currentValue.get(), newValue);
             }
         }
 

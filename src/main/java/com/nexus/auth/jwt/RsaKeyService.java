@@ -14,7 +14,7 @@ import java.security.PrivateKey;
 @Component
 public class RsaKeyService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RsaKeyService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RsaKeyService.class);
 
     private PrivateKey rsaKey;
 
@@ -25,7 +25,7 @@ public class RsaKeyService {
             keyGen.initialize(2048);
             var key = keyGen.generateKeyPair();
             this.rsaKey = key.getPrivate();
-            LOGGER.info("JWT Key Generated!");
+            LOG.info("JWT Key Generated!");
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("Error generating RSA key pair", e);
         }
