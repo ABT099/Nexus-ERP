@@ -22,16 +22,18 @@ public class EventController {
     private final EventRepository eventRepository;
     private final AdminFinder adminFinder;
     private final EventManager eventManager;
+    private final EventMapper eventMapper;
 
-    public EventController(EventRepository eventRepository, AdminFinder adminFinder, EventManager eventManager) {
+    public EventController(EventRepository eventRepository, AdminFinder adminFinder, EventManager eventManager, EventMapper eventMapper) {
         this.eventRepository = eventRepository;
         this.adminFinder = adminFinder;
         this.eventManager = eventManager;
+        this.eventMapper = eventMapper;
     }
 
     @Zoned
     @GetMapping("/admin/{adminId}")
-    public ResponseEntity<List<Event>> getAllByAdmin(@Valid @Positive @PathVariable long adminId) {
+    public ResponseEntity<List<BasicEventResponse>> getAllByAdmin(@Valid @Positive @PathVariable long adminId) {
         List<Event> events = new ArrayList<>(Optional.ofNullable(eventRepository.findAllByAdminId(adminId))
                 .orElse(Collections.emptyList()));
 
@@ -40,13 +42,15 @@ public class EventController {
                         .thenComparing(Event::getDate, Comparator.nullsLast(Comparator.naturalOrder()))
         );
 
-        return ResponseEntity.ok(events);
+        return ResponseEntity.ok(events.stream().map(eventMapper::toBasicEventResponse).toList());
     }
 
     @Zoned
     @GetMapping("{id}")
-    public ResponseEntity<Event> getById(@Valid @Positive @PathVariable int id) {
-        return ResponseEntity.ok(findById(id));
+    public ResponseEntity<EventResponse> getById(@Valid @Positive @PathVariable int id) {
+        Event event = findById(id);
+
+        return ResponseEntity.ok(eventMapper.toEventResponse(event));
     }
 
     @PostMapping
@@ -62,7 +66,7 @@ public class EventController {
         Event savedEvent = eventRepository.save(event);
         eventManager.addEvent(
                 request.adminIds(),
-                new EventHolderDto(Objects.requireNonNull(savedEvent.getId()), savedEvent.getName(), savedEvent.getDate(), savedEvent.isUrgent())
+                new EventDTO(Objects.requireNonNull(savedEvent.getId()), savedEvent.getName(), savedEvent.getDate(), savedEvent.isUrgent())
         );
 
         return ResponseEntity.created(URI.create("events/" + savedEvent.getId()))
@@ -105,7 +109,7 @@ public class EventController {
         event.addAdmin(admin);
         eventRepository.save(event);
 
-        eventManager.addEvent(adminId, new EventHolderDto(eventId, event.getName(), event.getDate(), event.isUrgent()));
+        eventManager.addEvent(adminId, new EventDTO(eventId, event.getName(), event.getDate(), event.isUrgent()));
 
     }
 
@@ -120,7 +124,7 @@ public class EventController {
         event.removeAdmin(admin);
         eventRepository.save(event);
 
-        eventManager.removeEvent(adminId, new EventHolderDto(eventId, event.getName(), event.getDate(), event.isUrgent()));
+        eventManager.removeEvent(adminId, new EventDTO(eventId, event.getName(), event.getDate(), event.isUrgent()));
     }
 
     @DeleteMapping("{id}")
@@ -132,9 +136,9 @@ public class EventController {
                 .map(Admin::getId)
                 .collect(Collectors.toSet());
 
-        EventHolderDto eventHolderDto = new EventHolderDto(event.getId(), event.getName(), event.getDate(), event.isUrgent());
+        EventDTO eventDTO = new EventDTO(event.getId(), event.getName(), event.getDate(), event.isUrgent());
 
-        eventManager.removeEvent(adminIds, eventHolderDto);
+        eventManager.removeEvent(adminIds, eventDTO);
 
         List<Admin> adminsToRemove = new ArrayList<>(event.getAdmins());
         for (Admin admin : adminsToRemove) {

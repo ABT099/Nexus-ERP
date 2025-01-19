@@ -1,25 +1,17 @@
 package com.nexus.project;
 
-import com.nexus.abstraction.CreateWorkItemRequest;
+import com.nexus.validation.AfterNow;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import java.time.ZonedDateTime;
 
-public final class CreateProjectRequest extends CreateWorkItemRequest {
-
-    private final Long ownerId;
-    private final double price;
-
-    public CreateProjectRequest(String name, String description, ZonedDateTime startDate, ZonedDateTime expectedEndDate, Long ownerId, double price) {
-        super(name, description, startDate, expectedEndDate);
-        this.ownerId = ownerId;
-        this.price = price;
-    }
-
-    public Long ownerId() {
-        return ownerId;
-    }
-
-    public double price() {
-        return price;
-    }
-}
+public record CreateProjectRequest(
+        @NotNull @Positive Long ownerId,
+        @NotEmpty String name,
+        @NotEmpty String description,
+        @AfterNow ZonedDateTime startDate,
+        @AfterNow ZonedDateTime expectedEndDate,
+        @Positive double price
+) { }

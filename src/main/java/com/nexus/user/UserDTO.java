@@ -1,6 +1,6 @@
 package com.nexus.user;
 
-public record UserDto(
+public record UserDTO(
         User user,
         String token
 ) { }

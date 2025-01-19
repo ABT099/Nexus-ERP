@@ -73,6 +73,22 @@ public class Project extends AbstractWorkItem {
 
     public Project() {}
 
+    public User getOwner() {
+        return owner;
+    }
+
+    public List<ProjectStep> getSteps() {
+        return steps;
+    }
+
+    public List<Payment> getPayments() {
+        return payments;
+    }
+
+    public List<Expense> getExpenses() {
+        return expenses;
+    }
+
     public double getPrice() {
         return price;
     }

@@ -1,6 +1,6 @@
 package com.nexus.notification;
 
-public record CreateNotificationDto(
+public record CreateNotificationDTO(
         long userId,
         String title,
         String body,

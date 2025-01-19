@@ -21,21 +21,29 @@ public class PaymentController {
     private final PaymentRepository paymentRepository;
     private final ProjectFinder projectFinder;
     private final UserService userService;
+    private final PaymentMapper paymentMapper;
 
-    public PaymentController(PaymentRepository paymentRepository, ProjectFinder projectFinder, UserService userService) {
+    public PaymentController(PaymentRepository paymentRepository, ProjectFinder projectFinder, UserService userService, PaymentMapper paymentMapper) {
         this.paymentRepository = paymentRepository;
         this.projectFinder = projectFinder;
         this.userService = userService;
+        this.paymentMapper = paymentMapper;
     }
 
     @GetMapping
-    public ResponseEntity<List<Payment>> getAll() {
-        return ResponseEntity.ok(paymentRepository.findAll());
+    public ResponseEntity<List<BasicPaymentResponse>> getAll() {
+        return ResponseEntity.ok(
+                paymentRepository.findAll().stream()
+                        .map(paymentMapper::toBasicPaymentResponse)
+                        .toList()
+        );
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Payment> getById(@Valid @Positive @PathVariable("id") int id) {
-        return ResponseEntity.ok(findById(id));
+    public ResponseEntity<PaymentResponse> getById(@Valid @Positive @PathVariable("id") int id) {
+        Payment payment = findById(id);
+
+        return ResponseEntity.ok(paymentMapper.toPaymentResponse(payment));
     }
 
     @PostMapping
@@ -44,12 +52,12 @@ public class PaymentController {
 
         Payment payment;
 
-        if (request.getProjectId() != null) {
-            Project project = projectFinder.findById(request.getProjectId());
+        if (request.projectId() != null) {
+            Project project = projectFinder.findById(request.projectId());
 
-            payment = new Payment(request.getAmount(), request.getPaymentDate(), project, payer);
+            payment = new Payment(request.amount(), request.paymentDate(), project, payer);
         } else {
-            payment = new Payment(request.getAmount(), request.getPaymentDate(), payer);
+            payment = new Payment(request.amount(), request.paymentDate(), payer);
         }
 
         paymentRepository.save(payment);
@@ -62,8 +70,8 @@ public class PaymentController {
         Payment payment = findById(id);
 
         UpdateHandler.updateEntity(tracker -> {
-            tracker.updateField(payment::getAmount, request.getAmount(), payment::setAmount);
-            tracker.updateField(payment::getPaymentDate, request.getPaymentDate(), payment::setPaymentDate);
+            tracker.updateField(payment::getAmount, request.amount(), payment::setAmount);
+            tracker.updateField(payment::getPaymentDate, request.paymentDate(), payment::setPaymentDate);
         }, () -> paymentRepository.save(payment));
     }
 

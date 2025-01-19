@@ -4,7 +4,7 @@ import com.nexus.abstraction.UserContext;
 import com.nexus.common.ArchivableQueryType;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.user.UserCreationContext;
-import com.nexus.user.UserDto;
+import com.nexus.user.UserDTO;
 import com.nexus.user.UserType;
 import com.nexus.utils.UpdateHandler;
 import jakarta.transaction.Transactional;
@@ -22,14 +22,16 @@ public class CompanyController extends UserContext {
 
     private final CompanyRepository companyRepository;
     private final UserCreationContext userCreationContext;
+    private final CompanyMapper companyMapper;
 
-    public CompanyController(CompanyRepository companyRepository, UserCreationContext userCreationContext) {
+    public CompanyController(CompanyRepository companyRepository, UserCreationContext userCreationContext, CompanyMapper companyMapper) {
         this.companyRepository = companyRepository;
         this.userCreationContext = userCreationContext;
+        this.companyMapper = companyMapper;
     }
 
     @GetMapping
-    public ResponseEntity<List<Company>> getAll(
+    public ResponseEntity<List<CompanyResponse>> getAll(
             @RequestParam(
                     required = false,
                     name = "a"
@@ -42,23 +44,27 @@ public class CompanyController extends UserContext {
             default -> companies = companyRepository.findAllNonArchived();
         }
 
-        return ResponseEntity.ok(companies);
+        return ResponseEntity.ok(companies.stream().map(companyMapper::map).toList());
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Company> getById(@Valid @Positive @PathVariable long id) {
-        return ResponseEntity.ok(findById(id));
+    public ResponseEntity<CompanyResponse> getById(@Valid @Positive @PathVariable long id) {
+        Company company = findById(id);
+
+        return ResponseEntity.ok(companyMapper.map(company));
     }
 
     @GetMapping("me")
-    public ResponseEntity<Company> getMe() {
-        return ResponseEntity.ok(findFromAuth());
+    public ResponseEntity<CompanyResponse> getMe() {
+        Company company = findFromAuth();
+
+        return ResponseEntity.ok(companyMapper.map(company));
     }
 
     @PostMapping
     @Transactional
     public ResponseEntity<Long> create(@Valid @RequestBody CreateCompanyRequest request) {
-        UserDto userDto = userCreationContext.create(request.username(), request.password(), UserType.CUSTOMER);
+        UserDTO userDto = userCreationContext.create(request.username(), request.password(), UserType.CUSTOMER);
 
         Company company = new Company(userDto.user(), request.companyName());
 

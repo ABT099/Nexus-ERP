@@ -4,7 +4,7 @@ import com.github.javafaker.Faker;
 import com.nexus.config.TestContainerConfig;
 import com.nexus.user.User;
 import com.nexus.user.UserCreationContext;
-import com.nexus.user.UserDto;
+import com.nexus.user.UserDTO;
 import com.nexus.user.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,7 +31,7 @@ public abstract class AuthenticatedIntegrationTest {
         String password = faker.internet().password();
 
 
-        UserDto userDto = userContext.create(username, password, UserType.SUPER_USER);
+        UserDTO userDto = userContext.create(username, password, UserType.SUPER_USER);
 
         user = userDto.user();
         assertNotNull(user);

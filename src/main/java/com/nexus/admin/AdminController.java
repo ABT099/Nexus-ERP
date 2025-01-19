@@ -8,7 +8,7 @@ import com.nexus.common.person.CreatePersonRequest;
 import com.nexus.common.person.PersonService;
 import com.nexus.common.person.UpdatePersonRequest;
 import com.nexus.user.UserCreationContext;
-import com.nexus.user.UserDto;
+import com.nexus.user.UserDTO;
 import com.nexus.user.UserType;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -27,47 +27,58 @@ public class AdminController extends UserContext {
     private final UserCreationContext userCreationContext;
     private final PersonService<Admin> personService;
     private final AdminFinder adminFinder;
+    private final AdminMapper adminMapper;
 
-    public AdminController(AdminRepository adminRepository, UserCreationContext userCreationContext, PersonService<Admin> personService, AdminFinder adminFinder) {
+    public AdminController(AdminRepository adminRepository, UserCreationContext userCreationContext, PersonService<Admin> personService, AdminFinder adminFinder, AdminMapper adminMapper) {
         this.adminRepository = adminRepository;
         this.userCreationContext = userCreationContext;
         this.personService = personService;
         this.adminFinder = adminFinder;
+        this.adminMapper = adminMapper;
     }
 
     @GetMapping
-    public ResponseEntity<List<Admin>> getAll(
+    public ResponseEntity<List<BasicAdminResponse>> getAll(
             @RequestParam(
                     required = false,
                     name = "a"
             ) ArchivableQueryType archived
     ) {
-        List<Admin> admins;
+        List<Admin> result;
 
         switch (archived) {
-            case ALL -> admins = adminRepository.findAll();
-            case Archived -> admins = adminRepository.findAllArchived();
-            default -> admins = adminRepository.findAllNonArchived();
+            case ALL -> result = adminRepository.findAll();
+            case Archived -> result = adminRepository.findAllArchived();
+            default -> result = adminRepository.findAllNonArchived();
         }
 
-        return ResponseEntity.ok(admins);
+        return ResponseEntity.ok(
+                result.stream().map(adminMapper::toBasicAdminResponse).toList()
+        );
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Admin> getById(@Valid @Positive @PathVariable long id) {
-        return ResponseEntity.ok(adminFinder.findById(id));
+    public ResponseEntity<AdminResponse> getById(@Valid @Positive @PathVariable long id) {
+        Admin admin = adminFinder.findById(id);
+
+        return ResponseEntity.ok(
+                adminMapper.toAdminResponse(admin)
+        );
     }
 
     @GetMapping("me")
-    public ResponseEntity<Admin> getMe() {
-        return ResponseEntity
-                .ok(findFromAuth());
+    public ResponseEntity<AdminResponse> getMe() {
+        Admin admin = findFromAuth();
+
+        return ResponseEntity.ok(
+               adminMapper.toAdminResponse(admin)
+        );
     }
 
     @PostMapping
     @Transactional
     public ResponseEntity<RegisterResponse> create(@Valid @RequestBody CreatePersonRequest request) {
-        UserDto userDto = userCreationContext.create(request.username(), request.password(), UserType.ADMIN);
+        UserDTO userDto = userCreationContext.create(request.username(), request.password(), UserType.ADMIN);
 
         Admin admin = new Admin(userDto.user(), request.firstName(), request.lastName());
 

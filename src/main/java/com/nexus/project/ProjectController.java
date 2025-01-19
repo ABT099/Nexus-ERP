@@ -24,43 +24,59 @@ public class ProjectController extends UserContext {
     private final ProjectFinder projectFinder;
     private final UserService userService;
     private final FileService fileService;
+    private final ProjectMapper projectMapper;
 
-    public ProjectController(ProjectRepository projectRepository, ProjectFinder projectFinder, UserService userService, FileService fileService) {
+    public ProjectController(ProjectRepository projectRepository, ProjectFinder projectFinder, UserService userService, FileService fileService, ProjectMapper projectMapper) {
         this.projectRepository = projectRepository;
         this.projectFinder = projectFinder;
         this.userService = userService;
         this.fileService = fileService;
+        this.projectMapper = projectMapper;
     }
 
     @GetMapping
-    public ResponseEntity<List<Project>> getAll() {
-        return ResponseEntity.ok(projectRepository.findAll());
+    public ResponseEntity<List<ListProjectResponse>> getAll() {
+        return ResponseEntity.ok(
+                projectRepository.findAll().stream()
+                        .map(projectMapper::toListProjectResponse)
+                        .toList()
+        );
     }
 
     @GetMapping("by-owner/{id}")
-    public ResponseEntity<List<Project>> getAllByOwner(@Valid @Positive @PathVariable long id) {
+    public ResponseEntity<List<ListProjectResponse>> getAllByOwner(@Valid @Positive @PathVariable long id) {
         userService.doesUserExists(id);
 
-        return ResponseEntity.ok(projectRepository.findAllByOwnerId(id));
+        return ResponseEntity.ok(
+                projectRepository.findAllByOwnerId(id).stream()
+                    .map(projectMapper::toListProjectResponse)
+                    .toList()
+        );
     }
 
     @GetMapping("me")
-    public ResponseEntity<List<Project>> getMyProjects() {
+    public ResponseEntity<List<ListProjectResponse>> getMyProjects() {
         long userId = getUserId();
 
         userService.doesUserExists(userId);
 
-        return ResponseEntity.ok(projectRepository.findAllByOwnerId(userId));
+        return ResponseEntity.ok(
+                projectRepository.findAllByOwnerId(userId).stream()
+                    .map(projectMapper::toListProjectResponse)
+                    .toList()
+        );
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Project> getById(@Valid @Positive @PathVariable int id) {
-        return ResponseEntity.ok(projectFinder.findById(id));
+    public ResponseEntity<ProjectResponse> getById(@Valid @Positive @PathVariable int id) {
+        Project project = projectFinder.findById(id);
+
+        return ResponseEntity.ok(projectMapper.toProjectResponse(project));
     }
 
     @PostMapping
     public ResponseEntity<Integer> create(@Valid @RequestBody CreateProjectRequest request) {
-        User owner = userService.findById(getUserId());
+        User owner = userService.findById(request.ownerId());
 
         Project project = new Project(
                 owner,

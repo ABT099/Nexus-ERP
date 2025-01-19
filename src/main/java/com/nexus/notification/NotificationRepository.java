@@ -12,4 +12,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
         where u.id = :userId
     """)
     List<Notification> findAllByUserId(long userId);
+
+    Long countAllByUserIdAndRead(long userId, boolean read);
 }

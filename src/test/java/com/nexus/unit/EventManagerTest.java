@@ -1,10 +1,10 @@
 package com.nexus.unit;
 
-import com.nexus.event.EventHolderDto;
+import com.nexus.event.EventDTO;
 import com.nexus.event.EventManager;
 import com.nexus.event.EventRepository;
 import com.nexus.notification.NotificationManager;
-import com.nexus.notification.NotificationHolderDto;
+import com.nexus.notification.NotificationDTO;
 import com.nexus.notification.NotificationType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,7 +51,7 @@ class EventManagerTest {
         // Arrange
         Long adminId = 1L;
         Instant now = Instant.now().plusSeconds(3600);
-        EventHolderDto event = new EventHolderDto(1, "Test Event", now.atZone(ZoneId.systemDefault()), false);
+        EventDTO event = new EventDTO(1, "Test Event", now.atZone(ZoneId.systemDefault()), false);
         CountDownLatch latch = new CountDownLatch(1);
 
         doAnswer(invocation -> {
@@ -65,13 +65,13 @@ class EventManagerTest {
         latch.await();  // Wait for the async task to complete
 
         // Assert
-        ConcurrentSkipListSet<EventHolderDto> events = EventManager.getAdminEvents().get(adminId);
+        ConcurrentSkipListSet<EventDTO> events = EventManager.getAdminEvents().get(adminId);
         assertNotNull(events);
 
         // Verify notification is sent
-        ArgumentCaptor<NotificationHolderDto> notificationCaptor = ArgumentCaptor.forClass(NotificationHolderDto.class);
+        ArgumentCaptor<NotificationDTO> notificationCaptor = ArgumentCaptor.forClass(NotificationDTO.class);
         verify(notificationManager, atLeastOnce()).addNotification(notificationCaptor.capture());
-        NotificationHolderDto notification = notificationCaptor.getValue();
+        NotificationDTO notification = notificationCaptor.getValue();
         assertEquals("Event Reminder", notification.getTitle());
         assertEquals(NotificationType.REMINDER, notification.getType());
     }
@@ -81,7 +81,7 @@ class EventManagerTest {
         // Arrange
         Long adminId = 1L;
         Instant now = Instant.now().plusSeconds(3600);
-        EventHolderDto event = new EventHolderDto(1, "Test Event", now.atZone(ZoneId.systemDefault()), false);
+        EventDTO event = new EventDTO(1, "Test Event", now.atZone(ZoneId.systemDefault()), false);
 
         EventManager.getAdminEvents().computeIfAbsent(adminId, id -> new ConcurrentSkipListSet<>()).add(event);
 
@@ -89,7 +89,7 @@ class EventManagerTest {
         eventManager.removeEvent(adminId, event);
 
         // Assert
-        ConcurrentSkipListSet<EventHolderDto> events = EventManager.getAdminEvents().get(adminId);
+        ConcurrentSkipListSet<EventDTO> events = EventManager.getAdminEvents().get(adminId);
         assertTrue(events == null || !events.contains(event));
     }
 
@@ -98,10 +98,10 @@ class EventManagerTest {
         // Arrange
         Long adminId = 1L;
         Instant now = Instant.now();
-        EventHolderDto pastEvent = new EventHolderDto(1, "Past Event", now.minusSeconds(3600).atZone(ZoneId.systemDefault()), false);
-        EventHolderDto futureEvent = new EventHolderDto(2, "Future Event", now.plusSeconds(3800).atZone(ZoneId.systemDefault()), false);
+        EventDTO pastEvent = new EventDTO(1, "Past Event", now.minusSeconds(3600).atZone(ZoneId.systemDefault()), false);
+        EventDTO futureEvent = new EventDTO(2, "Future Event", now.plusSeconds(3800).atZone(ZoneId.systemDefault()), false);
 
-        ConcurrentSkipListSet<EventHolderDto> events = new ConcurrentSkipListSet<>();
+        ConcurrentSkipListSet<EventDTO> events = new ConcurrentSkipListSet<>();
         events.add(pastEvent);
         events.add(futureEvent);
 

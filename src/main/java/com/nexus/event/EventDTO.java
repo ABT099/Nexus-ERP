@@ -1,16 +1,15 @@
 package com.nexus.event;
 
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.Objects;
 
-public class EventHolderDto implements Comparable<EventHolderDto> {
+public class EventDTO implements Comparable<EventDTO> {
     private  Integer eventId;
     private  String eventName;
     private ZonedDateTime date;
     private  boolean urgent;
 
-    public EventHolderDto(Integer eventId, String EventName, ZonedDateTime date, boolean urgent) {
+    public EventDTO(Integer eventId, String EventName, ZonedDateTime date, boolean urgent) {
         this.eventId = eventId;
         this.eventName = EventName;
         this.date = date;
@@ -49,7 +48,7 @@ public class EventHolderDto implements Comparable<EventHolderDto> {
     }
 
     @Override
-    public int compareTo(EventHolderDto other) {
+    public int compareTo(EventDTO other) {
         int urgentComparison = Boolean.compare(other.isUrgent(), this.isUrgent());
         if (urgentComparison != 0) {
             return urgentComparison;
@@ -61,7 +60,7 @@ public class EventHolderDto implements Comparable<EventHolderDto> {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        EventHolderDto that = (EventHolderDto) obj;
+        EventDTO that = (EventDTO) obj;
         return Objects.equals(eventId, that.eventId);
     }
 

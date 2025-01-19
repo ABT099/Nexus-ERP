@@ -1,20 +1,13 @@
 package com.nexus.payment;
 
-import com.nexus.abstraction.CreateFinancialRequest;
-import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import java.time.ZonedDateTime;
 
-public final class CreatePaymentRequest extends CreateFinancialRequest {
-
-    private final Integer payerId;
-
-    public CreatePaymentRequest(double Amount, ZonedDateTime paymentDate, @Nullable Integer projectId, Integer payerId) {
-        super(Amount, paymentDate, projectId);
-        this.payerId = payerId;
-    }
-
-    public Integer payerId() {
-        return payerId;
-    }
-}
+public record CreatePaymentRequest(
+        @Positive double amount,
+        ZonedDateTime paymentDate,
+        @NotNull @Positive Integer projectId,
+        @Positive Long payerId
+) { }

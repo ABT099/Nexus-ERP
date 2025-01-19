@@ -16,20 +16,28 @@ public class ExpenseCategoryController {
 
     private final ExpenseCategoryRepository repository;
     private final ExpenseCategoryFinder finder;
+    private final ExpenseCategoryMapper mapper;
 
-    public ExpenseCategoryController(ExpenseCategoryRepository repository, ExpenseCategoryFinder finder) {
+    public ExpenseCategoryController(ExpenseCategoryRepository repository, ExpenseCategoryFinder finder, ExpenseCategoryMapper mapper) {
         this.repository = repository;
         this.finder = finder;
+        this.mapper = mapper;
     }
 
     @GetMapping
-    public ResponseEntity<List<ExpenseCategory>> getAll() {
-        return ResponseEntity.ok(repository.findAll());
+    public ResponseEntity<List<BasicExpenseCategoryResponse>> getAll() {
+        return ResponseEntity.ok(
+                repository.findAll().stream()
+                        .map(mapper::toBasicExpenseCategoryResponse)
+                        .toList()
+        );
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<ExpenseCategory> getById(@Valid @Positive @PathVariable int id) {
-        return ResponseEntity.ok(finder.findById(id));
+    public ResponseEntity<ExpenseCategoryResponse> getById(@Valid @Positive @PathVariable int id) {
+        ExpenseCategory category = finder.findById(id);
+
+        return ResponseEntity.ok(mapper.toExpenseCategoryResponse(category));
     }
 
     @PostMapping

@@ -1,7 +1,7 @@
 package com.nexus.event;
 
 import com.nexus.notification.NotificationManager;
-import com.nexus.notification.NotificationHolderDto;
+import com.nexus.notification.NotificationDTO;
 import com.nexus.notification.NotificationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +22,10 @@ import java.util.concurrent.Executor;
 @Component
 public class EventManager {
     private static final Logger LOG = LoggerFactory.getLogger(EventManager.class);
-    private static final Map<Long, ConcurrentSkipListSet<EventHolderDto>> adminEvents = new ConcurrentHashMap<>();
-    private static final Comparator<EventHolderDto> EVENT_COMPARATOR =
-            Comparator.comparing(EventHolderDto::isUrgent).reversed()
-                    .thenComparing(EventHolderDto::getDate, Comparator.nullsLast(Comparator.naturalOrder()));
+    private static final Map<Long, ConcurrentSkipListSet<EventDTO>> adminEvents = new ConcurrentHashMap<>();
+    private static final Comparator<EventDTO> EVENT_COMPARATOR =
+            Comparator.comparing(EventDTO::isUrgent).reversed()
+                    .thenComparing(EventDTO::getDate, Comparator.nullsLast(Comparator.naturalOrder()));
 
     private final NotificationManager notificationManager;
     private final EventRepository eventRepository;
@@ -37,7 +37,7 @@ public class EventManager {
         this.taskExecutor = taskExecutor;
     }
 
-    public static Map<Long, ConcurrentSkipListSet<EventHolderDto>> getAdminEvents() {
+    public static Map<Long, ConcurrentSkipListSet<EventDTO>> getAdminEvents() {
         return adminEvents;
     }
 
@@ -54,13 +54,13 @@ public class EventManager {
         LOG.info("Scheduled urgent status check completed");
     }
 
-    public void addEvent(Set<Long> adminIds, EventHolderDto event) {
+    public void addEvent(Set<Long> adminIds, EventDTO event) {
         LOG.info("Adding event '{}' for multiple admins: {}", event.getEventName(), adminIds);
         taskExecutor.execute(() -> {
             Instant now = Instant.now();
             adminIds.forEach(adminId -> {
                 adminEvents.computeIfAbsent(adminId, id -> new ConcurrentSkipListSet<>(EVENT_COMPARATOR)).add(event);
-                ConcurrentSkipListSet<EventHolderDto> events = adminEvents.get(adminId);
+                ConcurrentSkipListSet<EventDTO> events = adminEvents.get(adminId);
                 updateUrgentStatus(events, now);
                 sendReminder(adminId, events);
                 LOG.debug("Event '{}' added for adminId: {}", event.getEventName(), adminId);
@@ -68,23 +68,23 @@ public class EventManager {
         });
     }
 
-    public void addEvent(Long adminId, EventHolderDto event) {
+    public void addEvent(Long adminId, EventDTO event) {
         LOG.info("Adding event '{}' for adminId: {}", event.getEventName(), adminId);
         taskExecutor.execute(() -> {
             Instant now = Instant.now();
             adminEvents.computeIfAbsent(adminId, id -> new ConcurrentSkipListSet<>(EVENT_COMPARATOR)).add(event);
-            ConcurrentSkipListSet<EventHolderDto> events = adminEvents.get(adminId);
+            ConcurrentSkipListSet<EventDTO> events = adminEvents.get(adminId);
             updateUrgentStatus(events, now);
             sendReminder(adminId, events);
             LOG.debug("Event '{}' added for adminId: {}", event.getEventName(), adminId);
         });
     }
 
-    public void removeEvent(Set<Long> adminIds, EventHolderDto event) {
+    public void removeEvent(Set<Long> adminIds, EventDTO event) {
         LOG.info("Removing event '{}' for multiple admins: {}", event.getEventName(), adminIds);
         taskExecutor.execute(() -> {
             adminIds.forEach(adminId -> {
-                ConcurrentSkipListSet<EventHolderDto> events = adminEvents.get(adminId);
+                ConcurrentSkipListSet<EventDTO> events = adminEvents.get(adminId);
                 if (events != null) {
                     events.remove(event);
                     if (events.isEmpty()) {
@@ -96,10 +96,10 @@ public class EventManager {
         });
     }
 
-    public void removeEvent(Long adminId, EventHolderDto event) {
+    public void removeEvent(Long adminId, EventDTO event) {
         LOG.info("Removing event '{}' for adminId: {}", event.getEventName(), adminId);
         taskExecutor.execute(() -> {
-            ConcurrentSkipListSet<EventHolderDto> events = adminEvents.get(adminId);
+            ConcurrentSkipListSet<EventDTO> events = adminEvents.get(adminId);
             if (events != null) {
                 events.remove(event);
                 if (events.isEmpty()) {
@@ -110,7 +110,7 @@ public class EventManager {
         });
     }
 
-    private void updateUrgentStatus(ConcurrentSkipListSet<EventHolderDto> events, Instant now) {
+    private void updateUrgentStatus(ConcurrentSkipListSet<EventDTO> events, Instant now) {
         if (events == null) return;
 
         LOG.debug("Updating urgent status for {} events", events.size());
@@ -134,18 +134,18 @@ public class EventManager {
         }
     }
 
-    private void sendReminder(Long adminId, ConcurrentSkipListSet<EventHolderDto> events) {
+    private void sendReminder(Long adminId, ConcurrentSkipListSet<EventDTO> events) {
         LocalDate today = LocalDate.now();
         LocalDate tomorrow = today.plusDays(1);
 
         LOG.debug("Sending reminders for adminId: {}", adminId);
-        List<NotificationHolderDto> notifications = new ArrayList<>();
-        for (EventHolderDto event : events) {
+        List<NotificationDTO> notifications = new ArrayList<>();
+        for (EventDTO event : events) {
             LocalDate eventDay = event.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             if (eventDay.equals(today) || eventDay.equals(tomorrow)) {
                 LocalTime eventTime = event.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
                 String dayDescription = eventDay.equals(today) ? "today" : "tomorrow";
-                notifications.add(new NotificationHolderDto(
+                notifications.add(new NotificationDTO(
                         adminId,
                         "Event Reminder",
                         "Reminder for the event: " + event.getEventName() + " scheduled for: " + dayDescription + " at " + eventTime,

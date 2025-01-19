@@ -36,7 +36,7 @@ public class NotificationManagerTest {
         User user = new User();
         user.setId(1L);
 
-        NotificationHolderDto notificationDto = new NotificationHolderDto(1L, "Test Title", "Test Body", NotificationType.REMINDER);
+        NotificationDTO notificationDto = new NotificationDTO(1L, "Test Title", "Test Body", NotificationType.REMINDER);
         Notification notification = new Notification(user, "Test Title", "Test Body", NotificationType.REMINDER);
 
         when(userService.findAllById(any())).thenReturn(List.of(user));
@@ -52,7 +52,7 @@ public class NotificationManagerTest {
                 eq(notification)
         );
 
-        Queue<NotificationHolderDto> queue = extractQueue(notificationManager);
+        Queue<NotificationDTO> queue = extractQueue(notificationManager);
         assertTrue(queue.isEmpty());
     }
 
@@ -76,8 +76,8 @@ public class NotificationManagerTest {
         user2.setId(2L);
 
 
-        NotificationHolderDto dto1 = new NotificationHolderDto(1L, title, body, NotificationType.REMINDER);
-        NotificationHolderDto dto2 = new NotificationHolderDto(2L, title, body, NotificationType.REMINDER);
+        NotificationDTO dto1 = new NotificationDTO(1L, title, body, NotificationType.REMINDER);
+        NotificationDTO dto2 = new NotificationDTO(2L, title, body, NotificationType.REMINDER);
 
         Notification notification1 = new Notification(user, title, body, NotificationType.REMINDER);
         Notification notification2 = new Notification(user2, title, body, NotificationType.REMINDER);
@@ -108,17 +108,17 @@ public class NotificationManagerTest {
                 eq(notification2)
         );
 
-        Queue<NotificationHolderDto> queue = extractQueue(notificationManager);
+        Queue<NotificationDTO> queue = extractQueue(notificationManager);
         assertTrue(queue.isEmpty());
     }
 
     @SuppressWarnings("unchecked")
-    private Queue<NotificationHolderDto> extractQueue(NotificationManager manager) {
+    private Queue<NotificationDTO> extractQueue(NotificationManager manager) {
         // Reflection is used to access the private `notificationQueue` field.
         try {
             var field = NotificationManager.class.getDeclaredField("notificationQueue");
             field.setAccessible(true);
-            return (Queue<NotificationHolderDto>) field.get(manager);
+            return (Queue<NotificationDTO>) field.get(manager);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException("Failed to extract queue", e);
         }

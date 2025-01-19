@@ -41,7 +41,7 @@ class EmployeeRepositoryTest {
         user = new User("employee", "password", UserType.EMPLOYEE);
         userRepository.save(user);
 
-        employee = new Employee(user, "Abdo", "Towait");
+        employee = new Employee(user, "Abdo", "Towait",  "code");
         employeeRepository.save(employee);
     }
 
@@ -50,7 +50,7 @@ class EmployeeRepositoryTest {
         User secondaryUser = new User("employee2", "password", UserType.EMPLOYEE);
         userRepository.save(secondaryUser);
 
-        Employee secondaryEmployee = new Employee(secondaryUser, "FirstName2", "LastName2");
+        Employee secondaryEmployee = new Employee(secondaryUser, "FirstName2", "LastName2",  "code2");
 
         // Archive the primary employee for testing
         employee.setArchived(true);

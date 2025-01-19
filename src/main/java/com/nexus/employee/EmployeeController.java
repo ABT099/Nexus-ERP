@@ -7,7 +7,7 @@ import com.nexus.common.person.PersonService;
 import com.nexus.common.person.UpdatePersonRequest;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.user.UserCreationContext;
-import com.nexus.user.UserDto;
+import com.nexus.user.UserDTO;
 import com.nexus.user.UserType;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -26,16 +26,18 @@ public class EmployeeController extends UserContext {
     private final UserCreationContext userCreationContext;
     private final PersonService<Employee> personService;
     private final EmployeeFinder employeeFinder;
+    private final EmployeeMapper employeeMapper;
 
-    public EmployeeController(EmployeeRepository employeeRepository, UserCreationContext userCreationContext, PersonService<Employee> personService, EmployeeFinder employeeFinder) {
+    public EmployeeController(EmployeeRepository employeeRepository, UserCreationContext userCreationContext, PersonService<Employee> personService, EmployeeFinder employeeFinder, EmployeeMapper employeeMapper) {
         this.employeeRepository = employeeRepository;
         this.userCreationContext = userCreationContext;
         this.personService = personService;
         this.employeeFinder = employeeFinder;
+        this.employeeMapper = employeeMapper;
     }
 
     @GetMapping
-    public ResponseEntity<List<Employee>> getAll(
+    public ResponseEntity<List<BasicEmployeeResponse>> getAll(
             @RequestParam(
                     required = false,
                     name = "a"
@@ -48,25 +50,32 @@ public class EmployeeController extends UserContext {
             default -> employees = employeeRepository.findAllNonArchived();
         }
 
-        return ResponseEntity.ok(employees);
+        return ResponseEntity.ok(employees.stream().map(employeeMapper::toBasicEmployeeResponse).toList());
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Employee> getById(@Valid @Positive @PathVariable long id) {
-        return ResponseEntity.ok(employeeFinder.findById(id));
+    public ResponseEntity<EmployeeResponse> getById(@Valid @Positive @PathVariable long id) {
+        Employee employee = employeeFinder.findById(id);
+
+        return ResponseEntity.ok(employeeMapper.toEmployeeResponse(employee));
     }
 
     @GetMapping("me")
-    public ResponseEntity<Employee> getMe() {
-        return ResponseEntity.ok(findFromAuth());
+    public ResponseEntity<EmployeeResponse> getMe() {
+        Employee employee = findFromAuth();
+
+        return ResponseEntity.ok(employeeMapper.toEmployeeResponse(employee));
     }
 
     @PostMapping
     @Transactional
     public ResponseEntity<Long> create(@Valid @RequestBody CreatePersonRequest request) {
-        UserDto userDto = userCreationContext.create(request.username(), request.password(), UserType.EMPLOYEE);
+        UserDTO userDto = userCreationContext.create(request.username(), request.password(), UserType.EMPLOYEE);
 
-        Employee employee = new Employee(userDto.user(), request.firstName(), request.lastName());
+        // Todo: Generate emp code..
+        String employeeCode = "";
+
+        Employee employee = new Employee(userDto.user(), request.firstName(), request.lastName(), employeeCode);
 
         employeeRepository.save(employee);
 
@@ -100,10 +109,7 @@ public class EmployeeController extends UserContext {
     }
 
     @DeleteMapping("{id}")
-    public void delete(
-            @Valid
-            @Positive
-            @PathVariable long id) {
+    public void delete(@Valid @Positive @PathVariable long id) {
         employeeRepository.deleteById(id);
     }
 

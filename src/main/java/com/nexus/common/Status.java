@@ -1,6 +1,8 @@
 package com.nexus.common;
 
 public enum Status {
-    // Todo: add more
-    PENDING
+    PENDING,
+    COMPLETED,
+    IN_PROGRESS,
+    CANCELLED
 }

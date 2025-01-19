@@ -7,7 +7,7 @@ import com.nexus.common.person.PersonService;
 import com.nexus.common.person.UpdatePersonRequest;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.user.UserCreationContext;
-import com.nexus.user.UserDto;
+import com.nexus.user.UserDTO;
 import com.nexus.user.UserType;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -25,15 +25,17 @@ public class CustomerController extends UserContext {
     private final CustomerRepository customerRepository;
     private final UserCreationContext userCreationContext;
     private final PersonService<Customer> personService;
+    private final CustomerMapper customerMapper;
 
-    public CustomerController(CustomerRepository customerRepository, UserCreationContext userCreationContext, PersonService<Customer> personService) {
+    public CustomerController(CustomerRepository customerRepository, UserCreationContext userCreationContext, PersonService<Customer> personService, CustomerMapper customerMapper) {
         this.customerRepository = customerRepository;
         this.userCreationContext = userCreationContext;
         this.personService = personService;
+        this.customerMapper = customerMapper;
     }
 
     @GetMapping
-    public ResponseEntity<List<Customer>> getCustomers(
+    public ResponseEntity<List<CustomerResponse>> getCustomers(
             @RequestParam(
                     required = false,
                     name = "a"
@@ -46,23 +48,25 @@ public class CustomerController extends UserContext {
             default -> customers = customerRepository.findAllNonArchived();
         }
 
-        return ResponseEntity.ok(customers);
+        return ResponseEntity.ok(customers.stream().map(customerMapper::map).toList());
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Customer> getById(@Valid @Positive @PathVariable long id) {
-        return ResponseEntity.ok(findById(id));
+    public ResponseEntity<CustomerResponse> getById(@Valid @Positive @PathVariable long id) {
+        Customer customer = findById(id);
+        return ResponseEntity.ok(customerMapper.map(customer));
     }
 
     @GetMapping("me")
-    public ResponseEntity<Customer> getMe() {
-        return ResponseEntity.ok(findFromAuth());
+    public ResponseEntity<CustomerResponse> getMe() {
+        Customer customer = findFromAuth();
+        return ResponseEntity.ok(customerMapper.map(customer));
     }
 
     @PostMapping
     @Transactional
     public ResponseEntity<Long> create(@Valid @RequestBody CreatePersonRequest request) {
-        UserDto userDto = userCreationContext.create(request.username(), request.password(), UserType.CUSTOMER);
+        UserDTO userDto = userCreationContext.create(request.username(), request.password(), UserType.CUSTOMER);
 
         Customer customer = new Customer(userDto.user(), request.firstName(), request.lastName());
 

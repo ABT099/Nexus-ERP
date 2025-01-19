@@ -17,7 +17,7 @@ public class NotificationManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationManager.class);
 
-    private final Queue<NotificationHolderDto> notificationQueue = new LinkedList<>();
+    private final Queue<NotificationDTO> notificationQueue = new LinkedList<>();
     private final SimpMessagingTemplate messagingTemplate;
     private final NotificationRepository notificationRepository;
     private final UserService userService;
@@ -33,17 +33,17 @@ public class NotificationManager {
     @Transactional
     public void flush() {
         LOG.info("Starting flush operation.");
-        List<CreateNotificationDto> batch = new ArrayList<>(BATCH_SIZE);
+        List<CreateNotificationDTO> batch = new ArrayList<>(BATCH_SIZE);
 
         while (!notificationQueue.isEmpty()) {
-            NotificationHolderDto notification = notificationQueue.poll();
+            NotificationDTO notification = notificationQueue.poll();
             if (notification != null) {
                 LOG.debug("Adding notification to batch: {}", notification);
-                batch.add(new CreateNotificationDto(
-                        notification.getUserId(),
-                        notification.getTitle(),
-                        notification.getBody(),
-                        notification.getType()
+                batch.add(new CreateNotificationDTO(
+                        notification.userId(),
+                        notification.title(),
+                        notification.body(),
+                        notification.type()
                 ));
 
                 // Process the batch when full
@@ -64,19 +64,19 @@ public class NotificationManager {
         LOG.info("Flush operation completed.");
     }
 
-    public void addNotification(NotificationHolderDto notification) {
+    public void addNotification(NotificationDTO notification) {
         LOG.debug("Adding single notification to the queue: {}", notification);
         notificationQueue.offer(notification);
     }
 
-    public void addBatchNotification(List<NotificationHolderDto> notifications) {
+    public void addBatchNotification(List<NotificationDTO> notifications) {
         LOG.debug("Adding batch of notifications to the queue. Batch size: {}", notifications.size());
         notificationQueue.addAll(notifications);
     }
 
-    private void processBatch(List<CreateNotificationDto> createNotificationDtos) {
-        LOG.info("Processing a batch of {} notifications.", createNotificationDtos.size());
-        List<Notification> notifications = saveAll(createNotificationDtos);
+    private void processBatch(List<CreateNotificationDTO> createNotificationDTOS) {
+        LOG.info("Processing a batch of {} notifications.", createNotificationDTOS.size());
+        List<Notification> notifications = saveAll(createNotificationDTOS);
 
         for (Notification notification : notifications) {
             LOG.debug("Sending notification to user: {}", notification.getUser().getUsername());
@@ -88,19 +88,19 @@ public class NotificationManager {
         }
     }
 
-    private List<Notification> saveAll(List<CreateNotificationDto> createNotificationDtos) {
-        LOG.info("Saving a batch of {} notifications.", createNotificationDtos.size());
+    private List<Notification> saveAll(List<CreateNotificationDTO> createNotificationDTOS) {
+        LOG.info("Saving a batch of {} notifications.", createNotificationDTOS.size());
 
-        Set<Long> userIds = createNotificationDtos.stream()
-                .map(CreateNotificationDto::userId)
+        Set<Long> userIds = createNotificationDTOS.stream()
+                .map(CreateNotificationDTO::userId)
                 .collect(Collectors.toSet());
         LOG.debug("Fetching users with IDs: {}", userIds);
 
         Map<Long, User> usersMap = userService.findAllById(userIds).stream()
                 .collect(Collectors.toMap(User::getId, user -> user));
 
-        List<Notification> notifications = new ArrayList<>(createNotificationDtos.size());
-        for (CreateNotificationDto dto : createNotificationDtos) {
+        List<Notification> notifications = new ArrayList<>(createNotificationDTOS.size());
+        for (CreateNotificationDTO dto : createNotificationDTOS) {
             User user = usersMap.get(dto.userId());
             if (user == null) {
                 LOG.error("User not found for ID: {}", dto.userId());

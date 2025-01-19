@@ -20,7 +20,7 @@ public class UserCreationContext {
         this.authenticationService = authenticationService;
     }
 
-    public UserDto create(String username, String password, UserType userType) {
+    public UserDTO create(String username, String password, UserType userType) {
         if (userRepository.existsByUsername(username)) {
             LOGGER.error("Username {} already exists", username);
             throw new DuplicateResourceException("Username already exists");
@@ -35,6 +35,6 @@ public class UserCreationContext {
 
         String token  = authenticationService.getToken(new LoginRequest(username, password));
 
-        return new UserDto(user, token);
+        return new UserDTO(user, token);
     }
 }

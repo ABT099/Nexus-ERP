@@ -22,25 +22,31 @@ public class ProjectStepController {
     private final ProjectStepRepository projectStepRepository;
     private final ProjectFinder projectFinder;
     private final EmployeeFinder employeeFinder;
+    private final ProjectStepMapper projectStepMapper;
 
-    public ProjectStepController(ProjectStepRepository projectStepRepository, ProjectFinder projectFinder, EmployeeFinder employeeFinder) {
+    public ProjectStepController(ProjectStepRepository projectStepRepository, ProjectFinder projectFinder, EmployeeFinder employeeFinder, ProjectStepMapper projectStepMapper) {
         this.projectStepRepository = projectStepRepository;
         this.projectFinder = projectFinder;
         this.employeeFinder = employeeFinder;
+        this.projectStepMapper = projectStepMapper;
     }
 
     @GetMapping("by-project/{id}")
-    public ResponseEntity<List<ProjectStep>> getAllByProject(@Valid @Positive @PathVariable int id) {
+    public ResponseEntity<List<BasicStepResponse>> getAllByProject(@Valid @Positive @PathVariable int id) {
         projectFinder.doesProjectExist(id);
 
-        return ResponseEntity.ok(projectStepRepository.findAllByProjectId(id));
+        return ResponseEntity.ok(
+                projectStepRepository.findAllByProjectId(id).stream()
+                        .map(projectStepMapper::toBasicStepResponse)
+                        .toList()
+        );
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<ProjectStep> getById(@Valid @Positive @PathVariable int id) {
+    public ResponseEntity<StepResponse> getById(@Valid @Positive @PathVariable int id) {
         ProjectStep step = findById(id);
 
-        return ResponseEntity.ok(step);
+        return ResponseEntity.ok(projectStepMapper.toStepResponse(step));
     }
 
     @PostMapping

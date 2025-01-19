@@ -7,10 +7,6 @@ import org.springframework.stereotype.Component;
 public class MessageMapper implements Mapper<Message, MessageResponse> {
     @Override
     public MessageResponse map(Message source) {
-        if (source == null) {
-            throw new IllegalArgumentException("Source entity cannot be null");
-        }
-
         return new MessageResponse(
                 source.getId(),
                 source.getSender().getId(),

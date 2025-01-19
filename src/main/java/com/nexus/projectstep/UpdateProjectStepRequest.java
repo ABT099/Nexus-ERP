@@ -1,11 +1,17 @@
 package com.nexus.projectstep;
 
-import com.nexus.abstraction.UpdateWorkItemRequest;
+import com.nexus.validation.AfterNow;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import java.time.ZonedDateTime;
 
-public final class UpdateProjectStepRequest extends UpdateWorkItemRequest {
-    public UpdateProjectStepRequest(int id, String name, String description, ZonedDateTime StartDate, ZonedDateTime ExpectedEndDate, ZonedDateTime actualEndDate) {
-        super(id, name, description, StartDate, ExpectedEndDate, actualEndDate);
-    }
-}
+public record UpdateProjectStepRequest(
+        @NotNull @Positive Integer id,
+        @NotEmpty String name,
+        @NotEmpty String description,
+        @AfterNow ZonedDateTime startDate,
+        @AfterNow ZonedDateTime expectedEndDate,
+        ZonedDateTime actualEndDate
+) { }

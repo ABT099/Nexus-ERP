@@ -1,8 +1,6 @@
 package com.nexus.integration;
 
-import com.nexus.expense.CreateExpenseRequest;
 import com.nexus.expense.Expense;
-import com.nexus.expense.UpdateExpenseRequest;
 import com.nexus.expensecategory.ExpenseCategory;
 import com.nexus.expensecategory.ExpenseCategoryRepository;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,11 +1,9 @@
 package com.nexus.expense;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nexus.abstraction.AbstractFinancial;
 import com.nexus.expensecategory.ExpenseCategory;
 import com.nexus.project.Project;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 
 import java.time.ZonedDateTime;

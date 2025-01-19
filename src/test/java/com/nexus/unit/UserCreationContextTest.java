@@ -38,7 +38,7 @@ public class UserCreationContextTest {
         when(authenticationService.getToken(loginRequest)).thenReturn("token");
 
         // Act
-        UserDto createdUser = userCreationContext.create(username, password, userType);
+        UserDTO createdUser = userCreationContext.create(username, password, userType);
 
         // Assert
         assertNotNull(createdUser);

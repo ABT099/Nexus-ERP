@@ -20,21 +20,29 @@ public class FileController {
     private final FileRepository fileRepository;
     private final FileService fileService;
     private final ProjectFinder projectFinder;
+    private final FileMapper fileMapper;
 
-    public FileController(FileRepository fileRepository, FileService fileService, ProjectFinder projectFinder) {
+    public FileController(FileRepository fileRepository, FileService fileService, ProjectFinder projectFinder, FileMapper fileMapper) {
         this.fileRepository = fileRepository;
         this.fileService = fileService;
         this.projectFinder = projectFinder;
+        this.fileMapper = fileMapper;
     }
 
     @GetMapping("by-project/{id}")
-    public ResponseEntity<List<File>> getAllByProjectId(@Valid @Positive @PathVariable int id) {
-        return ResponseEntity.ok(fileRepository.findAllByProjectId(id));
+    public ResponseEntity<List<BasicFileResponse>> getAllByProjectId(@Valid @Positive @PathVariable int id) {
+        return ResponseEntity.ok(
+                fileRepository.findAllByProjectId(id).stream()
+                        .map(fileMapper::toBasicFileResponse)
+                        .toList()
+        );
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<File> getById(@Valid @Positive @PathVariable int id) {
-        return ResponseEntity.ok(fileService.findById(id));
+    public ResponseEntity<FileResponse> getById(@Valid @Positive @PathVariable int id) {
+        File file = fileService.findById(id);
+
+        return ResponseEntity.ok(fileMapper.toFileResponse(file));
     }
 
     @PostMapping
