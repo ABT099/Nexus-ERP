@@ -1,7 +1,8 @@
 package com.nexus.integration;
 
 import com.github.javafaker.Faker;
-import com.nexus.admin.Admin;
+import com.nexus.admin.AdminResponse;
+import com.nexus.admin.BasicAdminResponse;
 import com.nexus.unit.AdminCreationService;
 import com.nexus.auth.RegisterResponse;
 import com.nexus.common.person.UpdatePersonRequest;
@@ -16,6 +17,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.boot.test.context.SpringBootTest.*;
@@ -45,10 +48,10 @@ public class AdminIntegrationTest {
         assertNotNull(adminResponse);
         assertTrue(adminResponse.id() > 0);
 
-        Admin admin = getAdmin(adminResponse);
+        AdminResponse admin = getAdmin(adminResponse);
 
         assertNotNull(admin);
-        assertEquals(admin.getId(), adminResponse.id());
+        assertEquals(admin.id(), adminResponse.id());
     }
 
     @Test
@@ -58,10 +61,10 @@ public class AdminIntegrationTest {
         assertNotNull(adminResponse);
         assertTrue(adminResponse.id() > 0);
 
-        Admin admin = getAdmin(adminResponse);
+        AdminResponse admin = getAdmin(adminResponse);
 
         assertNotNull(admin);
-        assertEquals(admin.getId(), adminResponse.id());
+        assertEquals(admin.id(), adminResponse.id());
 
         String newFirstName = faker.name().firstName();
         String newLastName = faker.name().lastName();
@@ -76,11 +79,11 @@ public class AdminIntegrationTest {
                 .exchange()
                 .expectStatus().isOk();
 
-        Admin admin2 = getAdmin(adminResponse);
+        AdminResponse admin2 = getAdmin(adminResponse);
 
         assertNotNull(admin2);
-        assertNotEquals(admin.getFirstName(), admin2.getFirstName());
-        assertNotEquals(admin.getLastName(), admin2.getLastName());
+        assertNotEquals(admin.firstName(), admin2.firstName());
+        assertNotEquals(admin.lastName(), admin2.lastName());
     }
 
     @Test
@@ -90,9 +93,9 @@ public class AdminIntegrationTest {
         assertNotNull(adminResponse);
         assertTrue(adminResponse.id() > 0);
 
-        Admin admin = getAdmin(adminResponse);
+        AdminResponse admin = getAdmin(adminResponse);
         assertNotNull(admin);
-        assertEquals(admin.getId(), adminResponse.id());
+        assertEquals(admin.id(), adminResponse.id());
 
         String newFirstName = faker.name().firstName();
         String newLastName = faker.name().lastName();
@@ -107,11 +110,11 @@ public class AdminIntegrationTest {
                 .exchange()
                 .expectStatus().isOk();
 
-        Admin admin2 = getAdmin(adminResponse);
+        AdminResponse admin2 = getAdmin(adminResponse);
 
         assertNotNull(admin2);
-        assertNotEquals(admin.getFirstName(), admin2.getFirstName());
-        assertNotEquals(admin.getLastName(), admin2.getLastName());
+        assertNotEquals(admin.firstName(), admin2.firstName());
+        assertNotEquals(admin.lastName(), admin2.lastName());
     }
 
     @Test
@@ -129,10 +132,18 @@ public class AdminIntegrationTest {
                 .exchange()
                 .expectStatus().isOk();
 
-        Admin admin = getAdmin(adminResponse);
+        List<BasicAdminResponse> admins = webTestClient.get()
+                .uri("/admins?a=Archived")
+                .accept(APPLICATION_JSON)
+                .header("Authorization", "Bearer " + adminResponse.token())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<List<BasicAdminResponse>>() {})
+                .returnResult()
+                .getResponseBody();
 
-        assertNotNull(admin);
-        assertTrue(admin.isArchived());
+        assertNotNull(admins);
+        assertFalse(admins.isEmpty());
     }
 
     @Test
@@ -149,7 +160,7 @@ public class AdminIntegrationTest {
                 .expectStatus().isOk();
     }
 
-    private Admin getAdmin(RegisterResponse adminResponse) {
+    private AdminResponse getAdmin(RegisterResponse adminResponse) {
 
         return webTestClient.get()
                 .uri("/admins/{id}", adminResponse.id())
@@ -157,7 +168,7 @@ public class AdminIntegrationTest {
                 .header("Authorization", "Bearer " + adminResponse.token())
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(new ParameterizedTypeReference<Admin>() {})
+                .expectBody(new ParameterizedTypeReference<AdminResponse>() {})
                 .returnResult()
                 .getResponseBody();
     }

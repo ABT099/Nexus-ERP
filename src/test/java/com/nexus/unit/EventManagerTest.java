@@ -72,8 +72,8 @@ class EventManagerTest {
         ArgumentCaptor<NotificationDTO> notificationCaptor = ArgumentCaptor.forClass(NotificationDTO.class);
         verify(notificationManager, atLeastOnce()).addNotification(notificationCaptor.capture());
         NotificationDTO notification = notificationCaptor.getValue();
-        assertEquals("Event Reminder", notification.getTitle());
-        assertEquals(NotificationType.REMINDER, notification.getType());
+        assertEquals("Event Reminder", notification.title());
+        assertEquals(NotificationType.REMINDER, notification.type());
     }
 
     @Test

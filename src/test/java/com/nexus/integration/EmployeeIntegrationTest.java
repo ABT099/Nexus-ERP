@@ -1,6 +1,7 @@
 package com.nexus.integration;
 
 import com.github.javafaker.Faker;
+import com.nexus.employee.EmployeeResponse;
 import com.nexus.unit.AdminCreationService;
 import com.nexus.auth.LoginRequest;
 import com.nexus.auth.RegisterResponse;
@@ -48,10 +49,10 @@ public class EmployeeIntegrationTest {
         assertNotNull(response);
         assertTrue(response.id() > 0);
 
-        Employee employee = getEmployee(response);
+        EmployeeResponse employee = getEmployee(response);
 
         assertNotNull(employee);
-        assertEquals(employee.getId(), response.id());
+        assertEquals(employee.id(), response.id());
     }
 
     @Test
@@ -61,10 +62,10 @@ public class EmployeeIntegrationTest {
         assertNotNull(response);
         assertTrue(response.id() > 0);
 
-        Employee employee = getEmployee(response);
+        EmployeeResponse employee = getEmployee(response);
 
         assertNotNull(employee);
-        assertEquals(employee.getId(), response.id());
+        assertEquals(employee.id(), response.id());
 
         String newFirstName = faker.name().firstName();
         String newLastName = faker.name().lastName();
@@ -80,11 +81,11 @@ public class EmployeeIntegrationTest {
                 .exchange()
                 .expectStatus().isOk();
 
-        Employee updatedEmployee = getEmployee(response);
+        EmployeeResponse updatedEmployee = getEmployee(response);
 
         assertNotNull(updatedEmployee);
-        assertEquals(updatedEmployee.getFirstName(), newFirstName);
-        assertEquals(updatedEmployee.getLastName(), newLastName);
+        assertEquals(updatedEmployee.firstName(), newFirstName);
+        assertEquals(updatedEmployee.lastName(), newLastName);
     }
 
     @Test
@@ -94,9 +95,9 @@ public class EmployeeIntegrationTest {
         assertNotNull(response);
         assertTrue(response.id() > 0);
 
-        Employee employee = getEmployee(response);
+        EmployeeResponse employee = getEmployee(response);
         assertNotNull(employee);
-        assertEquals(employee.getId(), response.id());
+        assertEquals(employee.id(), response.id());
 
         String newFirstName = faker.name().firstName();
         String newLastName = faker.name().lastName();
@@ -112,11 +113,11 @@ public class EmployeeIntegrationTest {
                 .exchange()
                 .expectStatus().isOk();
 
-        Employee updatedEmployee = getEmployee(response);
+        EmployeeResponse updatedEmployee = getEmployee(response);
 
         assertNotNull(updatedEmployee);
-        assertEquals(updatedEmployee.getFirstName(), newFirstName);
-        assertEquals(updatedEmployee.getLastName(), newLastName);
+        assertEquals(updatedEmployee.firstName(), newFirstName);
+        assertEquals(updatedEmployee.lastName(), newLastName);
     }
 
     @Test
@@ -125,12 +126,12 @@ public class EmployeeIntegrationTest {
         assertNotNull(response);
         assertTrue(response.id() > 0);
 
-        Employee employee = getEmployee(response);
+        EmployeeResponse employee = getEmployee(response);
         assertNotNull(employee);
-        assertEquals(employee.getId(), response.id());
+        assertEquals(employee.id(), response.id());
 
         webClient.patch()
-                .uri("/employees/archive/{id}", employee.getId())
+                .uri("/employees/archive/{id}", employee.id())
                 .accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON)
                 .header("Authorization", "Bearer " + response.token())
@@ -144,12 +145,12 @@ public class EmployeeIntegrationTest {
         assertNotNull(response);
         assertTrue(response.id() > 0);
 
-        Employee employee = getEmployee(response);
+        EmployeeResponse employee = getEmployee(response);
         assertNotNull(employee);
-        assertEquals(employee.getId(), response.id());
+        assertEquals(employee.id(), response.id());
 
         webClient.delete()
-                .uri("/employees/{id}", employee.getId())
+                .uri("/employees/{id}", employee.id())
                 .accept(APPLICATION_JSON)
                 .header("Authorization", "Bearer " + response.token())
                 .exchange()
@@ -189,7 +190,7 @@ public class EmployeeIntegrationTest {
         return new RegisterResponse(id , customerToken);
     }
 
-    private Employee getEmployee(RegisterResponse response) {
+    private EmployeeResponse getEmployee(RegisterResponse response) {
 
         return webClient.get()
                 .uri("/employees/{id}", response.id())
@@ -197,7 +198,7 @@ public class EmployeeIntegrationTest {
                 .header("Authorization", "Bearer " + response.token())
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(new ParameterizedTypeReference<Employee>() {})
+                .expectBody(new ParameterizedTypeReference<EmployeeResponse>() {})
                 .returnResult()
                 .getResponseBody();
     }

@@ -2,6 +2,7 @@ package com.nexus.integration;
 
 import com.nexus.expensecategory.ExpenseCategory;
 import com.nexus.expensecategory.ExpenseCategoryRequest;
+import com.nexus.expensecategory.ExpenseCategoryResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -20,7 +21,7 @@ public class ExpenseCategoryIntegrationTest extends AuthenticatedIntegrationTest
     void canCreateExpenseCategory() {
         int categoryId = createExpenseCategory();
 
-        ExpenseCategory expenseCategory = getExpenseCategory(categoryId);
+        ExpenseCategoryResponse expenseCategory = getExpenseCategory(categoryId);
 
         assertNotNull(expenseCategory);
     }
@@ -29,7 +30,7 @@ public class ExpenseCategoryIntegrationTest extends AuthenticatedIntegrationTest
     void canUpdateExpenseCategory() {
         int categoryId = createExpenseCategory();
 
-        ExpenseCategory oldCategory = getExpenseCategory(categoryId);
+        ExpenseCategoryResponse oldCategory = getExpenseCategory(categoryId);
 
         ExpenseCategoryRequest request = new ExpenseCategoryRequest("name12", "description12");
 
@@ -42,12 +43,12 @@ public class ExpenseCategoryIntegrationTest extends AuthenticatedIntegrationTest
                 .exchange()
                 .expectStatus().isOk();
 
-        ExpenseCategory newCategory = getExpenseCategory(categoryId);
+        ExpenseCategoryResponse newCategory = getExpenseCategory(categoryId);
 
         assertNotNull(newCategory);
 
-        assertNotEquals(oldCategory.getName(), newCategory.getName());
-        assertNotEquals(oldCategory.getDescription(), newCategory.getDescription());
+        assertNotEquals(oldCategory.name(), newCategory.name());
+        assertNotEquals(oldCategory.description(), newCategory.description());
     }
 
     @Test
@@ -86,13 +87,13 @@ public class ExpenseCategoryIntegrationTest extends AuthenticatedIntegrationTest
         return categoryId;
     }
 
-    private ExpenseCategory getExpenseCategory(int categoryId) {
+    private ExpenseCategoryResponse getExpenseCategory(int categoryId) {
         return webTestClient.get()
                 .uri("expense-categories/{id}", categoryId)
                 .header("Authorization", token)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(ExpenseCategory.class)
+                .expectBody(ExpenseCategoryResponse.class)
                 .returnResult().getResponseBody();
     }
 }

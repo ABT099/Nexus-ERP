@@ -2,6 +2,7 @@ package com.nexus.integration;
 
 import com.nexus.notification.Notification;
 import com.nexus.notification.NotificationRepository;
+import com.nexus.notification.NotificationResponse;
 import com.nexus.notification.NotificationType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +27,13 @@ public class NotificationIntegrationTest extends AuthenticatedIntegrationTest {
 
         notificationRepository.save(notification);
 
-        List<Notification> notificationsResult = webTestClient.get().uri("/notifications/user/{id}", user.getId())
+        List<NotificationResponse> notificationsResult = webTestClient.get().uri("/notifications/user/{id}", user.getId())
                 .header("Authorization", token)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Notification.class)
+                .expectBodyList(NotificationResponse.class)
                 .value(notifications -> assertTrue(notifications.stream()
-                        .anyMatch(n -> n.getTitle().equals("title") && n.getBody().equals("body"))))
+                        .anyMatch(n -> n.title().equals("title") && n.body().equals("body"))))
                 .returnResult().getResponseBody();
 
         assertNotNull(notificationsResult);
@@ -44,15 +45,15 @@ public class NotificationIntegrationTest extends AuthenticatedIntegrationTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", token)
-                .body(Mono.just(notificationsResult.stream().map(AbstractPersistable::getId).toList()), List.class).exchange().expectStatus().isOk();
+                .body(Mono.just(notificationsResult.stream().map(NotificationResponse::id).toList()), List.class).exchange().expectStatus().isOk();
 
-        List<Notification> read = webTestClient.get().uri("/notifications/user/{id}", user.getId())
+        List<NotificationResponse> read = webTestClient.get().uri("/notifications/user/{id}", user.getId())
                 .header("Authorization", token)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Notification.class)
+                .expectBodyList(NotificationResponse.class)
                 .value(notifications -> assertTrue(notifications.stream()
-                        .anyMatch(n -> n.getTitle().equals("title") && n.getBody().equals("body") && n.isRead())))
+                        .anyMatch(n -> n.title().equals("title") && n.body().equals("body") && n.isRead())))
                 .returnResult().getResponseBody();
 
         assertNotNull(read);

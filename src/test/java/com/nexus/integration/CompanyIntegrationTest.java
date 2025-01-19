@@ -1,10 +1,10 @@
 package com.nexus.integration;
 
 import com.github.javafaker.Faker;
+import com.nexus.company.CompanyResponse;
 import com.nexus.unit.AdminCreationService;
 import com.nexus.auth.LoginRequest;
 import com.nexus.auth.RegisterResponse;
-import com.nexus.company.Company;
 import com.nexus.company.CreateCompanyRequest;
 import com.nexus.company.UpdateCompanyRequest;
 import com.nexus.config.TestContainerConfig;
@@ -47,10 +47,10 @@ public class CompanyIntegrationTest {
         assertNotNull(response);
         assertTrue(response.id() > 0);
 
-        Company company = getCompany(response);
+        CompanyResponse company = getCompany(response);
 
         assertNotNull(company);
-        assertEquals(company.getId(), response.id());
+        assertEquals(company.id(), response.id());
     }
 
     @Test
@@ -60,14 +60,14 @@ public class CompanyIntegrationTest {
         assertNotNull(response);
         assertTrue(response.id() > 0);
 
-        Company company = getCompany(response);
+        CompanyResponse company = getCompany(response);
 
         assertNotNull(company);
-        assertEquals(company.getId(), response.id());
+        assertEquals(company.id(), response.id());
 
         String newCompanyName = faker.company().name();
 
-        UpdateCompanyRequest request = new UpdateCompanyRequest(company.getId(), newCompanyName);
+        UpdateCompanyRequest request = new UpdateCompanyRequest(company.id(), newCompanyName);
 
         webClient.put()
                 .uri("/companies")
@@ -78,10 +78,10 @@ public class CompanyIntegrationTest {
                 .exchange()
                 .expectStatus().isOk();
 
-        Company updatedCompany = getCompany(response);
+        CompanyResponse updatedCompany = getCompany(response);
 
         assertNotNull(updatedCompany);
-        assertEquals(updatedCompany.getCompanyName(), newCompanyName);
+        assertEquals(updatedCompany.companyName(), newCompanyName);
     }
 
     @Test
@@ -91,9 +91,9 @@ public class CompanyIntegrationTest {
         assertNotNull(response);
         assertTrue(response.id() > 0);
 
-        Company company = getCompany(response);
+        CompanyResponse company = getCompany(response);
         assertNotNull(company);
-        assertEquals(company.getId(), response.id());
+        assertEquals(company.id(), response.id());
 
         String newCompanyName = faker.company().name();
 
@@ -106,10 +106,10 @@ public class CompanyIntegrationTest {
                 .exchange()
                 .expectStatus().isOk();
 
-        Company updatedCompany = getCompany(response);
+        CompanyResponse updatedCompany = getCompany(response);
 
         assertNotNull(updatedCompany);
-        assertEquals(updatedCompany.getCompanyName(), newCompanyName);
+        assertEquals(updatedCompany.companyName(), newCompanyName);
     }
 
     @Test
@@ -118,12 +118,12 @@ public class CompanyIntegrationTest {
         assertNotNull(response);
         assertTrue(response.id() > 0);
 
-        Company company = getCompany(response);
+        CompanyResponse company = getCompany(response);
         assertNotNull(company);
-        assertEquals(company.getId(), response.id());
+        assertEquals(company.id(), response.id());
 
         webClient.patch()
-                .uri("/companies/archive/{id}", company.getId())
+                .uri("/companies/archive/{id}", company.id())
                 .accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON)
                 .header("Authorization", "Bearer " + response.token())
@@ -137,12 +137,12 @@ public class CompanyIntegrationTest {
         assertNotNull(response);
         assertTrue(response.id() > 0);
 
-        Company company = getCompany(response);
+        CompanyResponse company = getCompany(response);
         assertNotNull(company);
-        assertEquals(company.getId(), response.id());
+        assertEquals(company.id(), response.id());
 
         webClient.delete()
-                .uri("/companies/{id}", company.getId())
+                .uri("/companies/{id}", company.id())
                 .accept(APPLICATION_JSON)
                 .header("Authorization", "Bearer " + response.token())
                 .exchange()
@@ -181,7 +181,7 @@ public class CompanyIntegrationTest {
          return new RegisterResponse(id , customerToken);
     }
 
-    private Company getCompany(RegisterResponse response) {
+    private CompanyResponse getCompany(RegisterResponse response) {
 
         return webClient.get()
                 .uri("/companies/{id}", response.id())
@@ -189,7 +189,7 @@ public class CompanyIntegrationTest {
                 .header("Authorization", "Bearer " + response.token())
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(new ParameterizedTypeReference<Company>() {})
+                .expectBody(new ParameterizedTypeReference<CompanyResponse>() {})
                 .returnResult()
                 .getResponseBody();
     }

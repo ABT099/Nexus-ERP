@@ -1,6 +1,9 @@
 package com.nexus.integration;
 
+import com.nexus.expense.CreateExpenseRequest;
 import com.nexus.expense.Expense;
+import com.nexus.expense.ExpenseResponse;
+import com.nexus.expense.UpdateExpenseRequest;
 import com.nexus.expensecategory.ExpenseCategory;
 import com.nexus.expensecategory.ExpenseCategoryRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,9 +40,9 @@ public class ExpenseIntegrationTest extends AuthenticatedIntegrationTest {
         int categoryId = getCategoryId();
         int expenseId = createExpense(categoryId);
 
-        Expense expense = getExpense(expenseId);
+        ExpenseResponse expense = getExpense(expenseId);
 
-        UpdateExpenseRequest request = new UpdateExpenseRequest(111, ZonedDateTime.now(), null);
+        UpdateExpenseRequest request = new UpdateExpenseRequest(111, ZonedDateTime.now(), getCategoryId());
 
         webTestClient.put()
                 .uri("/expenses/" + expenseId)
@@ -50,12 +53,11 @@ public class ExpenseIntegrationTest extends AuthenticatedIntegrationTest {
                 .exchange()
                 .expectStatus().isOk();
 
-        Expense updatedExpense = getExpense(expenseId);
+        ExpenseResponse updatedExpense = getExpense(expenseId);
 
         assertNotNull(updatedExpense);
 
-        assertNotEquals(expense.getAmount(), updatedExpense.getAmount());
-        assertEquals(expense.getExpenseCategory().getId(), updatedExpense.getExpenseCategory().getId());
+        assertNotEquals(expense.amount(), updatedExpense.amount());
     }
 
     @Test
@@ -63,7 +65,7 @@ public class ExpenseIntegrationTest extends AuthenticatedIntegrationTest {
         int categoryId = getCategoryId();
         int expenseId = createExpense(categoryId);
 
-        Expense expense = getExpense(expenseId);
+        ExpenseResponse expense = getExpense(expenseId);
 
         int newCategoryId = getCategoryId();
 
@@ -78,11 +80,10 @@ public class ExpenseIntegrationTest extends AuthenticatedIntegrationTest {
                 .exchange()
                 .expectStatus().isOk();
 
-        Expense updatedExpense = getExpense(expenseId);
+        ExpenseResponse updatedExpense = getExpense(expenseId);
 
         assertNotNull(updatedExpense);
-        assertNotEquals(expense.getAmount(), updatedExpense.getAmount());
-        assertNotEquals(expense.getExpenseCategory().getId(), updatedExpense.getExpenseCategory().getId());
+        assertNotEquals(expense.amount(), updatedExpense.amount());
     }
 
     @Test
@@ -129,13 +130,13 @@ public class ExpenseIntegrationTest extends AuthenticatedIntegrationTest {
         return expenseId;
     }
 
-    private Expense getExpense(Integer expenseId) {
-        Expense expense = webTestClient.get()
+    private ExpenseResponse getExpense(Integer expenseId) {
+        ExpenseResponse expense = webTestClient.get()
                 .uri("/expenses/{id}", expenseId)
                 .header("Authorization", token)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(Expense.class)
+                .expectBody(ExpenseResponse.class)
                 .returnResult().getResponseBody();
 
         assertNotNull(expense);

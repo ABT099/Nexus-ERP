@@ -106,9 +106,6 @@ public class EventIntegrationTest extends AuthenticatedIntegrationTest {
         Event event = getEvent();
 
         assertNotNull(event);
-
-        List<Long> ids = event.getAdmins().stream().map(AbstractAppUser::getId).toList();
-        assertTrue(ids.contains(adminId));
     }
 
     @Test

@@ -1,13 +1,13 @@
 package com.nexus.integration;
 
 import com.github.javafaker.Faker;
+import com.nexus.customer.CustomerResponse;
 import com.nexus.unit.AdminCreationService;
 import com.nexus.auth.LoginRequest;
 import com.nexus.auth.RegisterResponse;
 import com.nexus.common.person.CreatePersonRequest;
 import com.nexus.common.person.UpdatePersonRequest;
 import com.nexus.config.TestContainerConfig;
-import com.nexus.customer.Customer;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
@@ -46,10 +46,10 @@ public class CustomerIntegrationTest {
         assertNotNull(response);
         assertTrue(response.id() > 0);
 
-        Customer customer = getCustomer(response);
+        CustomerResponse customer = getCustomer(response);
 
         assertNotNull(customer);
-        assertEquals(customer.getId(), response.id());
+        assertEquals(customer.id(), response.id());
     }
 
     @Test
@@ -59,10 +59,10 @@ public class CustomerIntegrationTest {
         assertNotNull(response);
         assertTrue(response.id() > 0);
 
-        Customer customer = getCustomer(response);
+        CustomerResponse customer = getCustomer(response);
 
         assertNotNull(customer);
-        assertEquals(customer.getId(), response.id());
+        assertEquals(customer.id(), response.id());
 
         String newFirstName = faker.name().firstName();
         String newLastName = faker.name().lastName();
@@ -78,11 +78,11 @@ public class CustomerIntegrationTest {
                 .exchange()
                 .expectStatus().isOk();
 
-        Customer updatedCustomer = getCustomer(response);
+        CustomerResponse updatedCustomer = getCustomer(response);
 
         assertNotNull(updatedCustomer);
-        assertEquals(updatedCustomer.getFirstName(), newFirstName);
-        assertEquals(updatedCustomer.getLastName(), newLastName);
+        assertEquals(updatedCustomer.firstName(), newFirstName);
+        assertEquals(updatedCustomer.lastName(), newLastName);
     }
 
     @Test
@@ -92,9 +92,9 @@ public class CustomerIntegrationTest {
         assertNotNull(response);
         assertTrue(response.id() > 0);
 
-        Customer customer = getCustomer(response);
+        CustomerResponse customer = getCustomer(response);
         assertNotNull(customer);
-        assertEquals(customer.getId(), response.id());
+        assertEquals(customer.id(), response.id());
 
         String newFirstName = faker.name().firstName();
         String newLastName = faker.name().lastName();
@@ -110,11 +110,11 @@ public class CustomerIntegrationTest {
                 .exchange()
                 .expectStatus().isOk();
 
-        Customer updatedCustomer = getCustomer(response);
+        CustomerResponse updatedCustomer = getCustomer(response);
 
         assertNotNull(updatedCustomer);
-        assertEquals(updatedCustomer.getFirstName(), newFirstName);
-        assertEquals(updatedCustomer.getLastName(), newLastName);
+        assertEquals(updatedCustomer.firstName(), newFirstName);
+        assertEquals(updatedCustomer.lastName(), newLastName);
     }
 
     @Test
@@ -123,12 +123,12 @@ public class CustomerIntegrationTest {
         assertNotNull(response);
         assertTrue(response.id() > 0);
 
-        Customer customer = getCustomer(response);
+        CustomerResponse customer = getCustomer(response);
         assertNotNull(customer);
-        assertEquals(customer.getId(), response.id());
+        assertEquals(customer.id(), response.id());
 
         webClient.patch()
-                .uri("/customers/archive/{id}", customer.getId())
+                .uri("/customers/archive/{id}", customer.id())
                 .accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON)
                 .header("Authorization", "Bearer " + response.token())
@@ -142,12 +142,12 @@ public class CustomerIntegrationTest {
         assertNotNull(response);
         assertTrue(response.id() > 0);
 
-        Customer customer = getCustomer(response);
+        CustomerResponse customer = getCustomer(response);
         assertNotNull(customer);
-        assertEquals(customer.getId(), response.id());
+        assertEquals(customer.id(), response.id());
 
         webClient.delete()
-                .uri("/customers/{id}", customer.getId())
+                .uri("/customers/{id}", customer.id())
                 .accept(APPLICATION_JSON)
                 .header("Authorization", "Bearer " + response.token())
                 .exchange()
@@ -187,7 +187,7 @@ public class CustomerIntegrationTest {
         return new RegisterResponse(id , customerToken);
     }
 
-    private Customer getCustomer(RegisterResponse response) {
+    private CustomerResponse getCustomer(RegisterResponse response) {
 
         return webClient.get()
                 .uri("/customers/{id}", response.id())
@@ -195,7 +195,7 @@ public class CustomerIntegrationTest {
                 .header("Authorization", "Bearer " + response.token())
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(new ParameterizedTypeReference<Customer>() {})
+                .expectBody(new ParameterizedTypeReference<CustomerResponse>() {})
                 .returnResult()
                 .getResponseBody();
     }
