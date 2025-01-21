@@ -36,7 +36,8 @@ public class URLS {
     public static void configure() {
         for (String url : AllowedUrls) {
             if (url.endsWith("**")) {
-                URLSWithRelativePaths.add(url);
+                String path = url.substring(0, url.length() - 2);
+                URLSWithRelativePaths.add(path);
             } else {
                 URLSWithoutRelativePaths.add(url);
             }
