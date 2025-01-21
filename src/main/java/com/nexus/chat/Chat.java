@@ -1,20 +1,27 @@
 package com.nexus.chat;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
-import org.springframework.data.jpa.domain.AbstractPersistable;
+import com.nexus.abstraction.TenantAware;
+import jakarta.persistence.*;
 
 import java.util.List;
 
 @Entity
-public class Chat extends AbstractPersistable<Long> {
+public class Chat extends TenantAware {
+
+    @Id
+    @GeneratedValue
+    private Long id;
+
     @OneToMany(
             mappedBy = "chat",
             orphanRemoval = true,
             fetch = FetchType.LAZY
     )
     private List<Message> messages;
+
+    public Long getId() {
+        return id;
+    }
 
     public List<Message> getMessages() {
         return messages;

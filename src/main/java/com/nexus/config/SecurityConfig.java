@@ -2,6 +2,7 @@ package com.nexus.config;
 
 import com.nexus.auth.jwt.JwtFilter;
 import com.nexus.auth.principal.PrincipalService;
+import com.nexus.common.URLS;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,6 +18,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Configuration
 @EnableWebSecurity
@@ -34,23 +38,20 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(request -> request
-                        .requestMatchers(
-                                "auth/login",
-                                "/v2/api-docs",
-                                "/v3/api-docs",
-                                "/v3/api-docs/**",
-                                "/swagger-resources",
-                                "/swagger-resources/**",
-                                "/configuration/ui",
-                                "/configuration/security",
-                                "/swagger-ui/**",
-                                "/webjars/**",
-                                "/swagger-ui.html"
-                        ).permitAll()
-                        .requestMatchers(HttpMethod.POST, "admins").permitAll()
-                        .anyRequest().authenticated()
-                )
+                .authorizeHttpRequests(request -> {
+                    // Permit all URLs from AllowedUrls
+                    request.requestMatchers(URLS.AllowedUrls).permitAll();
+
+                    // Permit URLs from AllowedMethodUrls with specific HTTP methods
+                    URLS.AllowedMethodUrls.forEach((method, urls) -> {
+                        for (String url : urls) {
+                            request.requestMatchers(method, url).permitAll();
+                        }
+                    });
+
+                    // Any other request must be authenticated
+                    request.anyRequest().authenticated();
+                })
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

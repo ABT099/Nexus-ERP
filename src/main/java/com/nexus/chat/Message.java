@@ -1,14 +1,18 @@
 package com.nexus.chat;
 
+import com.nexus.abstraction.TenantAware;
 import com.nexus.user.User;
 import jakarta.persistence.*;
-import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Entity
-public class Message extends AbstractPersistable<Long> {
+public class Message extends TenantAware {
+    @Id
+    @GeneratedValue
+    private Long id;
+
     @ManyToOne(
             optional = false,
             fetch = FetchType.EAGER
@@ -41,6 +45,10 @@ public class Message extends AbstractPersistable<Long> {
     }
 
     public Message() {}
+
+    public Long getId() {
+        return id;
+    }
 
     public User getSender() {
         return sender;

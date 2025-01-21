@@ -1,5 +1,6 @@
 package com.nexus.user;
 
+import com.nexus.abstraction.TenantAware;
 import com.nexus.notification.Notification;
 import com.nexus.payment.Payment;
 import com.nexus.project.Project;
@@ -9,7 +10,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "_user")
-public class User {
+public class User extends TenantAware {
 
     @Id
     @GeneratedValue
@@ -58,15 +59,11 @@ public class User {
     )
     private List<Project> projects;
 
-    @PrePersist
-    private void prePersist() {
-        archived = false;
-    }
-
     public User(String username, String password, UserType userType) {
         this.username = username;
         this.password = password;
         this.userType = userType;
+        archived = false;
     }
 
     public User() {}

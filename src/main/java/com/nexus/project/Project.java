@@ -1,6 +1,7 @@
 package com.nexus.project;
 
-import com.nexus.abstraction.AbstractWorkItem;
+import com.nexus.abstraction.AuditableTenantAware;
+import com.nexus.common.Status;
 import com.nexus.employee.Employee;
 import com.nexus.expense.Expense;
 import com.nexus.file.File;
@@ -17,7 +18,19 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-public class Project extends AbstractWorkItem {
+public class Project extends AuditableTenantAware<User, Integer> {
+
+    @Column(nullable = false, columnDefinition = "text")
+    private String name;
+    @Column(nullable = false, columnDefinition = "text")
+    private String description;
+    @Column(nullable = false)
+    private ZonedDateTime startDate;
+    @Column(nullable = false)
+    private ZonedDateTime expectedEndDate;
+    private ZonedDateTime actualEndDate;
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.PENDING;
     @ManyToOne(
             fetch = FetchType.LAZY,
             optional = false
@@ -66,12 +79,63 @@ public class Project extends AbstractWorkItem {
     private double price;
 
     public Project(User owner, double price, String name, String description, ZonedDateTime startDate, ZonedDateTime expectedEndDate) {
-        super(name, description, startDate, expectedEndDate);
+        this.name = name;
+        this.description = description;
+        this.startDate = startDate;
+        this.expectedEndDate = expectedEndDate;
         this.owner = owner;
         this.price = price;
     }
 
     public Project() {}
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public ZonedDateTime getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(ZonedDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public ZonedDateTime getExpectedEndDate() {
+        return expectedEndDate;
+    }
+
+    public void setExpectedEndDate(ZonedDateTime expectedEndDate) {
+        this.expectedEndDate = expectedEndDate;
+    }
+
+    public ZonedDateTime getActualEndDate() {
+        return actualEndDate;
+    }
+
+    public void setActualEndDate(ZonedDateTime actualEndDate) {
+        this.actualEndDate = actualEndDate;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 
     public User getOwner() {
         return owner;
