@@ -4,6 +4,8 @@ import com.nexus.project.Project;
 import com.nexus.project.ProjectRepository;
 import com.nexus.projectstep.ProjectStep;
 import com.nexus.projectstep.ProjectStepRepository;
+import com.nexus.tenant.Tenant;
+import com.nexus.tenant.TenantRepository;
 import com.nexus.user.User;
 import com.nexus.user.UserRepository;
 import com.nexus.user.UserType;
@@ -32,12 +34,18 @@ public class ProjectStepRepositoryTest {
     @Autowired
     private ProjectStepRepository projectStepRepository;
 
+    @Autowired
+    private TenantRepository tenantRepository;
+
     @Test
     void shouldFindAllProjectsByOwnerId() {
+        Tenant tenant = tenantRepository.save(new Tenant());
+
         User user = new User(
                 "username",
                 "password",
-                UserType.SUPER_USER
+                UserType.SUPER_USER,
+                tenant.getId()
         );
 
         userRepository.save(user);
@@ -48,7 +56,8 @@ public class ProjectStepRepositoryTest {
                 "name",
                 "description",
                 ZonedDateTime.now(),
-                ZonedDateTime.now().plusDays(1)
+                ZonedDateTime.now().plusDays(1),
+                tenant.getId()
         );
 
         projectRepository.save(project);

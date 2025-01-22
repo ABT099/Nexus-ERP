@@ -1,6 +1,8 @@
 package com.nexus.integration;
 
 import com.nexus.chat.*;
+import com.nexus.tenant.Tenant;
+import com.nexus.tenant.TenantRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +19,17 @@ public class MessageIntegrationTest extends AuthenticatedIntegrationTest {
     @Autowired
     private ChatRepository chatRepository;
 
+    @Autowired
+    private TenantRepository tenantRepository;
+
     @BeforeEach
     public void setup() {
         createUser();
 
-        Chat chat = new Chat();
+        Tenant tenant = new Tenant();
+        tenantRepository.save(tenant);
+
+        Chat chat = new Chat(tenant.getId());
         chatRepository.save(chat);
 
         Message message = new Message(

@@ -2,6 +2,8 @@ package com.nexus.repository;
 
 import com.nexus.employee.Employee;
 import com.nexus.employee.EmployeeRepository;
+import com.nexus.tenant.Tenant;
+import com.nexus.tenant.TenantRepository;
 import com.nexus.user.User;
 import com.nexus.user.UserRepository;
 import com.nexus.user.UserType;
@@ -30,15 +32,22 @@ class EmployeeRepositoryTest {
     private UserRepository userRepository;
 
     @Autowired
+    private TenantRepository tenantRepository;
+
+    @Autowired
     private TestEntityManager entityManager;
 
     private User user;
+    private String tenantId;
     private Employee employee;
 
     @BeforeEach
     void setUp() {
         // Create and save a primary user and employee
-        user = new User("employee", "password", UserType.EMPLOYEE);
+        Tenant tenant = tenantRepository.save(new Tenant());
+        tenantId = tenant.getId();
+
+        user = new User("employee", "password", UserType.EMPLOYEE,tenantId);
         userRepository.save(user);
 
         employee = new Employee(user, "Abdo", "Towait",  "code");
@@ -47,7 +56,7 @@ class EmployeeRepositoryTest {
 
     private void prepareEmployeeList() {
         // Create and save a secondary user and employee
-        User secondaryUser = new User("employee2", "password", UserType.EMPLOYEE);
+        User secondaryUser = new User("employee2", "password", UserType.EMPLOYEE, tenantId);
         userRepository.save(secondaryUser);
 
         Employee secondaryEmployee = new Employee(secondaryUser, "FirstName2", "LastName2",  "code2");

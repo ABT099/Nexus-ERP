@@ -5,6 +5,8 @@ import com.nexus.chat.Chat;
 import com.nexus.chat.ChatRepository;
 import com.nexus.chat.Message;
 import com.nexus.chat.MessageRepository;
+import com.nexus.tenant.Tenant;
+import com.nexus.tenant.TenantRepository;
 import com.nexus.user.User;
 import com.nexus.user.UserRepository;
 import com.nexus.user.UserType;
@@ -32,16 +34,21 @@ public class MessageRepositoryTest {
     private ChatRepository chatRepository;
 
     @Autowired
+    private TenantRepository tenantRepository;
+
+    @Autowired
     private UserRepository userRepository;
 
     @Test
     void findByChatIdOrderByCreatedAtAsc() {
         // Arrange
-        User user = new User("username", "password", UserType.SUPER_USER);
+        Tenant tenant = tenantRepository.save(new Tenant());
+
+        User user = new User("username", "password", UserType.SUPER_USER, tenant.getId());
 
         userRepository.save(user);
 
-        Chat chat = chatRepository.save(new Chat());
+        Chat chat = chatRepository.save(new Chat(tenant.getId()));
 
         chatRepository.save(chat);
 

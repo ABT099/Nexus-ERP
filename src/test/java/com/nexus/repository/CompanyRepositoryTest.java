@@ -2,6 +2,8 @@ package com.nexus.repository;
 
 import com.nexus.company.Company;
 import com.nexus.company.CompanyRepository;
+import com.nexus.tenant.Tenant;
+import com.nexus.tenant.TenantRepository;
 import com.nexus.user.User;
 import com.nexus.user.UserRepository;
 import com.nexus.user.UserType;
@@ -28,17 +30,23 @@ public class CompanyRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private TenantRepository tenantRepository;
 
     @Autowired
     private TestEntityManager entityManager;
 
     private Company company;
+    private String tenantId;
     private User user;
 
     @BeforeEach
     void setUp() {
         // Create and save a new user and company
-        user = new User("customer", "password", UserType.CUSTOMER);
+        Tenant tenant = tenantRepository.save(new Tenant());
+        tenantId = tenant.getId();
+
+        user = new User("customer", "password", UserType.CUSTOMER, tenantId);
         userRepository.save(user);
 
         company = new Company(user, "CompanyName");
@@ -47,7 +55,7 @@ public class CompanyRepositoryTest {
 
     private void prepareCompanyList() {
         // Create additional user and company instances
-        User secondaryUser = new User("customer12", "password", UserType.CUSTOMER);
+        User secondaryUser = new User("customer12", "password", UserType.CUSTOMER, tenantId);
         userRepository.save(secondaryUser);
 
         Company secondaryCompany = new Company(secondaryUser, "CompanyName1");

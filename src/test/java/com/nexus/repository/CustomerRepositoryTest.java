@@ -2,6 +2,8 @@ package com.nexus.repository;
 
 import com.nexus.customer.Customer;
 import com.nexus.customer.CustomerRepository;
+import com.nexus.tenant.Tenant;
+import com.nexus.tenant.TenantRepository;
 import com.nexus.user.User;
 import com.nexus.user.UserRepository;
 import com.nexus.user.UserType;
@@ -30,15 +32,24 @@ class CustomerRepositoryTest {
     private UserRepository userRepository;
 
     @Autowired
+    private TenantRepository tenantRepository;
+
+    @Autowired
     private TestEntityManager entityManager;
 
     private User user;
+    private String tenantId;
+
     private Customer customer;
 
     @BeforeEach
     void setUp() {
         // Create and save a new user and customer
-        user = new User("customer", "password", UserType.CUSTOMER);
+        Tenant tenant = new Tenant();
+        tenantRepository.save(tenant);
+        tenantId = tenant.getId();
+
+        user = new User("customer", "password", UserType.CUSTOMER, tenantId);
         userRepository.save(user);
 
         customer = new Customer(user, "Abdo", "Towait");
@@ -47,7 +58,7 @@ class CustomerRepositoryTest {
 
     private void prepareCustomerList() {
         // Create and save a secondary user and customer
-        User secondaryUser = new User("customer2", "password", UserType.CUSTOMER);
+        User secondaryUser = new User("customer2", "password", UserType.CUSTOMER, tenantId);
         userRepository.save(secondaryUser);
 
         Customer secondaryCustomer = new Customer(secondaryUser, "FirstName2", "LastName2");

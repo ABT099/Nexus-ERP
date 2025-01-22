@@ -59,11 +59,12 @@ public class User extends TenantAware {
     )
     private List<Project> projects;
 
-    public User(String username, String password, UserType userType) {
+    public User(String username, String password, UserType userType, String tenantId) {
         this.username = username;
         this.password = password;
         this.userType = userType;
         archived = false;
+        setTenantId(tenantId);
     }
 
     public User() {}

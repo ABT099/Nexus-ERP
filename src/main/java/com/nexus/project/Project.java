@@ -78,13 +78,14 @@ public class Project extends AuditableTenantAware<User, Integer> {
     @Positive
     private double price;
 
-    public Project(User owner, double price, String name, String description, ZonedDateTime startDate, ZonedDateTime expectedEndDate) {
+    public Project(User owner, double price, String name, String description, ZonedDateTime startDate, ZonedDateTime expectedEndDate, String tenantId) {
         this.name = name;
         this.description = description;
         this.startDate = startDate;
         this.expectedEndDate = expectedEndDate;
         this.owner = owner;
         this.price = price;
+        setTenantId(tenantId);
     }
 
     public Project() {}

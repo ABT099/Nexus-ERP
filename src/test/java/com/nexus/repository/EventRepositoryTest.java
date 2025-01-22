@@ -5,6 +5,8 @@ import com.nexus.admin.AdminRepository;
 import com.nexus.event.Event;
 import com.nexus.event.EventRepository;
 import com.nexus.event.EventType;
+import com.nexus.tenant.Tenant;
+import com.nexus.tenant.TenantRepository;
 import com.nexus.user.User;
 import com.nexus.user.UserRepository;
 import com.nexus.user.UserType;
@@ -33,6 +35,9 @@ public class EventRepositoryTest {
     private AdminRepository adminRepository;
 
     @Autowired
+    private TenantRepository tenantRepository;
+
+    @Autowired
     private UserRepository userRepository;
     @Autowired
     private TestEntityManager entityManager;
@@ -40,7 +45,9 @@ public class EventRepositoryTest {
     @Test
     void findAllByAdminId() {
         // Arrange
-        User user = new User("user", "pass", UserType.ADMIN);
+        Tenant tenant = tenantRepository.save(new Tenant());
+
+        User user = new User("user", "pass", UserType.ADMIN, tenant.getId());
         userRepository.save(user);
 
         Admin admin = new Admin(user, "first", "last");

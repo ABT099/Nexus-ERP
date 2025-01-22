@@ -2,6 +2,8 @@ package com.nexus.repository;
 
 import com.nexus.admin.Admin;
 import com.nexus.admin.AdminRepository;
+import com.nexus.tenant.Tenant;
+import com.nexus.tenant.TenantRepository;
 import com.nexus.user.User;
 import com.nexus.user.UserRepository;
 import com.nexus.user.UserType;
@@ -30,15 +32,23 @@ class AdminRepositoryTest {
     private UserRepository userRepository;
 
     @Autowired
+    private TenantRepository tenantRepository;
+
+    @Autowired
     private TestEntityManager entityManager;
 
     private User adminUser;
+    private String tenantId;
     private Admin admin;
 
     @BeforeEach
     void setUp() {
         // Create and save a new user and admin
-        adminUser = new User("admin", "password", UserType.ADMIN);
+        Tenant tenant = new Tenant();
+        tenantRepository.save(tenant);
+        tenantId = tenant.getId();
+
+        adminUser = new User("admin", "password", UserType.ADMIN, tenantId);
         userRepository.save(adminUser);
 
         admin = new Admin(adminUser, "Abdo", "Towait");
@@ -47,7 +57,7 @@ class AdminRepositoryTest {
 
     private void prepareAdminList() {
         // Additional admin and user setup
-        User secondaryUser = new User("admin2", "password", UserType.ADMIN);
+        User secondaryUser = new User("admin2", "password", UserType.ADMIN, tenantId);
         userRepository.save(secondaryUser);
 
         Admin secondaryAdmin = new Admin(secondaryUser, "FirstName1", "LastName1");

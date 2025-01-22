@@ -3,6 +3,7 @@ package com.nexus.unit;
 import com.nexus.auth.AuthenticationService;
 import com.nexus.auth.LoginRequest;
 import com.nexus.exception.DuplicateResourceException;
+import com.nexus.tenant.TenantRepository;
 import com.nexus.user.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +21,8 @@ import static org.mockito.Mockito.never;
 public class UserCreationContextTest {
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private TenantRepository tenantRepository;
     @Mock
     private AuthenticationService authenticationService;
     @InjectMocks

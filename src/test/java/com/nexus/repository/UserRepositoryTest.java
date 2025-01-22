@@ -1,7 +1,10 @@
 package com.nexus.repository;
 
+import com.nexus.tenant.Tenant;
+import com.nexus.tenant.TenantRepository;
 import com.nexus.user.User;
 import com.nexus.user.UserRepository;
+import com.nexus.user.UserTenantDTO;
 import com.nexus.user.UserType;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,11 +26,16 @@ public class UserRepositoryTest {
     @Autowired
     private UserRepository underTest;
 
+    @Autowired
+    private TenantRepository tenantRepository;
+
     private final String username = "abdo";
 
     @BeforeEach
     public void setUp() {
-        User user = new User(username, "password", UserType.ADMIN);
+        Tenant tenant = tenantRepository.save(new Tenant());
+
+        User user = new User(username, "password", UserType.ADMIN, tenant.getId());
         underTest.save(user);
     }
 
@@ -42,11 +50,5 @@ public class UserRepositoryTest {
     public void userExistsByUsername() {
         boolean exists = underTest.existsByUsername(username);
         assertThat(exists).isTrue();
-    }
-
-    @Test
-    public void findUserIdByUsername() {
-        String userId = underTest.findUserIdByUsername(username);
-        assertThat(userId).isNotBlank();
     }
 }

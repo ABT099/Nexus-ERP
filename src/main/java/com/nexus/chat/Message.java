@@ -1,6 +1,5 @@
 package com.nexus.chat;
 
-import com.nexus.abstraction.TenantAware;
 import com.nexus.user.User;
 import jakarta.persistence.*;
 
@@ -8,7 +7,7 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Entity
-public class Message extends TenantAware {
+public class Message  {
     @Id
     @GeneratedValue
     private Long id;

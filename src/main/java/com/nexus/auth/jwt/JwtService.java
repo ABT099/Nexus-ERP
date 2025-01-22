@@ -15,10 +15,11 @@ public class JwtService {
         this.rsaKeyService = rsaKeyService;
     }
 
-    public String generateToken(String username, String userId) {
+    public String generateToken(String username, String userId, String tenantId) {
         return Jwts.builder()
                 .subject(username)
                 .id(userId)
+                .claim("tenant_id", tenantId)
                 .signWith(rsaKeyService.getKey())
                 .compact();
     }

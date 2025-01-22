@@ -4,6 +4,7 @@ import com.nexus.abstraction.UserContext;
 import com.nexus.common.Status;
 import com.nexus.file.File;
 import com.nexus.file.FileService;
+import com.nexus.tenant.TenantContext;
 import com.nexus.user.User;
 import com.nexus.user.UserService;
 import com.nexus.utils.UpdateHandler;
@@ -84,7 +85,8 @@ public class ProjectController extends UserContext {
                 request.name(),
                 request.description(),
                 request.startDate(),
-                request.expectedEndDate()
+                request.expectedEndDate(),
+                TenantContext.getTenantId()
         );
 
         projectRepository.save(project);

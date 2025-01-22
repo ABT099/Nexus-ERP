@@ -2,6 +2,8 @@ package com.nexus.repository;
 
 import com.nexus.project.Project;
 import com.nexus.project.ProjectRepository;
+import com.nexus.tenant.Tenant;
+import com.nexus.tenant.TenantRepository;
 import com.nexus.user.User;
 import com.nexus.user.UserRepository;
 import com.nexus.user.UserType;
@@ -28,12 +30,19 @@ public class ProjectRepositoryTest {
     @Autowired
     private ProjectRepository projectRepository;
 
+    @Autowired
+    private TenantRepository tenantRepository;
+
     @Test
     void shouldFindAllProjectsByOwnerId() {
+        Tenant tenant = new Tenant();
+        tenantRepository.save(tenant);
+
         User user = new User(
                 "username",
                 "password",
-                UserType.SUPER_USER
+                UserType.SUPER_USER,
+                tenant.getId()
         );
 
         userRepository.save(user);
@@ -44,7 +53,8 @@ public class ProjectRepositoryTest {
                 "name",
                 "description",
                 ZonedDateTime.now(),
-                ZonedDateTime.now().plusDays(1)
+                ZonedDateTime.now().plusDays(1),
+                tenant.getId()
         );
 
         projectRepository.save(project);

@@ -1,16 +1,16 @@
 package com.nexus.tenant;
 
+import com.nexus.auth.jwt.AppAuthToken;
 import com.nexus.common.URLS;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Component
 public class TenantInterceptor implements HandlerInterceptor {
@@ -45,7 +45,14 @@ public class TenantInterceptor implements HandlerInterceptor {
         }
 
         // Validate the tenant ID header
-        String tenantId = request.getHeader("X-Tenant-ID");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        String tenantId = null;
+
+        if (authentication instanceof AppAuthToken) {
+            tenantId  = ((AppAuthToken) authentication).getTenantId();
+        }
+
         if (tenantId == null || tenantId.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write("Tenant ID is missing");

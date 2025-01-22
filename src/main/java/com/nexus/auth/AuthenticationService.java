@@ -1,7 +1,9 @@
 package com.nexus.auth;
 
 import com.nexus.auth.jwt.JwtService;
+import com.nexus.user.User;
 import com.nexus.user.UserService;
+import com.nexus.user.UserTenantDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,7 +36,7 @@ public class AuthenticationService {
             return null;
         }
 
-        String userId = userService.findUserIdByUsername(request.username());
-        return jwtService.generateToken(request.username(), userId);
+        UserTenantDTO user = userService.findUserTenantInfo(request.username());
+        return jwtService.generateToken(request.username(), user.id(), user.tenantId());
     }
 }

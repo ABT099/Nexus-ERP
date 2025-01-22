@@ -1,9 +1,7 @@
 package com.nexus.abstraction;
 
-import com.nexus.tenant.TenantContext;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.PrePersist;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.Filters;
@@ -19,11 +17,6 @@ import java.io.Serializable;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class AuditableTenantAware<USER, ID extends Serializable> extends AbstractAuditable<USER, ID> {
     private String tenantId;
-
-    @PrePersist
-    public void prePersist() {
-        tenantId = TenantContext.getTenantId();
-    }
 
     public String getTenantId() {
         return tenantId;

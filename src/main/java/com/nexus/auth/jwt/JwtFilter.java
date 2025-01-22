@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -36,20 +35,21 @@ public class JwtFilter extends OncePerRequestFilter {
         String token = null;
         String username = null;
         String userId = null;
+        String tenantId = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             username = jwtService.extractClaim(token, Claims::getSubject);
-
             userId = jwtService.extractClaim(token, Claims::getId);
+            tenantId = jwtService.extractClaim(token, (claims -> claims.get("tenant_id").toString()));
         }
 
-        if (username != null && userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (username != null && userId != null && tenantId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = context.getBean(PrincipalService.class).loadUserByUsername(username);
 
             if (jwtService.validate(token, userDetails)) {
-                UsernamePasswordAuthenticationToken userToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, userId, userDetails.getAuthorities());
+                AppAuthToken userToken =
+                        new AppAuthToken(userDetails, Long.parseLong(userId), tenantId);
 
                 userToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(userToken);

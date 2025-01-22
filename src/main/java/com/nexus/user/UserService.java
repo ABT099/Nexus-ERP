@@ -32,8 +32,10 @@ public class UserService {
         return userRepository.findAllById(ids);
     }
 
-    public String findUserIdByUsername(String username) {
-        return userRepository.findUserIdByUsername(username);
+    public UserTenantDTO findUserTenantInfo(String username) {
+        User user = findByUsername(username);
+
+        return new UserTenantDTO(user.getId().toString(), user.getTenantId());
     }
 
     public void doesUserExists(long id) {

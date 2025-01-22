@@ -19,6 +19,12 @@ public class Chat extends TenantAware {
     )
     private List<Message> messages;
 
+    public Chat(String tenantId) {
+        setTenantId(tenantId);
+    }
+
+    public Chat() {}
+
     public Long getId() {
         return id;
     }

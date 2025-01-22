@@ -4,6 +4,7 @@ import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.user.User;
 import com.nexus.user.UserRepository;
 import com.nexus.user.UserService;
+import com.nexus.user.UserTenantDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -72,18 +73,5 @@ class UserServiceTest {
         assertNotNull(users);
         assertEquals(3, users.size());
         verify(userRepository).findAllById(List.of(1L, 2L, 3L));
-    }
-
-    @Test
-    void findUserIdByUsername_shouldReturnUserId() {
-        when(userRepository.findUserIdByUsername("admin")).thenReturn("1");
-
-        String userId = userService.findUserIdByUsername("admin");
-        assertNotNull(userId);
-
-        Long userIdNum = Long.valueOf(userId);
-        assertEquals(1L, userIdNum);
-
-        verify(userRepository).findUserIdByUsername("admin");
     }
 }

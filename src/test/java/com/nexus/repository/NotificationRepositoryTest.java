@@ -4,6 +4,8 @@ package com.nexus.repository;
 import com.nexus.notification.Notification;
 import com.nexus.notification.NotificationRepository;
 import com.nexus.notification.NotificationType;
+import com.nexus.tenant.Tenant;
+import com.nexus.tenant.TenantRepository;
 import com.nexus.user.User;
 import com.nexus.user.UserRepository;
 import com.nexus.user.UserType;
@@ -27,11 +29,14 @@ public class NotificationRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private TenantRepository tenantRepository;
 
     @Test
     void findAllNotificationsByUserId() {
         // Arrange
-        User user = new User("username", "password", UserType.SUPER_USER);
+        Tenant tenant = tenantRepository.save(new Tenant());
+        User user = new User("username", "password", UserType.SUPER_USER, tenant.getId());
 
         userRepository.save(user);
 
