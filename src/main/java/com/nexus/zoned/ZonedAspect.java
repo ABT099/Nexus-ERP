@@ -13,12 +13,12 @@ import java.time.ZonedDateTime;
 
 @Aspect
 @Component
-public class ZonedInterceptor {
+public class ZonedAspect {
 
     private final ZoneFilter zoneFilter;
     private final TimeZoneHolder timeZoneHolder;
 
-    public ZonedInterceptor(ZoneFilter zoneFilter, TimeZoneHolder timeZoneHolder) {
+    public ZonedAspect(ZoneFilter zoneFilter, TimeZoneHolder timeZoneHolder) {
         this.zoneFilter = zoneFilter;
         this.timeZoneHolder = timeZoneHolder;
     }

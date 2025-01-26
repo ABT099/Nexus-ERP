@@ -1,19 +1,16 @@
 package com.nexus.event;
 
+import com.nexus.abstraction.AbstractAppAuditing;
 import com.nexus.admin.Admin;
 import com.nexus.common.Status;
-import com.nexus.user.User;
 import jakarta.persistence.*;
-import org.springframework.data.jpa.domain.AbstractAuditable;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@EntityListeners(AuditingEntityListener.class)
-public class Event extends AbstractAuditable<User, Integer>  {
+public class Event extends AbstractAppAuditing<Integer> {
     @Column(
             nullable = false,
             columnDefinition = "text"

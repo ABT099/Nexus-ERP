@@ -5,6 +5,7 @@ import com.nexus.common.Status;
 import com.nexus.employee.Employee;
 import com.nexus.expense.Expense;
 import com.nexus.file.File;
+import com.nexus.ineteraction.Interaction;
 import com.nexus.payment.Payment;
 import com.nexus.projectstep.ProjectStep;
 import com.nexus.user.User;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-public class Project extends AuditableTenantAware<User, Integer> {
+public class Project extends AuditableTenantAware<Integer> {
 
     @Column(nullable = false, columnDefinition = "text")
     private String name;
@@ -77,6 +78,9 @@ public class Project extends AuditableTenantAware<User, Integer> {
 
     @Positive
     private double price;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<Interaction> interactions;
 
     public Project(User owner, double price, String name, String description, ZonedDateTime startDate, ZonedDateTime expectedEndDate, String tenantId) {
         this.name = name;

@@ -4,6 +4,7 @@ import com.nexus.abstraction.UserContext;
 import com.nexus.common.Status;
 import com.nexus.file.File;
 import com.nexus.file.FileService;
+import com.nexus.monitor.MonitorManager;
 import com.nexus.tenant.TenantContext;
 import com.nexus.user.User;
 import com.nexus.user.UserService;
@@ -26,13 +27,15 @@ public class ProjectController extends UserContext {
     private final UserService userService;
     private final FileService fileService;
     private final ProjectMapper projectMapper;
+    private final MonitorManager monitorManager;
 
-    public ProjectController(ProjectRepository projectRepository, ProjectFinder projectFinder, UserService userService, FileService fileService, ProjectMapper projectMapper) {
+    public ProjectController(ProjectRepository projectRepository, ProjectFinder projectFinder, UserService userService, FileService fileService, ProjectMapper projectMapper, MonitorManager monitorManager) {
         this.projectRepository = projectRepository;
         this.projectFinder = projectFinder;
         this.userService = userService;
         this.fileService = fileService;
         this.projectMapper = projectMapper;
+        this.monitorManager = monitorManager;
     }
 
     @GetMapping
@@ -91,6 +94,8 @@ public class ProjectController extends UserContext {
 
         projectRepository.save(project);
 
+        monitorManager.monitor(project);
+
         return ResponseEntity.created(URI.create("/projects/" + project.getId())).body(project.getId());
     }
 
@@ -98,14 +103,14 @@ public class ProjectController extends UserContext {
     public void update(@Valid @RequestBody UpdateProjectRequest request) {
         Project project = projectFinder.findById(request.id());
 
-        UpdateHandler.updateEntity(tracker -> {
+        UpdateHandler.updateEntity(project, tracker -> {
             tracker.updateField(project::getPrice, request.price(), project::setPrice);
             tracker.updateField(project::getName, request.name(), project::setName);
             tracker.updateField(project::getDescription, request.description(), project::setDescription);
             tracker.updateField(project::getStartDate, request.startDate(), project::setStartDate);
             tracker.updateField(project::getExpectedEndDate, request.expectedEndDate(), project::setExpectedEndDate);
             tracker.updateField(project::getActualEndDate, request.actualEndDate(), project::setActualEndDate);
-        }, () -> projectRepository.save(project));
+        }, () -> projectRepository.save(project), monitorManager);
     }
 
     @DeleteMapping("{id}")
@@ -117,9 +122,9 @@ public class ProjectController extends UserContext {
     public void updateStatus(@Valid @Positive @PathVariable int id, Status status) {
         Project project = projectFinder.findById(id);
 
-        UpdateHandler.updateEntity(tracker -> {
+        UpdateHandler.updateEntity(project,tracker -> {
             tracker.updateField(project::getStatus, status, project::setStatus);
-        }, () -> projectRepository.save(project));
+        }, () -> projectRepository.save(project), monitorManager);
     }
 
     @PatchMapping("{id}/files/{fileId}")
@@ -130,6 +135,8 @@ public class ProjectController extends UserContext {
         project.addFile(file);
 
         projectRepository.save(project);
+
+        monitorManager.monitor(project, "Adding file " + file.getName());
     }
 
     @DeleteMapping("{id}/files/{fileId}")
@@ -140,5 +147,7 @@ public class ProjectController extends UserContext {
         project.removeFile(file);
 
         projectRepository.save(project);
+
+        monitorManager.monitor(project, "Removed file " + file.getName());
     }
 }

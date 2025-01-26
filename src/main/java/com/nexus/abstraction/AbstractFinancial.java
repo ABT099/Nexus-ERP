@@ -1,16 +1,12 @@
 package com.nexus.abstraction;
 
-import com.nexus.admin.Admin;
 import com.nexus.project.Project;
 import jakarta.persistence.*;
-import org.springframework.data.jpa.domain.AbstractAuditable;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.ZonedDateTime;
 
 @MappedSuperclass
-@EntityListeners(AuditingEntityListener.class)
-public abstract class AbstractFinancial extends AbstractAuditable<Admin, Integer> {
+public abstract class AbstractFinancial extends AbstractAppAuditing<Integer> {
     private double amount;
     private ZonedDateTime paymentDate;
 

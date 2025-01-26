@@ -1,18 +1,19 @@
 package com.nexus.projectstep;
 
+import com.nexus.abstraction.AbstractAppAuditing;
 import com.nexus.common.Status;
 import com.nexus.employee.Employee;
+import com.nexus.ineteraction.Interaction;
 import com.nexus.project.Project;
-import com.nexus.user.User;
 import jakarta.persistence.*;
-import org.springframework.data.jpa.domain.AbstractAuditable;
 
 import java.time.ZonedDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
-public class ProjectStep extends AbstractAuditable<User, Integer> {
+public class ProjectStep extends AbstractAppAuditing<Integer> {
     @Column(nullable = false, columnDefinition = "text")
     private String name;
     @Column(nullable = false, columnDefinition = "text")
@@ -39,6 +40,9 @@ public class ProjectStep extends AbstractAuditable<User, Integer> {
             inverseJoinColumns = @JoinColumn(name = "employee_id")
     )
     private Set<Employee> employees = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<Interaction> interactions;
 
     public ProjectStep(Project project, String name, String description, ZonedDateTime startDate, ZonedDateTime expectedEndDate) {
         this.name = name;

@@ -1,20 +1,16 @@
 package com.nexus.file;
 
+import com.nexus.abstraction.AbstractAppAuditing;
 import com.nexus.project.Project;
-import com.nexus.user.User;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToMany;
-import org.springframework.data.jpa.domain.AbstractAuditable;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@EntityListeners(AuditingEntityListener.class)
-public class File extends AbstractAuditable<User, Integer> {
+public class File extends AbstractAppAuditing<Integer> {
     private String name;
     private String description;
     private String type;

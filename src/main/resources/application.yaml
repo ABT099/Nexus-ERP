@@ -27,3 +27,7 @@ server:
   error:
     include-message: always
     include-binding-errors: always
+
+logging:
+  level:
+    com.nexus: debug
