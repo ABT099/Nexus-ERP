@@ -2,6 +2,7 @@ package com.nexus.utils;
 
 import com.nexus.abstraction.AbstractAppAuditing;
 import com.nexus.exception.NoUpdateException;
+import com.nexus.monitor.ActionType;
 import com.nexus.monitor.MonitorManager;
 
 import java.util.Objects;
@@ -53,7 +54,7 @@ public class UpdateHandler {
 
         String context = tracker.getContext();
 
-        monitorManager.monitor(entity, context);
+        monitorManager.monitor(entity, ActionType.UPDATE, context);
     }
 
     /**

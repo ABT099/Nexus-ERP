@@ -4,6 +4,8 @@ import com.nexus.admin.Admin;
 import com.nexus.admin.AdminFinder;
 import com.nexus.common.Status;
 import com.nexus.exception.ResourceNotFoundException;
+import com.nexus.monitor.ActionType;
+import com.nexus.monitor.MonitorManager;
 import com.nexus.utils.UpdateHandler;
 import com.nexus.zoned.Zoned;
 import jakarta.validation.Valid;
@@ -23,12 +25,20 @@ public class EventController {
     private final AdminFinder adminFinder;
     private final EventManager eventManager;
     private final EventMapper eventMapper;
+    private final MonitorManager monitorManager;
 
-    public EventController(EventRepository eventRepository, AdminFinder adminFinder, EventManager eventManager, EventMapper eventMapper) {
+    public EventController(
+            EventRepository eventRepository,
+            AdminFinder adminFinder,
+            EventManager eventManager,
+            EventMapper eventMapper,
+            MonitorManager monitorManager
+    ) {
         this.eventRepository = eventRepository;
         this.adminFinder = adminFinder;
         this.eventManager = eventManager;
         this.eventMapper = eventMapper;
+        this.monitorManager = monitorManager;
     }
 
     @Zoned
@@ -69,6 +79,8 @@ public class EventController {
                 new EventDTO(Objects.requireNonNull(savedEvent.getId()), savedEvent.getName(), savedEvent.getDate(), savedEvent.isUrgent())
         );
 
+        monitorManager.monitor(savedEvent, ActionType.CREATE);
+
         return ResponseEntity.created(URI.create("events/" + savedEvent.getId()))
                 .body(savedEvent.getId());
     }
@@ -80,22 +92,22 @@ public class EventController {
     ) {
         Event event = findById(id);
 
-        UpdateHandler.updateEntity(tracker -> {
+        UpdateHandler.updateEntity(event, tracker -> {
             tracker.updateField(event::getName, request.name(), event::setName);
             tracker.updateField(event::getDescription, request.description(), event::setDescription);
             tracker.updateField(event::getType, request.type(), event::setType);
             tracker.updateField(event::getStatus, request.status(), event::setStatus);
             tracker.updateField(event::getDate, request.date(), event::setDate);
-        }, () -> eventRepository.save(event));
+        }, () -> eventRepository.save(event), monitorManager);
     }
 
     @PatchMapping("{id}/status")
     public void updateStatus(@Valid @Positive @PathVariable int id, @RequestBody Status status) {
         Event event = findById(id);
 
-        UpdateHandler.updateEntity(tracker -> {
+        UpdateHandler.updateEntity(event, tracker -> {
             tracker.updateField(event::getStatus, status, event::setStatus);
-        }, () -> eventRepository.save(event));
+        }, () -> eventRepository.save(event), monitorManager);
     }
 
     @PatchMapping("{eventId}/add-admin/{adminId}")
@@ -111,6 +123,7 @@ public class EventController {
 
         eventManager.addEvent(adminId, new EventDTO(eventId, event.getName(), event.getDate(), event.isUrgent()));
 
+        monitorManager.monitor(event, ActionType.ADD_ADMIN);
     }
 
     @PatchMapping("{eventId}/remove-admin/{adminId}")
@@ -125,6 +138,8 @@ public class EventController {
         eventRepository.save(event);
 
         eventManager.removeEvent(adminId, new EventDTO(eventId, event.getName(), event.getDate(), event.isUrgent()));
+
+        monitorManager.monitor(event, ActionType.REMOVE_ADMIN);
     }
 
     @DeleteMapping("{id}")
@@ -147,6 +162,8 @@ public class EventController {
         event.getAdmins().clear();
 
         eventRepository.deleteById(id);
+
+        monitorManager.monitor(event, ActionType.DELETE);
     }
 
     private Event findById(int id) {

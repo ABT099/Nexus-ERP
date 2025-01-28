@@ -1,6 +1,8 @@
 package com.nexus.payment;
 
 import com.nexus.exception.ResourceNotFoundException;
+import com.nexus.monitor.ActionType;
+import com.nexus.monitor.MonitorManager;
 import com.nexus.project.Project;
 import com.nexus.project.ProjectFinder;
 import com.nexus.user.User;
@@ -22,12 +24,20 @@ public class PaymentController {
     private final ProjectFinder projectFinder;
     private final UserService userService;
     private final PaymentMapper paymentMapper;
+    private final MonitorManager monitorManager;
 
-    public PaymentController(PaymentRepository paymentRepository, ProjectFinder projectFinder, UserService userService, PaymentMapper paymentMapper) {
+    public PaymentController(
+            PaymentRepository paymentRepository,
+            ProjectFinder projectFinder,
+            UserService userService,
+            PaymentMapper paymentMapper,
+            MonitorManager monitorManager
+    ) {
         this.paymentRepository = paymentRepository;
         this.projectFinder = projectFinder;
         this.userService = userService;
         this.paymentMapper = paymentMapper;
+        this.monitorManager = monitorManager;
     }
 
     @GetMapping
@@ -62,6 +72,8 @@ public class PaymentController {
 
         paymentRepository.save(payment);
 
+        monitorManager.monitor(payment, ActionType.CREATE);
+
         return ResponseEntity.created(URI.create("/payments/" + payment.getId())).body(payment.getId());
     }
 
@@ -69,15 +81,19 @@ public class PaymentController {
     public void update(@Valid @Positive @PathVariable int id, @Valid @RequestBody UpdatePaymentRequest request) {
         Payment payment = findById(id);
 
-        UpdateHandler.updateEntity(tracker -> {
+        UpdateHandler.updateEntity(payment, tracker -> {
             tracker.updateField(payment::getAmount, request.amount(), payment::setAmount);
             tracker.updateField(payment::getPaymentDate, request.paymentDate(), payment::setPaymentDate);
-        }, () -> paymentRepository.save(payment));
+        }, () -> paymentRepository.save(payment), monitorManager);
     }
 
     @DeleteMapping("{id}")
     public void delete(@Valid @Positive @PathVariable int id) {
-        paymentRepository.deleteById(id);
+        Payment payment = findById(id);
+
+        paymentRepository.delete(payment);
+
+        monitorManager.monitor(payment, ActionType.DELETE);
     }
 
     private Payment findById(int id) {

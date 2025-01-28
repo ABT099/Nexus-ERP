@@ -4,6 +4,8 @@ import com.nexus.common.Status;
 import com.nexus.employee.Employee;
 import com.nexus.employee.EmployeeFinder;
 import com.nexus.exception.ResourceNotFoundException;
+import com.nexus.monitor.ActionType;
+import com.nexus.monitor.MonitorManager;
 import com.nexus.project.Project;
 import com.nexus.project.ProjectFinder;
 import com.nexus.utils.UpdateHandler;
@@ -23,12 +25,20 @@ public class ProjectStepController {
     private final ProjectFinder projectFinder;
     private final EmployeeFinder employeeFinder;
     private final ProjectStepMapper projectStepMapper;
+    private final MonitorManager monitorManager;
 
-    public ProjectStepController(ProjectStepRepository projectStepRepository, ProjectFinder projectFinder, EmployeeFinder employeeFinder, ProjectStepMapper projectStepMapper) {
+    public ProjectStepController(
+            ProjectStepRepository projectStepRepository,
+            ProjectFinder projectFinder,
+            EmployeeFinder employeeFinder,
+            ProjectStepMapper projectStepMapper,
+            MonitorManager monitorManager
+    ) {
         this.projectStepRepository = projectStepRepository;
         this.projectFinder = projectFinder;
         this.employeeFinder = employeeFinder;
         this.projectStepMapper = projectStepMapper;
+        this.monitorManager = monitorManager;
     }
 
     @GetMapping("by-project/{id}")
@@ -63,6 +73,8 @@ public class ProjectStepController {
 
         projectStepRepository.save(step);
 
+        monitorManager.monitor(step, ActionType.CREATE);
+
         return ResponseEntity.created(URI.create("steps/" + step.getId())).body(step.getId());
     }
 
@@ -70,18 +82,22 @@ public class ProjectStepController {
     public void update(@Valid @RequestBody UpdateProjectStepRequest request) {
         ProjectStep step = findById(request.id());
 
-        UpdateHandler.updateEntity(tracker -> {
+        UpdateHandler.updateEntity(step, tracker -> {
             tracker.updateField(step::getName, request.name(), step::setName);
             tracker.updateField(step::getDescription, request.description(), step::setDescription);
             tracker.updateField(step::getStartDate, request.startDate(), step::setStartDate);
             tracker.updateField(step::getExpectedEndDate, request.expectedEndDate(), step::setExpectedEndDate);
             tracker.updateField(step::getActualEndDate, request.actualEndDate(), step::setActualEndDate);
-        }, () -> projectStepRepository.save(step));
+        }, () -> projectStepRepository.save(step), monitorManager);
     }
 
     @DeleteMapping("{id}")
     public void delete(@Valid @Positive @PathVariable int id) {
-        projectStepRepository.deleteById(id);
+        ProjectStep step = findById(id);
+
+        projectStepRepository.delete(step);
+
+        monitorManager.monitor(step, ActionType.DELETE);
     }
 
     @PatchMapping("{id}/employees/{employeeId}")
@@ -93,6 +109,8 @@ public class ProjectStepController {
         step.getProject().getEmployees().add(employee);
 
         projectStepRepository.save(step);
+
+        monitorManager.monitor(step, ActionType.ADD_EMPLOYEE);
     }
 
     @DeleteMapping("{id}/employees/{employeeId}")
@@ -104,6 +122,8 @@ public class ProjectStepController {
         step.getProject().getEmployees().add(employee);
 
         projectStepRepository.save(step);
+
+        monitorManager.monitor(step, ActionType.REMOVE_EMPLOYEE);
     }
 
     @PatchMapping("{id}/status")
@@ -112,9 +132,9 @@ public class ProjectStepController {
             @RequestBody Status status
     ) {
         ProjectStep step = findById(id);
-        UpdateHandler.updateEntity(tracker -> {
+        UpdateHandler.updateEntity(step, tracker -> {
             tracker.updateField(step::getStatus, status, step::setStatus);
-        }, () -> projectStepRepository.save(step));
+        }, () -> projectStepRepository.save(step), monitorManager);
     }
 
     private ProjectStep findById(int id) {

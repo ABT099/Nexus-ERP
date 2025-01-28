@@ -4,6 +4,7 @@ import com.nexus.abstraction.UserContext;
 import com.nexus.common.Status;
 import com.nexus.file.File;
 import com.nexus.file.FileService;
+import com.nexus.monitor.ActionType;
 import com.nexus.monitor.MonitorManager;
 import com.nexus.tenant.TenantContext;
 import com.nexus.user.User;
@@ -29,7 +30,14 @@ public class ProjectController extends UserContext {
     private final ProjectMapper projectMapper;
     private final MonitorManager monitorManager;
 
-    public ProjectController(ProjectRepository projectRepository, ProjectFinder projectFinder, UserService userService, FileService fileService, ProjectMapper projectMapper, MonitorManager monitorManager) {
+    public ProjectController(
+            ProjectRepository projectRepository,
+            ProjectFinder projectFinder,
+            UserService userService,
+            FileService fileService,
+            ProjectMapper projectMapper,
+            MonitorManager monitorManager
+    ) {
         this.projectRepository = projectRepository;
         this.projectFinder = projectFinder;
         this.userService = userService;
@@ -94,7 +102,7 @@ public class ProjectController extends UserContext {
 
         projectRepository.save(project);
 
-        monitorManager.monitor(project);
+        monitorManager.monitor(project, ActionType.CREATE);
 
         return ResponseEntity.created(URI.create("/projects/" + project.getId())).body(project.getId());
     }
@@ -115,7 +123,11 @@ public class ProjectController extends UserContext {
 
     @DeleteMapping("{id}")
     public void delete(@Valid @Positive @PathVariable int id) {
-        projectRepository.deleteById(id);
+        Project project = projectFinder.findById(id);
+
+        projectRepository.delete(project);
+
+        monitorManager.monitor(project, ActionType.DELETE);
     }
 
     @PatchMapping("{id}/status")
@@ -136,7 +148,7 @@ public class ProjectController extends UserContext {
 
         projectRepository.save(project);
 
-        monitorManager.monitor(project, "Adding file " + file.getName());
+        monitorManager.monitor(project, ActionType.ADD_FILE);
     }
 
     @DeleteMapping("{id}/files/{fileId}")
@@ -148,6 +160,6 @@ public class ProjectController extends UserContext {
 
         projectRepository.save(project);
 
-        monitorManager.monitor(project, "Removed file " + file.getName());
+        monitorManager.monitor(project, ActionType.REMOVE_FILE);
     }
 }

@@ -3,6 +3,8 @@ package com.nexus.expense;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.expensecategory.ExpenseCategory;
 import com.nexus.expensecategory.ExpenseCategoryFinder;
+import com.nexus.monitor.ActionType;
+import com.nexus.monitor.MonitorManager;
 import com.nexus.project.Project;
 import com.nexus.project.ProjectFinder;
 import com.nexus.utils.UpdateHandler;
@@ -22,12 +24,20 @@ public class ExpenseController {
     private final ProjectFinder projectFinder;
     private final ExpenseCategoryFinder expenseCategoryFinder;
     private final ExpenseMapper expenseMapper;
+    private final MonitorManager monitorManager;
 
-    public ExpenseController(ExpenseRepository expenseRepository, ProjectFinder projectFinder, ExpenseCategoryFinder expenseCategoryFinder, ExpenseMapper expenseMapper) {
+    public ExpenseController(
+            ExpenseRepository expenseRepository,
+            ProjectFinder projectFinder,
+            ExpenseCategoryFinder expenseCategoryFinder,
+            ExpenseMapper expenseMapper,
+            MonitorManager monitorManager
+    ) {
         this.expenseRepository = expenseRepository;
         this.projectFinder = projectFinder;
         this.expenseCategoryFinder = expenseCategoryFinder;
         this.expenseMapper = expenseMapper;
+        this.monitorManager = monitorManager;
     }
 
     @GetMapping
@@ -62,6 +72,8 @@ public class ExpenseController {
 
         expenseRepository.save(expense);
 
+        monitorManager.monitor(expense, ActionType.CREATE);
+
         return ResponseEntity.created(URI.create("expenses/" + expense.getId())).body(expense.getId());
     }
 
@@ -69,7 +81,7 @@ public class ExpenseController {
     public void update(@Valid @Positive @PathVariable int id, @Valid @RequestBody UpdateExpenseRequest request) {
         Expense expense = findById(id);
 
-        UpdateHandler.updateEntity(tracker -> {
+        UpdateHandler.updateEntity(expense, tracker -> {
             tracker.updateField(
                     expense.getExpenseCategory()::getId,
                     request.expenseCategoryId(),
@@ -79,12 +91,16 @@ public class ExpenseController {
                     });
             tracker.updateField(expense::getAmount, request.amount(), expense::setAmount);
             tracker.updateField(expense::getPaymentDate, request.paymentDate(), expense::setPaymentDate);
-        }, () -> expenseRepository.save(expense));
+        }, () -> expenseRepository.save(expense), monitorManager);
     }
 
     @DeleteMapping("{id}")
     public void delete(@Valid @Positive @PathVariable int id) {
-        expenseRepository.deleteById(id);
+        Expense expense = findById(id);
+
+        expenseRepository.delete(expense);
+
+        monitorManager.monitor(expense, ActionType.DELETE);
     }
 
     private Expense findById(int id) {

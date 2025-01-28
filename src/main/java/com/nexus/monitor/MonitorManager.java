@@ -32,7 +32,7 @@ public class MonitorManager {
         this.notificationManager = notificationManager;
     }
 
-    public <T extends AbstractAppAuditing<?>> void monitor(T entity, String... args) {
+    public <T extends AbstractAppAuditing<?>> void monitor(T entity, ActionType actionType, String... args) {
 
         if (entity == null) {
             throw new IllegalStateException("No entity found");
@@ -51,7 +51,7 @@ public class MonitorManager {
                     throw new IllegalStateException("No strategy found for " + entityClass.getSimpleName());
                 }
 
-                strategy.handle(entity, interceptionRepository, notificationManager, args);
+                strategy.handle(entity, interceptionRepository, notificationManager, actionType, args);
             } catch (Exception e) {
                 LOG.error("[Async Monitoring] Thread: {}", Thread.currentThread(), e);
             }
@@ -70,6 +70,7 @@ public class MonitorManager {
         void handle(S entity,
                     InterceptionRepository repository,
                     NotificationManager notification,
+                    ActionType actionType,
                     String... args) throws Exception;
     }
 }
