@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import java.time.ZonedDateTime;
 
 @MappedSuperclass
-public abstract class AbstractFinancial extends AbstractAppAuditing<Integer> {
+public abstract class AbstractFinancial extends AuditableTenantAware<Integer> {
     private double amount;
     private ZonedDateTime paymentDate;
 

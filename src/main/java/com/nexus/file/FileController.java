@@ -23,20 +23,17 @@ public class FileController {
     private final FileService fileService;
     private final ProjectFinder projectFinder;
     private final FileMapper fileMapper;
-    private final MonitorManager monitorManager;
 
     public FileController(
             FileRepository fileRepository,
             FileService fileService,
             ProjectFinder projectFinder,
-            FileMapper fileMapper,
-            MonitorManager monitorManager
+            FileMapper fileMapper
     ) {
         this.fileRepository = fileRepository;
         this.fileService = fileService;
         this.projectFinder = projectFinder;
         this.fileMapper = fileMapper;
-        this.monitorManager = monitorManager;
     }
 
     @GetMapping("by-project/{id}")
@@ -71,9 +68,6 @@ public class FileController {
             }
 
             fileRepository.saveAndFlush(file);
-
-            monitorManager.monitor(file, ActionType.CREATE);
-
             return ResponseEntity.created(URI.create("/files/" + file.getId())).body(file.getId());
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -84,10 +78,10 @@ public class FileController {
     public void update(@Valid @RequestBody UpdateFileRequest request) {
         File file = fileService.findById(request.id());
 
-        UpdateHandler.updateEntity(file, tracker -> {
+        UpdateHandler.updateEntity(tracker -> {
             tracker.updateField(file::getName, request.name(), file::setName);
             tracker.updateField(file::getDescription, request.description(), file::setDescription);
-        }, () -> fileRepository.saveAndFlush(file), monitorManager);
+        }, () -> fileRepository.saveAndFlush(file));
     }
 
     @DeleteMapping("{id}")
@@ -96,8 +90,6 @@ public class FileController {
         File file = fileService.findById(id);
 
         fileRepository.delete(file);
-
-        monitorManager.monitor(file, ActionType.DELETE);
     }
 
     private static File getFile(UploadFileRequest request) throws IOException {

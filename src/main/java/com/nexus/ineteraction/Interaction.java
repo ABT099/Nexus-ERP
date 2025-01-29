@@ -3,7 +3,7 @@ package com.nexus.ineteraction;
 import com.nexus.user.User;
 import jakarta.persistence.*;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 @Entity
 public class Interaction {
@@ -29,5 +29,14 @@ public class Interaction {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
-    private ZonedDateTime interactionDate;
+    private LocalDateTime interactionDate;
+
+    public Interaction(User interactedBy, String title, String description, LocalDateTime interactionDate) {
+        this.interactedBy = interactedBy;
+        this.title = title;
+        this.description = description;
+        this.interactionDate = interactionDate;
+    }
+
+    public Interaction() {}
 }

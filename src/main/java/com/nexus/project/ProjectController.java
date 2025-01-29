@@ -148,7 +148,7 @@ public class ProjectController extends UserContext {
 
         projectRepository.save(project);
 
-        monitorManager.monitor(project, ActionType.ADD_FILE);
+        monitorManager.monitor(project, ActionType.ADD_FILE, file.getName());
     }
 
     @DeleteMapping("{id}/files/{fileId}")
@@ -160,6 +160,6 @@ public class ProjectController extends UserContext {
 
         projectRepository.save(project);
 
-        monitorManager.monitor(project, ActionType.REMOVE_FILE);
+        monitorManager.monitor(project, ActionType.REMOVE_FILE, file.getName());
     }
 }

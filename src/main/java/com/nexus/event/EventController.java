@@ -123,7 +123,7 @@ public class EventController {
 
         eventManager.addEvent(adminId, new EventDTO(eventId, event.getName(), event.getDate(), event.isUrgent()));
 
-        monitorManager.monitor(event, ActionType.ADD_ADMIN);
+        monitorManager.monitor(event, ActionType.ADD_ADMIN, admin.getUser().getUsername());
     }
 
     @PatchMapping("{eventId}/remove-admin/{adminId}")
@@ -139,7 +139,7 @@ public class EventController {
 
         eventManager.removeEvent(adminId, new EventDTO(eventId, event.getName(), event.getDate(), event.isUrgent()));
 
-        monitorManager.monitor(event, ActionType.REMOVE_ADMIN);
+        monitorManager.monitor(event, ActionType.REMOVE_ADMIN, admin.getUser().getUsername());
     }
 
     @DeleteMapping("{id}")

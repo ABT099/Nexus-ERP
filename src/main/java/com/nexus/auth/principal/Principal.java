@@ -34,4 +34,8 @@ public class Principal implements UserDetails {
     public boolean isEnabled() {
         return !user.isArchived();
     }
+
+    public User getUser() {
+        return user;
+    }
 }

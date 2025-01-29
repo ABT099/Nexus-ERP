@@ -32,6 +32,10 @@ public class UserService {
         return userRepository.findAllById(ids);
     }
 
+    public List<User> findAllByTenantIdAndUserType(String tenantId, UserType userType) {
+        return userRepository.findAllByTenantIdAndUserType(tenantId, userType);
+    }
+
     public UserTenantDTO findUserTenantInfo(String username) {
         User user = findByUsername(username);
 
