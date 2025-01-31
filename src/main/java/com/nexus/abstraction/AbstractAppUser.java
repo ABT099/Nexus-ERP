@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.Instant;
 
 @MappedSuperclass
 public abstract class AbstractAppUser implements Serializable {
@@ -26,7 +26,7 @@ public abstract class AbstractAppUser implements Serializable {
     private User user;
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdDate;
+    private Instant createdDate = Instant.now();
     @Column(nullable = false)
     private boolean archived = false;
 
@@ -47,7 +47,7 @@ public abstract class AbstractAppUser implements Serializable {
         this.user = user;
     }
 
-    public Date getCreatedDate() {
+    public Instant getCreatedDate() {
         return createdDate;
     }
 

@@ -2,11 +2,11 @@ package com.nexus.expense;
 
 import jakarta.validation.constraints.Positive;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 public record CreateExpenseRequest(
         @Positive double amount,
-        ZonedDateTime paymentDate,
+        Instant paymentDate,
         Integer projectId,
         @Positive int expenseCategoryId
 ) {

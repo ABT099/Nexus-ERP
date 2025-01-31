@@ -1,6 +1,7 @@
 package com.nexus.notification;
 
 import com.nexus.exception.ResourceNotFoundException;
+import com.nexus.zoned.Zoned;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ public class NotificationController {
         this.notificationMapper = notificationMapper;
     }
 
+    @Zoned
     @GetMapping("/user/{id}")
     public ResponseEntity<List<NotificationResponse>> getAllByUserId(@Valid @Positive @PathVariable long id) {
         return ResponseEntity.ok(
@@ -30,6 +32,7 @@ public class NotificationController {
         );
     }
 
+    @Zoned
     @GetMapping("{id}")
     public ResponseEntity<NotificationResponse> getById(@Valid @Positive @PathVariable long id) {
         Notification notification = notificationRepository.findById(id)

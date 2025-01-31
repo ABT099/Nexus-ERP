@@ -1,9 +1,9 @@
 package com.nexus.payment;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 public record BasicPaymentResponse(
         Integer id,
         double amount,
-        ZonedDateTime paymentDate
+        String paymentDate
 ) { }

@@ -51,7 +51,7 @@ class EventManagerTest {
         // Arrange
         Long adminId = 1L;
         Instant now = Instant.now().plusSeconds(3600);
-        EventDTO event = new EventDTO(1, "Test Event", now.atZone(ZoneId.systemDefault()), false);
+        EventDTO event = new EventDTO(1, "Test Event", now, false);
         CountDownLatch latch = new CountDownLatch(1);
 
         doAnswer(invocation -> {
@@ -81,7 +81,7 @@ class EventManagerTest {
         // Arrange
         Long adminId = 1L;
         Instant now = Instant.now().plusSeconds(3600);
-        EventDTO event = new EventDTO(1, "Test Event", now.atZone(ZoneId.systemDefault()), false);
+        EventDTO event = new EventDTO(1, "Test Event", now, false);
 
         EventManager.getAdminEvents().computeIfAbsent(adminId, id -> new ConcurrentSkipListSet<>()).add(event);
 
@@ -98,8 +98,8 @@ class EventManagerTest {
         // Arrange
         Long adminId = 1L;
         Instant now = Instant.now();
-        EventDTO pastEvent = new EventDTO(1, "Past Event", now.minusSeconds(3600).atZone(ZoneId.systemDefault()), false);
-        EventDTO futureEvent = new EventDTO(2, "Future Event", now.plusSeconds(3800).atZone(ZoneId.systemDefault()), false);
+        EventDTO pastEvent = new EventDTO(1, "Past Event", now.minusSeconds(3600), false);
+        EventDTO futureEvent = new EventDTO(2, "Future Event", now.plusSeconds(3800), false);
 
         ConcurrentSkipListSet<EventDTO> events = new ConcurrentSkipListSet<>();
         events.add(pastEvent);

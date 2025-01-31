@@ -19,7 +19,7 @@ import com.nexus.user.UserType;
 import jakarta.annotation.PostConstruct;
 import org.springframework.context.annotation.Configuration;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +49,7 @@ public class MonitorConfig {
             );
 
             if (args.length > 0 && actionType.equals(ActionType.UPDATE)) {
-                LocalDateTime changedAt = event.getLastModifiedDate().orElseThrow(
+                Instant changedAt = event.getLastModifiedDate().orElseThrow(
                         () -> new RuntimeException("Event has no last modified by user!")
                 );
 
@@ -109,7 +109,7 @@ public class MonitorConfig {
                     () -> new RuntimeException("Project has no last modified by user!")
             );
 
-            LocalDateTime changedAt = project.getLastModifiedDate().orElseThrow(
+            Instant changedAt = project.getLastModifiedDate().orElseThrow(
                     () -> new RuntimeException("Project has no last modified by user!")
             );
 
@@ -206,7 +206,7 @@ public class MonitorConfig {
                 }
             }
 
-            LocalDateTime changedAt = projectStep.getLastModifiedDate().orElseThrow(
+            Instant changedAt = projectStep.getLastModifiedDate().orElseThrow(
                     () -> new RuntimeException("Project step has no last modified by user!")
             );
 

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import reactor.core.publisher.Mono;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,7 +43,7 @@ public class ExpenseIntegrationTest extends AuthenticatedIntegrationTest {
 
         ExpenseResponse expense = getExpense(expenseId);
 
-        UpdateExpenseRequest request = new UpdateExpenseRequest(111, ZonedDateTime.now(), getCategoryId());
+        UpdateExpenseRequest request = new UpdateExpenseRequest(111, Instant.now().now(), getCategoryId());
 
         webTestClient.put()
                 .uri("/expenses/" + expenseId)
@@ -69,7 +70,7 @@ public class ExpenseIntegrationTest extends AuthenticatedIntegrationTest {
 
         int newCategoryId = getCategoryId();
 
-        UpdateExpenseRequest request = new UpdateExpenseRequest(111, ZonedDateTime.now(), newCategoryId);
+        UpdateExpenseRequest request = new UpdateExpenseRequest(111, Instant.now(), newCategoryId);
 
         webTestClient.put()
                 .uri("/expenses/" + expenseId)
@@ -109,7 +110,7 @@ public class ExpenseIntegrationTest extends AuthenticatedIntegrationTest {
     private Integer createExpense(int expenseCategoryId) {
         CreateExpenseRequest request = new CreateExpenseRequest(
                 123,
-                ZonedDateTime.now(),
+                Instant.now(),
                 null,
                 expenseCategoryId
         );

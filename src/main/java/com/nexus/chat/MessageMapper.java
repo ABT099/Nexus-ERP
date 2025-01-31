@@ -12,6 +12,7 @@ public class MessageMapper implements Mapper<Message, MessageResponse> {
                 source.getSender().getId(),
                 source.getChat().getId(),
                 source.getText(),
-                source.getCreatedAt());
+                source.getCreatedAt().toString()
+        );
     }
 }

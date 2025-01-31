@@ -4,7 +4,7 @@ import com.nexus.validation.AfterNow;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.Set;
 
 public record CreateEventRequest(
@@ -18,5 +18,5 @@ public record CreateEventRequest(
         EventType type,
         @NotNull
         @AfterNow
-        ZonedDateTime date
+        Instant date
 ) { }

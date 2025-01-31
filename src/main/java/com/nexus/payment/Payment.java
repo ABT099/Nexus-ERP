@@ -8,7 +8,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 @Entity
 public class Payment extends AbstractFinancial {
@@ -20,12 +20,12 @@ public class Payment extends AbstractFinancial {
     @JoinColumn(name = "payer_id", nullable = false)
     private User payer;
 
-    public Payment(double amount, ZonedDateTime paymentDate, Project project, User payer) {
+    public Payment(double amount, Instant paymentDate, Project project, User payer) {
         super(amount, paymentDate, project);
         this.payer = payer;
     }
 
-    public Payment(double amount, ZonedDateTime paymentDate, User payer) {
+    public Payment(double amount, Instant paymentDate, User payer) {
         super(amount, paymentDate);
         this.payer = payer;
     }

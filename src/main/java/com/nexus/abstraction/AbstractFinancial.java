@@ -3,24 +3,25 @@ package com.nexus.abstraction;
 import com.nexus.project.Project;
 import jakarta.persistence.*;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 
 @MappedSuperclass
 public abstract class AbstractFinancial extends AuditableTenantAware<Integer> {
     private double amount;
-    private ZonedDateTime paymentDate;
+    private Instant paymentDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
 
-    public AbstractFinancial(double amount, ZonedDateTime paymentDate, Project project) {
+    public AbstractFinancial(double amount, Instant paymentDate, Project project) {
         this.amount = amount;
         this.paymentDate = paymentDate;
         this.project = project;
     }
 
-    public AbstractFinancial(double amount, ZonedDateTime paymentDate) {
+    public AbstractFinancial(double amount, Instant paymentDate) {
         this.amount = amount;
         this.paymentDate = paymentDate;
     }
@@ -35,11 +36,11 @@ public abstract class AbstractFinancial extends AuditableTenantAware<Integer> {
         this.amount = amount;
     }
 
-    public ZonedDateTime getPaymentDate() {
+    public Instant getPaymentDate() {
         return paymentDate;
     }
 
-    public void setPaymentDate(ZonedDateTime paymentDate) {
+    public void setPaymentDate(Instant paymentDate) {
         this.paymentDate = paymentDate;
     }
 

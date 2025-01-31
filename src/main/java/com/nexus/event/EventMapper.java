@@ -9,7 +9,7 @@ public class EventMapper {
             event.getName(),
             event.getType().name(),
             event.getStatus().name(),
-            event.getDate(),
+            event.getDate().toString(),
             event.isUrgent()
         );
     }
@@ -20,7 +20,7 @@ public class EventMapper {
                 event.getDescription(),
                 event.getType().name(),
                 event.getStatus().name(),
-                event.getDate()
+                event.getDate().toString()
         );
     }
 }

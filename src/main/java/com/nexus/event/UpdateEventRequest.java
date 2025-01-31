@@ -5,7 +5,7 @@ import com.nexus.validation.AfterNow;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 public record UpdateEventRequest(
         @NotEmpty
@@ -17,5 +17,5 @@ public record UpdateEventRequest(
         Status status,
         @NotNull
         @AfterNow
-        ZonedDateTime date
+        Instant date
 ) { }

@@ -7,8 +7,8 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 
 @Aspect
@@ -33,8 +33,8 @@ public class ZonedAspect {
 
         for (int i = 0; i < joinPoint.getArgs().length; i++) {
             Object arg = joinPoint.getArgs()[i];
-            if (arg instanceof ZonedDateTime original) {
-                joinPoint.getArgs()[i] = original.withZoneSameInstant(targetZone);
+            if (arg instanceof Instant original) {
+                joinPoint.getArgs()[i] = original.atZone(targetZone);
             }
         }
     }

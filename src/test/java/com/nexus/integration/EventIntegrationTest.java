@@ -13,7 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import reactor.core.publisher.Mono;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 
@@ -27,7 +28,7 @@ public class EventIntegrationTest extends AuthenticatedIntegrationTest {
     public void setup() {
         createUser();
 
-        CreateEventRequest request = new CreateEventRequest(Set.of(user.getId()), "event name", "event description", EventType.MEETING, ZonedDateTime.now().plusDays(2));
+        CreateEventRequest request = new CreateEventRequest(Set.of(user.getId()), "event name", "event description", EventType.MEETING, Instant.now().plus(1, ChronoUnit.DAYS));
 
         Integer id = webTestClient.post()
                 .uri("/events")
@@ -53,7 +54,7 @@ public class EventIntegrationTest extends AuthenticatedIntegrationTest {
 
         assertNotNull(event);
 
-        UpdateEventRequest request = new UpdateEventRequest("newName", "newDescription", EventType.MEETING, Status.PENDING, ZonedDateTime.now().plusDays(2));
+        UpdateEventRequest request = new UpdateEventRequest("newName", "newDescription", EventType.MEETING, Status.PENDING, Instant.now().plus(2, ChronoUnit.DAYS));
 
         webTestClient.put()
                 .uri("/events/{id}", eventId)

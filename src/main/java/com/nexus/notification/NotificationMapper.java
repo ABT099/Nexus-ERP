@@ -12,7 +12,7 @@ public class NotificationMapper implements Mapper<Notification, NotificationResp
             notification.getId(),
             notification.getTitle(),
             notification.getBody(),
-            notification.getDate(),
+            notification.getDate().toString(),
             notification.isRead(),
             notification.getType()
         );

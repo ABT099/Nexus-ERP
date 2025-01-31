@@ -1,15 +1,15 @@
 package com.nexus.event;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.Objects;
 
 public class EventDTO implements Comparable<EventDTO> {
-    private  Integer eventId;
-    private  String eventName;
-    private ZonedDateTime date;
-    private  boolean urgent;
+    private final Integer eventId;
+    private final String eventName;
+    private final Instant date;
+    private boolean urgent;
 
-    public EventDTO(Integer eventId, String EventName, ZonedDateTime date, boolean urgent) {
+    public EventDTO(Integer eventId, String EventName, Instant date, boolean urgent) {
         this.eventId = eventId;
         this.eventName = EventName;
         this.date = date;
@@ -19,16 +19,8 @@ public class EventDTO implements Comparable<EventDTO> {
         return eventId;
     }
 
-    public void setEventId(Integer eventId) {
-        this.eventId = eventId;
-    }
-
-    public ZonedDateTime getDate() {
+    public Instant getDate() {
         return date;
-    }
-
-    public void setDate(ZonedDateTime date) {
-        this.date = date;
     }
 
     public boolean isUrgent() {
@@ -43,17 +35,29 @@ public class EventDTO implements Comparable<EventDTO> {
         return eventName;
     }
 
-    public void setEventName(String eventName) {
-        this.eventName = eventName;
-    }
-
     @Override
     public int compareTo(EventDTO other) {
-        int urgentComparison = Boolean.compare(other.isUrgent(), this.isUrgent());
-        if (urgentComparison != 0) {
-            return urgentComparison;
+        // Compare by urgent status (urgent first)
+        if (this.urgent != other.urgent) {
+            return Boolean.compare(other.urgent, this.urgent); // Reversed for urgent first
         }
-        return this.date.compareTo(other.getDate());
+
+        // Compare by date (nulls last)
+        if (this.date == null && other.date == null) {
+            // Both dates are null, move to next comparison
+        } else if (this.date == null) {
+            return 1; // this.date is null, so it comes after
+        } else if (other.date == null) {
+            return -1; // other.date is null, so this comes first
+        } else {
+            int dateComparison = this.date.compareTo(other.date);
+            if (dateComparison != 0) {
+                return dateComparison;
+            }
+        }
+
+        // Compare by eventId
+        return this.eventId.compareTo(other.eventId);
     }
 
     @Override

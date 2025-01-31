@@ -4,8 +4,7 @@ import com.nexus.user.User;
 import jakarta.persistence.*;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
-import java.time.ZonedDateTime;
-import java.util.Date;
+import java.time.Instant;
 
 @Entity
 public class Notification extends AbstractPersistable<Long> {
@@ -21,7 +20,7 @@ public class Notification extends AbstractPersistable<Long> {
     @Column(nullable = false, columnDefinition = "text")
     private String body;
     @Temporal(TemporalType.TIMESTAMP)
-    private ZonedDateTime date = ZonedDateTime.now();
+    private Instant date = Instant.now();
     @Column(nullable = false)
     private boolean read = false;
 
@@ -53,11 +52,11 @@ public class Notification extends AbstractPersistable<Long> {
         this.body = body;
     }
 
-    public ZonedDateTime getDate() {
+    public Instant getDate() {
         return date;
     }
 
-    public void setDate(ZonedDateTime date) {
+    public void setDate(Instant date) {
         this.date = date;
     }
 

@@ -58,9 +58,9 @@ public class MessageRepositoryTest {
                 new Message(user, chat, "Message 3")
         );
 
-        messages.getFirst().setCreatedAt(Date.from(ZonedDateTime.now().minusDays(1).toInstant()));
-        messages.get(1).setCreatedAt(Date.from(ZonedDateTime.now().minusDays(1).toInstant()));
-        messages.get(2).setCreatedAt(Date.from(ZonedDateTime.now().minusDays(1).toInstant()));
+        messages.getFirst().setCreatedAt(ZonedDateTime.now().minusDays(1).toInstant());
+        messages.get(1).setCreatedAt(ZonedDateTime.now().minusDays(1).toInstant());
+        messages.get(2).setCreatedAt(ZonedDateTime.now().minusDays(1).toInstant());
 
         messageRepository.saveAll(messages);
 

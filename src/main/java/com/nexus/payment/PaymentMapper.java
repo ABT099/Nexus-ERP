@@ -15,7 +15,7 @@ public class PaymentMapper {
         return new BasicPaymentResponse(
                 payment.getId(),
                 payment.getAmount(),
-                payment.getPaymentDate()
+                payment.getPaymentDate().toString()
         );
     }
 
@@ -23,7 +23,7 @@ public class PaymentMapper {
         return new PaymentResponse(
                 payment.getId(),
                 payment.getAmount(),
-                payment.getPaymentDate(),
+                payment.getPaymentDate().toString(),
                 userMapper.toUserInfo(payment.getPayer())
         );
     }

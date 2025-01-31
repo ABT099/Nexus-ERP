@@ -3,6 +3,7 @@ package com.nexus.chat;
 import com.nexus.user.User;
 import jakarta.persistence.*;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
@@ -35,7 +36,7 @@ public class Message  {
     private Chat chat;
     private String text;
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt = Date.from(ZonedDateTime.now().toInstant());
+    private Instant createdAt = Instant.now();
 
     public Message(User sender, Chat chat, String text) {
         this.sender = sender;
@@ -73,11 +74,11 @@ public class Message  {
         this.text = text;
     }
 
-    public Date getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 }

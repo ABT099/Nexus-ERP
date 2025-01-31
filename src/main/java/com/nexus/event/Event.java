@@ -5,6 +5,7 @@ import com.nexus.admin.Admin;
 import com.nexus.common.Status;
 import jakarta.persistence.*;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -28,7 +29,7 @@ public class Event extends AbstractAppAuditing<Integer> {
     @Enumerated(EnumType.STRING)
     private Status status = Status.PENDING;
     @Temporal(TemporalType.TIMESTAMP)
-    private ZonedDateTime date;
+    private Instant date;
     @Column(nullable = false)
     private boolean urgent = false;
 
@@ -42,7 +43,7 @@ public class Event extends AbstractAppAuditing<Integer> {
     )
     private final Set<Admin> admins = new HashSet<>();
 
-    public Event(String name, String description, EventType type, ZonedDateTime date) {
+    public Event(String name, String description, EventType type, Instant date) {
         this.name = name;
         this.description = description;
         this.type = type;
@@ -102,11 +103,11 @@ public class Event extends AbstractAppAuditing<Integer> {
         admin.removeEvent(this);
     }
 
-    public ZonedDateTime getDate() {
+    public Instant getDate() {
         return date;
     }
 
-    public void setDate(ZonedDateTime date) {
+    public void setDate(Instant date) {
         this.date = date;
     }
 

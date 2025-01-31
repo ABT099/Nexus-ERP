@@ -8,6 +8,7 @@ import com.nexus.project.ProjectFinder;
 import com.nexus.user.User;
 import com.nexus.user.UserService;
 import com.nexus.utils.UpdateHandler;
+import com.nexus.zoned.Zoned;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +41,7 @@ public class PaymentController {
         this.monitorManager = monitorManager;
     }
 
+    @Zoned
     @GetMapping
     public ResponseEntity<List<BasicPaymentResponse>> getAll() {
         return ResponseEntity.ok(
@@ -49,6 +51,7 @@ public class PaymentController {
         );
     }
 
+    @Zoned
     @GetMapping("{id}")
     public ResponseEntity<PaymentResponse> getById(@Valid @Positive @PathVariable("id") int id) {
         Payment payment = findById(id);

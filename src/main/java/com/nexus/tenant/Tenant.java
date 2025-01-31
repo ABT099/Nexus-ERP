@@ -6,7 +6,7 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import org.springframework.data.annotation.CreatedDate;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -16,18 +16,17 @@ public class Tenant {
     private String id;
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
-    private ZonedDateTime createdDate;
+    private Instant createdDate;
 
     public String getId() {
         return id;
     }
 
-    public ZonedDateTime getCreatedDate() {
+    public Instant getCreatedDate() {
         return createdDate;
     }
 
     public Tenant() {
         id = UUID.randomUUID().toString();
-        createdDate = ZonedDateTime.now();
     }
 }
