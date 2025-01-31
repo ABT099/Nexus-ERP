@@ -11,9 +11,14 @@ import org.springframework.stereotype.Component;
 public class PLogInterceptor {
     private static final Logger LOGGER = LoggerFactory.getLogger(PLogInterceptor.class);
 
-    @Pointcut("execution(* com.nexus..*(..)) && (@annotation(org.springframework.web.bind.annotation.RequestMapping) || " +
+    @Pointcut("execution(* com.nexus..*(..)) && " +
+            "(@within(org.springframework.web.bind.annotation.RestController) || " +
             "@annotation(org.springframework.web.bind.annotation.GetMapping) || " +
-            "@annotation(org.springframework.web.bind.annotation.PostMapping))")
+            "@annotation(org.springframework.web.bind.annotation.PostMapping) || " +
+            "@annotation(org.springframework.web.bind.annotation.PutMapping) || " +
+            "@annotation(org.springframework.web.bind.annotation.PatchMapping) || " +
+            "@annotation(org.springframework.web.bind.annotation.DeleteMapping))"
+    )
     public void loggableMethods() {}
 
     @Around("loggableMethods()")
