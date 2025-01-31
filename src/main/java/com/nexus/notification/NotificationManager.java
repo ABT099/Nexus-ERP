@@ -6,10 +6,15 @@ import com.nexus.user.UserService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 @Component
@@ -21,13 +26,41 @@ public class NotificationManager {
     private final SimpMessagingTemplate messagingTemplate;
     private final NotificationRepository notificationRepository;
     private final UserService userService;
+    private final Executor taskExecutor;
 
     private static final int BATCH_SIZE = 50;
 
-    public NotificationManager(SimpMessagingTemplate messagingTemplate, NotificationRepository notificationRepository, UserService userService) {
+    public NotificationManager(
+            SimpMessagingTemplate messagingTemplate,
+            NotificationRepository notificationRepository,
+            UserService userService,
+            @Qualifier("taskExecutor") Executor taskExecutor
+    ) {
         this.messagingTemplate = messagingTemplate;
         this.notificationRepository = notificationRepository;
         this.userService = userService;
+        this.taskExecutor = taskExecutor;
+    }
+
+    @Scheduled(fixedRate = 3600000)
+    public void notificationCleanup() {
+        LOG.info("Cleaning up notifications");
+        taskExecutor.execute(() -> {
+            Instant now = Instant.now();
+
+            List<Notification> notifications = notificationRepository.findAll();
+            List<Notification> notificationsToDelete = new ArrayList<>();
+
+            for (Notification notification : notifications) {
+                long hoursDifference = ChronoUnit.HOURS.between(notification.getDate(), now);
+                if (hoursDifference < 0) {
+                    LOG.debug("Removing expired notification: {}", notification.getId());
+                    notificationsToDelete.add(notification);
+                }
+            }
+
+            notificationRepository.deleteAll(notificationsToDelete);
+        });
     }
 
     @Transactional
