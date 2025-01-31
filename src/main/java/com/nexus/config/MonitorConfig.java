@@ -2,6 +2,7 @@ package com.nexus.config;
 
 import com.nexus.abstraction.AbstractAppUser;
 import com.nexus.admin.Admin;
+import com.nexus.email.SendEmailService;
 import com.nexus.event.Event;
 import com.nexus.expense.Expense;
 import com.nexus.ineteraction.Interaction;
@@ -27,9 +28,11 @@ import java.util.List;
 public class MonitorConfig {
 
     private final UserService userService;
+    private final SendEmailService sendEmailService;
 
-    public MonitorConfig(UserService userService) {
+    public MonitorConfig(UserService userService, SendEmailService sendEmailService) {
         this.userService = userService;
+        this.sendEmailService = sendEmailService;
     }
 
     @PostConstruct
@@ -93,6 +96,8 @@ public class MonitorConfig {
 
             notifier.addBatchNotification(notificationDTOS);
             notifier.flush();
+
+            sendEmailService.sendEmail("abdo.personal99@gmail.com", title, body.toString());
         });
 
         MonitorManager.registerStrategy(Project.class, (
@@ -309,6 +314,8 @@ public class MonitorConfig {
                     title, body,
                     NotificationType.NEW_UPDATE
             ));
+
+            sendEmailService.sendEmail("abdo.personal99@gmail.com", title, body);
         }
 
         notifier.addBatchNotification(notificationDTOS);
