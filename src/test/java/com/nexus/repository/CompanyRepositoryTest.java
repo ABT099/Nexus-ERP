@@ -7,12 +7,9 @@ import com.nexus.tenant.TenantRepository;
 import com.nexus.user.User;
 import com.nexus.user.UserRepository;
 import com.nexus.user.UserType;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.util.List;
@@ -20,10 +17,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Transactional
-public class CompanyRepositoryTest {
+public class CompanyRepositoryTest extends AbstractRepositoryTest {
 
     @Autowired
     private CompanyRepository companyRepository;

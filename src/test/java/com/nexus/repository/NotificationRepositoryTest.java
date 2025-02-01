@@ -9,20 +9,14 @@ import com.nexus.tenant.TenantRepository;
 import com.nexus.user.User;
 import com.nexus.user.UserRepository;
 import com.nexus.user.UserType;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Transactional
-public class NotificationRepositoryTest {
+public class NotificationRepositoryTest extends AbstractRepositoryTest {
 
     @Autowired
     private NotificationRepository notificationRepository;

@@ -4,24 +4,17 @@ import com.nexus.tenant.Tenant;
 import com.nexus.tenant.TenantRepository;
 import com.nexus.user.User;
 import com.nexus.user.UserRepository;
-import com.nexus.user.UserTenantDTO;
 import com.nexus.user.UserType;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Transactional
-public class UserRepositoryTest {
+public class UserRepositoryTest extends AbstractRepositoryTest {
 
     @Autowired
     private UserRepository underTest;

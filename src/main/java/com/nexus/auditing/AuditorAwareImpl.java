@@ -1,4 +1,4 @@
-package com.nexus.common;
+package com.nexus.auditing;
 
 import com.nexus.auth.principal.Principal;
 import com.nexus.user.User;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-@Component
+@Component(value = "auditorAwareImpl")
 public class AuditorAwareImpl implements AuditorAware<User> {
     @Override
     public Optional<User> getCurrentAuditor() {

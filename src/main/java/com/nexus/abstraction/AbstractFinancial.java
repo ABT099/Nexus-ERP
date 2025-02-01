@@ -4,7 +4,6 @@ import com.nexus.project.Project;
 import jakarta.persistence.*;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 
 @MappedSuperclass
 public abstract class AbstractFinancial extends AuditableTenantAware<Integer> {

@@ -9,11 +9,8 @@ import com.nexus.tenant.TenantRepository;
 import com.nexus.user.User;
 import com.nexus.user.UserRepository;
 import com.nexus.user.UserType;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -21,10 +18,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Transactional
-public class FileRepositoryTest {
+public class FileRepositoryTest extends AbstractRepositoryTest {
     @Autowired
     private FileRepository fileRepository;
 
