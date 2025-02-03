@@ -4,18 +4,18 @@ import java.time.Instant;
 import java.util.Objects;
 
 public class EventDTO implements Comparable<EventDTO> {
-    private final Integer eventId;
+    private final Long eventId;
     private final String eventName;
     private final Instant date;
     private boolean urgent;
 
-    public EventDTO(Integer eventId, String EventName, Instant date, boolean urgent) {
+    public EventDTO(Long eventId, String EventName, Instant date, boolean urgent) {
         this.eventId = eventId;
         this.eventName = EventName;
         this.date = date;
         this.urgent = urgent;
     }
-    public Integer getEventId() {
+    public Long getEventId() {
         return eventId;
     }
 
@@ -70,6 +70,6 @@ public class EventDTO implements Comparable<EventDTO> {
 
     @Override
     public int hashCode() {
-        return Integer.hashCode(eventId);
+        return Long.hashCode(eventId);
     }
 }

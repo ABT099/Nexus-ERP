@@ -104,7 +104,7 @@ public class EventManager {
 
         LOG.debug("Updating urgent status for {} events", events.size());
 
-        Set<Integer> eventIdsToUpdate = new HashSet<>();
+        Set<Long> eventIdsToUpdate = new HashSet<>();
 
         events.removeIf(event -> {
             if (event.getDate() == null) {

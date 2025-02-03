@@ -60,7 +60,7 @@ public class ExpenseController {
     }
 
     @PostMapping
-    public ResponseEntity<Integer> create(@Valid @RequestBody CreateExpenseRequest request) {
+    public ResponseEntity<Long> create(@Valid @RequestBody CreateExpenseRequest request) {
         ExpenseCategory expenseCategory = expenseCategoryFinder.findById(request.expenseCategoryId());
 
         Expense expense;
@@ -81,7 +81,7 @@ public class ExpenseController {
     }
 
     @PutMapping("{id}")
-    public void update(@Valid @Positive @PathVariable int id, @Valid @RequestBody UpdateExpenseRequest request) {
+    public void update(@Valid @Positive @PathVariable long id, @Valid @RequestBody UpdateExpenseRequest request) {
         Expense expense = findById(id);
 
         UpdateHandler.updateEntity(expense, tracker -> {
@@ -106,7 +106,7 @@ public class ExpenseController {
         monitorManager.monitor(expense, ActionType.DELETE);
     }
 
-    private Expense findById(int id) {
+    private Expense findById(long id) {
         return expenseRepository.findById(id)
                 .orElseThrow(
                         () -> new ResourceNotFoundException("Expense with id " + id + " not found")

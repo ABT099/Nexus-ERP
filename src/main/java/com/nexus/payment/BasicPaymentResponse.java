@@ -1,9 +1,7 @@
 package com.nexus.payment;
 
-import java.time.Instant;
-
 public record BasicPaymentResponse(
-        Integer id,
+        Long id,
         double amount,
         String paymentDate
 ) { }

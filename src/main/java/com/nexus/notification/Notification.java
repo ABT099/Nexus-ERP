@@ -15,12 +15,16 @@ public class Notification extends AbstractPersistable<Long> {
             updatable = false
     )
     private User user;
+
     @Column(nullable = false, columnDefinition = "text")
     private String title;
+
     @Column(nullable = false, columnDefinition = "text")
     private String body;
+
     @Temporal(TemporalType.TIMESTAMP)
     private Instant date = Instant.now();
+
     @Column(nullable = false)
     private boolean read = false;
 

@@ -1,22 +1,22 @@
 package com.nexus.tenant;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.Instant;
-import java.util.UUID;
 
 @Entity
 public class Tenant {
 
     @Id
+    @Column(columnDefinition = "uuid", updatable = false, nullable = false, insertable = false)
     private String id;
+
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
     private Instant createdDate;
+
+    public Tenant() {}
 
     public String getId() {
         return id;
@@ -26,7 +26,4 @@ public class Tenant {
         return createdDate;
     }
 
-    public Tenant() {
-        id = UUID.randomUUID().toString();
-    }
 }

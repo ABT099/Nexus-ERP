@@ -2,6 +2,7 @@ package com.nexus.file;
 
 import com.nexus.abstraction.AbstractAppAuditing;
 import com.nexus.project.Project;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToMany;
@@ -11,10 +12,31 @@ import java.util.Set;
 
 @Entity
 public class File extends AbstractAppAuditing<Integer> {
+
+    @Column(
+            columnDefinition = "text",
+            nullable = false
+    )
     private String name;
+
+    @Column(
+            columnDefinition = "text",
+            nullable = false
+    )
     private String description;
+
+    @Column(
+            columnDefinition = "text",
+            nullable = false
+    )
     private String type;
+
+    @Column(
+            columnDefinition = "text",
+            nullable = false
+    )
     private String url;
+
     @ManyToMany(
             fetch = FetchType.LAZY,
             mappedBy = "files"

@@ -12,7 +12,7 @@ public class ExpenseCategoryFinder {
         this.repository = repository;
     }
 
-    public ExpenseCategory findById(int id) {
+    public ExpenseCategory findById(long id) {
         return repository.findById(id)
                 .orElseThrow(
                         () -> new ResourceNotFoundException("category not found with id " + id)

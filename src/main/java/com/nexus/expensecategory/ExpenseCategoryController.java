@@ -41,7 +41,7 @@ public class ExpenseCategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<Integer> create(@Valid @RequestBody ExpenseCategoryRequest request) {
+    public ResponseEntity<Long> create(@Valid @RequestBody ExpenseCategoryRequest request) {
         ExpenseCategory eCategory = new ExpenseCategory(request.name(), request.description());
         repository.save(eCategory);
 
@@ -59,7 +59,7 @@ public class ExpenseCategoryController {
     }
 
     @DeleteMapping("{id}")
-    public void delete(@Valid @Positive @PathVariable int id) {
+    public void delete(@Valid @Positive @PathVariable long id) {
         repository.deleteById(id);
     }
 }

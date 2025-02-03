@@ -12,9 +12,6 @@ import java.util.List;
 @Table(name = "_user")
 public class User extends TenantAware {
 
-    @Id
-    @GeneratedValue
-    private Long id;
     @Column(
             unique = true,
             nullable = false,
@@ -70,11 +67,11 @@ public class User extends TenantAware {
     public User() {}
 
     public Long getId() {
-        return id;
+        return super.getId();
     }
 
     public void setId(Long id) {
-        this.id = id;
+        super.setId(id);
     }
 
     public String getUsername() {

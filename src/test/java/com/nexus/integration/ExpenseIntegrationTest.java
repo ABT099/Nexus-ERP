@@ -29,17 +29,17 @@ public class ExpenseIntegrationTest extends AuthenticatedIntegrationTest {
 
     @Test
     void canCreateExpense() {
-        int categoryId = getCategoryId();
+        long categoryId = getCategoryId();
 
-        int expenseId = createExpense(categoryId);
+        long expenseId = createExpense(categoryId);
 
         getExpense(expenseId);
     }
 
     @Test
     void canUpdateExpense() {
-        int categoryId = getCategoryId();
-        int expenseId = createExpense(categoryId);
+        long categoryId = getCategoryId();
+        long expenseId = createExpense(categoryId);
 
         ExpenseResponse expense = getExpense(expenseId);
 
@@ -63,12 +63,12 @@ public class ExpenseIntegrationTest extends AuthenticatedIntegrationTest {
 
     @Test
     void canUpdateExpenseWithCategory() {
-        int categoryId = getCategoryId();
-        int expenseId = createExpense(categoryId);
+        long categoryId = getCategoryId();
+        long expenseId = createExpense(categoryId);
 
         ExpenseResponse expense = getExpense(expenseId);
 
-        int newCategoryId = getCategoryId();
+        long newCategoryId = getCategoryId();
 
         UpdateExpenseRequest request = new UpdateExpenseRequest(111, Instant.now(), newCategoryId);
 
@@ -89,8 +89,8 @@ public class ExpenseIntegrationTest extends AuthenticatedIntegrationTest {
 
     @Test
     void canDeleteExpense() {
-        int categoryId = getCategoryId();
-        int expenseId = createExpense(categoryId);
+        long categoryId = getCategoryId();
+        long expenseId = createExpense(categoryId);
 
         getExpense(expenseId);
 
@@ -107,7 +107,7 @@ public class ExpenseIntegrationTest extends AuthenticatedIntegrationTest {
                 .expectStatus().isNotFound();
     }
 
-    private Integer createExpense(int expenseCategoryId) {
+    private Integer createExpense(long expenseCategoryId) {
         CreateExpenseRequest request = new CreateExpenseRequest(
                 123,
                 Instant.now(),
@@ -131,7 +131,7 @@ public class ExpenseIntegrationTest extends AuthenticatedIntegrationTest {
         return expenseId;
     }
 
-    private ExpenseResponse getExpense(Integer expenseId) {
+    private ExpenseResponse getExpense(Long expenseId) {
         ExpenseResponse expense = webTestClient.get()
                 .uri("/expenses/{id}", expenseId)
                 .header("Authorization", token)
@@ -145,7 +145,7 @@ public class ExpenseIntegrationTest extends AuthenticatedIntegrationTest {
         return expense;
     }
 
-    private int getCategoryId() {
+    private Long getCategoryId() {
         ExpenseCategory expenseCategory = new ExpenseCategory(faker.name().name(), faker.name().nameWithMiddle());
         expenseCategoryRepo.save(expenseCategory);
         return expenseCategory.getId();

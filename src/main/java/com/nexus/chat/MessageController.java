@@ -62,11 +62,11 @@ public class MessageController {
     public void update(@Valid @RequestBody UpdateMessageRequest messageRequest) {
         Message message = findMessageById(messageRequest.id());
 
-        if (Objects.equals(messageRequest.text(), message.getText())) {
+        if (Objects.equals(messageRequest.text(), message.getMessageText())) {
             return;
         }
 
-        message.setText(messageRequest.text());
+        message.setMessageText(messageRequest.text());
         messageRepository.save(message);
 
         MessageResponse messageResponse = messageMapper.map(message);

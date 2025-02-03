@@ -1,7 +1,7 @@
 package com.nexus.expensecategory;
 
 public record ExpenseCategoryResponse(
-        Integer id,
+        Long id,
         String name,
         String description
 ) {

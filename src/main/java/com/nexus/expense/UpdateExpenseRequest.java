@@ -7,6 +7,6 @@ import java.time.Instant;
 public record UpdateExpenseRequest(
         @Positive double amount,
         Instant paymentDate,
-        @Positive int expenseCategoryId
+        @Positive Long expenseCategoryId
 ) {
 }

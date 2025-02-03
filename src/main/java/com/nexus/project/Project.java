@@ -23,15 +23,26 @@ public class Project extends AuditableTenantAware<Integer> {
 
     @Column(nullable = false, columnDefinition = "text")
     private String name;
+
     @Column(nullable = false, columnDefinition = "text")
     private String description;
+
     @Column(nullable = false)
     private ZonedDateTime startDate;
+
     @Column(nullable = false)
     private ZonedDateTime expectedEndDate;
+
     private ZonedDateTime actualEndDate;
+
+    @Positive
+    @Column(nullable = false)
+    private double price;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status = Status.PENDING;
+
     @ManyToOne(
             fetch = FetchType.LAZY,
             optional = false
@@ -54,6 +65,7 @@ public class Project extends AuditableTenantAware<Integer> {
             inverseJoinColumns = @JoinColumn(name = "file_id")
     )
     private Set<File> files = new HashSet<>();
+
     @OneToMany(
             mappedBy = "project",
             cascade = CascadeType.ALL,
@@ -75,9 +87,6 @@ public class Project extends AuditableTenantAware<Integer> {
             inverseJoinColumns = @JoinColumn(name = "employee_id")
     )
     private Set<Employee> employees = new HashSet<>();
-
-    @Positive
-    private double price;
 
     @OneToMany(fetch = FetchType.LAZY)
     private List<Interaction> interactions;

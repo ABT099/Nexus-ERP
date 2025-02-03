@@ -64,7 +64,7 @@ public class EventController {
     }
 
     @PostMapping
-    public ResponseEntity<Integer> create(@Valid @RequestBody CreateEventRequest request) {
+    public ResponseEntity<Long> create(@Valid @RequestBody CreateEventRequest request) {
         Event event = new Event(request.name(), request.description(), request.type(), request.date());
 
         List<Admin> admins = adminFinder.findAllById(request.adminIds());
@@ -112,7 +112,7 @@ public class EventController {
 
     @PatchMapping("{eventId}/add-admin/{adminId}")
     public void addAdmin(
-            @Valid @Positive @PathVariable int eventId,
+            @Valid @Positive @PathVariable long eventId,
             @Valid @Positive @PathVariable long adminId
     ) {
         Event event = findById(eventId);
@@ -128,7 +128,7 @@ public class EventController {
 
     @PatchMapping("{eventId}/remove-admin/{adminId}")
     public void removeAdmin(
-            @Valid @Positive @PathVariable int eventId,
+            @Valid @Positive @PathVariable long eventId,
             @Valid @Positive @PathVariable long adminId
     ) {
         Event event = findById(eventId);
@@ -143,7 +143,7 @@ public class EventController {
     }
 
     @DeleteMapping("{id}")
-    public void delete(@Valid @Positive @PathVariable int id) {
+    public void delete(@Valid @Positive @PathVariable long id) {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Event with id " + id + " not found"));
 
@@ -166,7 +166,7 @@ public class EventController {
         monitorManager.monitor(event, ActionType.DELETE);
     }
 
-    private Event findById(int id) {
+    private Event findById(long id) {
         return eventRepository.findById(id)
                 .orElseThrow(
                         () -> new ResourceNotFoundException("event with id " + id + " not found")

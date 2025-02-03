@@ -2,12 +2,16 @@ package com.nexus.abstraction;
 
 import com.nexus.project.Project;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
 
 import java.time.Instant;
 
 @MappedSuperclass
-public abstract class AbstractFinancial extends AuditableTenantAware<Integer> {
+public abstract class AbstractFinancial extends AuditableTenantAware<Long> {
+    
+    @Positive
     private double amount;
+
     private Instant paymentDate;
 
     @ManyToOne(fetch = FetchType.LAZY)

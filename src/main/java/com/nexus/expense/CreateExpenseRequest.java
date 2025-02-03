@@ -8,6 +8,6 @@ public record CreateExpenseRequest(
         @Positive double amount,
         Instant paymentDate,
         Integer projectId,
-        @Positive int expenseCategoryId
+        @Positive Long expenseCategoryId
 ) {
 }

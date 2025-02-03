@@ -3,16 +3,14 @@ package com.nexus.abstraction;
 import com.nexus.user.User;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import java.io.Serializable;
 import java.time.Instant;
 
 @MappedSuperclass
-public abstract class AbstractAppUser implements Serializable {
+public abstract class AbstractAppUser extends AbstractPersistable<Long> implements Serializable {
 
-    @Id
-    @GeneratedValue
-    private Long id;
     @OneToOne(
             cascade = CascadeType.ALL,
             orphanRemoval = true
@@ -24,9 +22,11 @@ public abstract class AbstractAppUser implements Serializable {
             unique = true
     )
     private User user;
+
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
     private Instant createdDate = Instant.now();
+
     @Column(nullable = false)
     private boolean archived = false;
 
@@ -35,20 +35,12 @@ public abstract class AbstractAppUser implements Serializable {
     }
     public AbstractAppUser() {}
 
-    public Long getId() {
-        return id;
-    }
-
     public User getUser() {
         return user;
     }
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public Instant getCreatedDate() {
-        return createdDate;
     }
 
     public boolean isArchived() {

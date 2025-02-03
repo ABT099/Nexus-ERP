@@ -2,15 +2,12 @@ package com.nexus.ineteraction;
 
 import com.nexus.user.User;
 import jakarta.persistence.*;
+import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import java.time.Instant;
 
 @Entity
-public class Interaction {
-
-    @Id
-    @GeneratedValue
-    private Long id;
+public class Interaction extends AbstractPersistable<Long> {
 
     @OneToOne(optional = false, fetch = FetchType.EAGER)
     private User interactedBy;

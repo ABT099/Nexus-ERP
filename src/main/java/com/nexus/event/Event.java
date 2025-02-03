@@ -10,25 +10,31 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-public class Event extends AbstractAppAuditing<Integer> {
+public class Event extends AbstractAppAuditing<Long> {
+
     @Column(
             nullable = false,
             columnDefinition = "text"
     )
     private String name;
+
     @Column(
             nullable = false,
             columnDefinition = "text"
     )
     private String description;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private EventType type;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status = Status.PENDING;
+
     @Temporal(TemporalType.TIMESTAMP)
     private Instant date;
+
     @Column(nullable = false)
     private boolean urgent = false;
 
@@ -50,10 +56,6 @@ public class Event extends AbstractAppAuditing<Integer> {
     }
 
     public Event() {}
-
-    public void setId(Integer id) {
-        super.setId(id);
-    }
 
     public String getName() {
         return name;

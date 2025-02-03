@@ -4,6 +4,7 @@ import com.nexus.abstraction.AbstractPerson;
 import com.nexus.project.Project;
 import com.nexus.projectstep.ProjectStep;
 import com.nexus.user.User;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToMany;
@@ -12,6 +13,11 @@ import java.util.List;
 
 @Entity
 public class Employee extends AbstractPerson {
+
+    @Column(
+            columnDefinition = "text",
+            nullable = false
+    )
     private String employeeCode;
 
     @ManyToMany(
@@ -19,6 +25,7 @@ public class Employee extends AbstractPerson {
             fetch = FetchType.LAZY
     )
     private List<Project> assignedProjects;
+
     @ManyToMany(
             mappedBy = "employees",
             fetch = FetchType.LAZY

@@ -60,7 +60,7 @@ public class PaymentController {
     }
 
     @PostMapping
-    public ResponseEntity<Integer> create(@Valid @RequestBody CreatePaymentRequest request) {
+    public ResponseEntity<Long> create(@Valid @RequestBody CreatePaymentRequest request) {
         User payer = userService.findById(request.payerId());
 
         Payment payment;

@@ -2,16 +2,12 @@ package com.nexus.chat;
 
 import com.nexus.user.User;
 import jakarta.persistence.*;
+import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.util.Date;
 
 @Entity
-public class Message  {
-    @Id
-    @GeneratedValue
-    private Long id;
+public class Message extends AbstractPersistable<Long> {
 
     @ManyToOne(
             optional = false,
@@ -34,21 +30,23 @@ public class Message  {
             updatable = false
     )
     private Chat chat;
-    private String text;
+
+    @Column(
+            columnDefinition = "text",
+            nullable = false
+    )
+    private String messageText;
+
     @Temporal(TemporalType.TIMESTAMP)
     private Instant createdAt = Instant.now();
 
-    public Message(User sender, Chat chat, String text) {
+    public Message(User sender, Chat chat, String messageText) {
         this.sender = sender;
         this.chat = chat;
-        this.text = text;
+        this.messageText = messageText;
     }
 
     public Message() {}
-
-    public Long getId() {
-        return id;
-    }
 
     public User getSender() {
         return sender;
@@ -66,12 +64,12 @@ public class Message  {
         this.chat = chat;
     }
 
-    public String getText() {
-        return text;
+    public String getMessageText() {
+        return messageText;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setMessageText(String text) {
+        this.messageText = text;
     }
 
     public Instant getCreatedAt() {

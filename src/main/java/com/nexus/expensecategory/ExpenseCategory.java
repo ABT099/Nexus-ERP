@@ -1,24 +1,21 @@
 package com.nexus.expensecategory;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nexus.expense.Expense;
 import jakarta.persistence.*;
+import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class ExpenseCategory {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+public class ExpenseCategory extends AbstractPersistable<Long> {
 
     @Column(
             nullable = false,
             columnDefinition = "text"
     )
     private String name;
+
     @Column(
             nullable = false,
             columnDefinition = "text"
@@ -29,7 +26,6 @@ public class ExpenseCategory {
             mappedBy = "expenseCategory",
             fetch = FetchType.LAZY
     )
-    @JsonIgnore
     private List<Expense> expenses = new ArrayList<>();
 
     public ExpenseCategory(String name, String description) {
@@ -38,14 +34,6 @@ public class ExpenseCategory {
     }
 
     public ExpenseCategory() {}
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;

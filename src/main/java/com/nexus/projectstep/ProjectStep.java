@@ -23,6 +23,7 @@ public class ProjectStep extends AbstractAppAuditing<Integer> {
     @Column(nullable = false)
     private ZonedDateTime expectedEndDate;
     private ZonedDateTime actualEndDate;
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status = Status.PENDING;
 

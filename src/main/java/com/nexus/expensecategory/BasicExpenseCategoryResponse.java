@@ -1,6 +1,6 @@
 package com.nexus.expensecategory;
 
 public record BasicExpenseCategoryResponse(
-    Integer id,
+    Long id,
     String name
 ) { }

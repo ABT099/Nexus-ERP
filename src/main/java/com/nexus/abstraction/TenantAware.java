@@ -6,11 +6,12 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.Filters;
 import org.hibernate.annotations.ParamDef;
+import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @MappedSuperclass
 @FilterDef(name = "tenantFilter", parameters = @ParamDef(name = "tenantId", type = String.class))
 @Filters(@Filter(name = "tenantFilter", condition = "tenant_id = :tenantId"))
-public abstract class TenantAware {
+public abstract class TenantAware extends AbstractPersistable<Long> {
     @Column(nullable = false)
     private String tenantId;
 
