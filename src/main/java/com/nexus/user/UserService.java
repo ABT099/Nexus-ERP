@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -32,7 +33,7 @@ public class UserService {
         return userRepository.findAllById(ids);
     }
 
-    public List<User> findAllByTenantIdAndUserType(String tenantId, UserType userType) {
+    public List<User> findAllByTenantIdAndUserType(UUID tenantId, UserType userType) {
         return userRepository.findAllByTenantIdAndUserType(tenantId, userType);
     }
 

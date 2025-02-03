@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,7 +34,7 @@ class AdminRepositoryTest extends AbstractRepositoryTest {
     private TestEntityManager entityManager;
 
     private User adminUser;
-    private String tenantId;
+    private UUID tenantId;
     private Admin admin;
 
     @BeforeEach

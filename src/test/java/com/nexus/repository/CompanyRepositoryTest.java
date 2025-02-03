@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,7 +32,7 @@ public class CompanyRepositoryTest extends AbstractRepositoryTest {
     private TestEntityManager entityManager;
 
     private Company company;
-    private String tenantId;
+    private UUID tenantId;
     private User user;
 
     @BeforeEach

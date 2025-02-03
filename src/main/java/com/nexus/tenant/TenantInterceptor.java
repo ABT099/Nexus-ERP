@@ -47,13 +47,13 @@ public class TenantInterceptor implements HandlerInterceptor {
         // Validate the tenant ID header
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        String tenantId = null;
+        UUID tenantId = null;
 
         if (authentication instanceof AppAuthToken) {
             tenantId  = ((AppAuthToken) authentication).getTenantId();
         }
 
-        if (tenantId == null || tenantId.isEmpty()) {
+        if (tenantId == null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write("Tenant ID is missing");
             return false;

@@ -13,10 +13,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 public class Project extends AuditableTenantAware<Integer> {
@@ -91,7 +88,7 @@ public class Project extends AuditableTenantAware<Integer> {
     @OneToMany(fetch = FetchType.LAZY)
     private List<Interaction> interactions;
 
-    public Project(User owner, double price, String name, String description, ZonedDateTime startDate, ZonedDateTime expectedEndDate, String tenantId) {
+    public Project(User owner, double price, String name, String description, ZonedDateTime startDate, ZonedDateTime expectedEndDate, UUID tenantId) {
         this.name = name;
         this.description = description;
         this.startDate = startDate;

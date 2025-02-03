@@ -1,13 +1,15 @@
 package com.nexus.tenant;
 
-public class TenantContext {
-    private static final ThreadLocal<String> tenantId = new ThreadLocal<>();
+import java.util.UUID;
 
-    public static String getTenantId() {
+public class TenantContext {
+    private static final ThreadLocal<UUID> tenantId = new ThreadLocal<>();
+
+    public static UUID getTenantId() {
         return tenantId.get();
     }
 
-    public static void setTenantId(String id) {
+    public static void setTenantId(UUID id) {
         tenantId.set(id);
     }
 

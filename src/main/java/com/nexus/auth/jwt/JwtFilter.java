@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -35,16 +36,18 @@ public class JwtFilter extends OncePerRequestFilter {
         String token = null;
         String username = null;
         String userId = null;
-        String tenantId = null;
+        UUID tenantId = null;
+
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             username = jwtService.extractClaim(token, Claims::getSubject);
             userId = jwtService.extractClaim(token, Claims::getId);
-            tenantId = jwtService.extractClaim(token, (claims -> claims.get("tenant_id").toString()));
+            String tenantIdString = jwtService.extractClaim(token, (claims -> claims.get("tenant_id").toString()));
+            tenantId = UUID.fromString(tenantIdString);
         }
 
-        if (username != null && userId != null && tenantId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (username != null && userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = context.getBean(PrincipalService.class).loadUserByUsername(username);
 
             if (jwtService.validate(token, userDetails)) {

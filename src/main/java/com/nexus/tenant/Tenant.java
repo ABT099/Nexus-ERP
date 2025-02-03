@@ -4,13 +4,15 @@ import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 public class Tenant {
 
     @Id
-    @Column(columnDefinition = "uuid", updatable = false, nullable = false, insertable = false)
-    private String id;
+    @GeneratedValue
+    @Column(columnDefinition = "uuid", updatable = false, nullable = false, unique = true)
+    private UUID id;
 
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
@@ -18,7 +20,7 @@ public class Tenant {
 
     public Tenant() {}
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 

@@ -7,6 +7,7 @@ import com.nexus.monitor.ActionType;
 import com.nexus.monitor.MonitorManager;
 import com.nexus.project.Project;
 import com.nexus.project.ProjectFinder;
+import com.nexus.tenant.TenantContext;
 import com.nexus.utils.UpdateHandler;
 import com.nexus.zoned.Zoned;
 import jakarta.validation.Valid;
@@ -68,9 +69,9 @@ public class ExpenseController {
         if (request.projectId() != null) {
             Project project = projectFinder.findById(request.projectId());
 
-            expense = new Expense(request.amount(), request.paymentDate(), project, expenseCategory);
+            expense = new Expense(request.amount(), request.paymentDate(), project, expenseCategory, TenantContext.getTenantId());
         } else {
-            expense = new Expense(request.amount(), request.paymentDate(), expenseCategory);
+            expense = new Expense(request.amount(), request.paymentDate(), expenseCategory, TenantContext.getTenantId());
         }
 
         expenseRepository.save(expense);

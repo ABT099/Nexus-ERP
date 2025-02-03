@@ -5,6 +5,7 @@ import com.nexus.monitor.ActionType;
 import com.nexus.monitor.MonitorManager;
 import com.nexus.project.Project;
 import com.nexus.project.ProjectFinder;
+import com.nexus.tenant.TenantContext;
 import com.nexus.user.User;
 import com.nexus.user.UserService;
 import com.nexus.utils.UpdateHandler;
@@ -68,9 +69,9 @@ public class PaymentController {
         if (request.projectId() != null) {
             Project project = projectFinder.findById(request.projectId());
 
-            payment = new Payment(request.amount(), request.paymentDate(), project, payer);
+            payment = new Payment(request.amount(), request.paymentDate(), project, payer, TenantContext.getTenantId());
         } else {
-            payment = new Payment(request.amount(), request.paymentDate(), payer);
+            payment = new Payment(request.amount(), request.paymentDate(), payer, TenantContext.getTenantId());
         }
 
         paymentRepository.save(payment);

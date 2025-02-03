@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
 import java.util.function.Function;
 
 @Service
@@ -15,7 +16,7 @@ public class JwtService {
         this.rsaKeyService = rsaKeyService;
     }
 
-    public String generateToken(String username, String userId, String tenantId) {
+    public String generateToken(String username, String userId, UUID tenantId) {
         return Jwts.builder()
                 .subject(username)
                 .id(userId)

@@ -25,7 +25,8 @@ spring:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
       mail.smtp.ssl.enable: false
-
+  flyway:
+    enabled: false
   datasource:
     url: jdbc:postgresql://localhost:5432/nexus-test
     username: postgres

@@ -7,6 +7,7 @@ import com.nexus.project.Project;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "_user")
@@ -56,7 +57,7 @@ public class User extends TenantAware {
     )
     private List<Project> projects;
 
-    public User(String username, String password, UserType userType, String tenantId) {
+    public User(String username, String password, UserType userType, UUID tenantId) {
         this.username = username;
         this.password = password;
         this.userType = userType;
