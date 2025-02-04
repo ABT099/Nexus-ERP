@@ -17,7 +17,8 @@ public class ExpenseMapper {
                 expense.getId(),
                 expense.getAmount(),
                 expense.getPaymentDate().toString(),
-                expenseCategoryMapper.toBasicExpenseCategoryResponse(expense.getExpenseCategory())
+                expenseCategoryMapper.toBasicExpenseCategoryResponse(expense.getExpenseCategory()),
+                expense.isArchived()
         );
     }
 }

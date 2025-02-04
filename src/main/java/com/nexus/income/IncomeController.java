@@ -1,5 +1,7 @@
 package com.nexus.income;
 
+import com.nexus.common.ArchivableQueryType;
+import com.nexus.common.ArchivedService;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.monitor.ActionType;
 import com.nexus.monitor.MonitorManager;
@@ -44,12 +46,17 @@ public class IncomeController {
 
     @Zoned
     @GetMapping
-    public ResponseEntity<List<BasicIncomeResponse>> getAll() {
-        return ResponseEntity.ok(
-                incomeRepository.findAll().stream()
-                        .map(incomeMapper::toBasicIncomeResponse)
-                        .toList()
-        );
+    public ResponseEntity<List<BasicIncomeResponse>> getAll(
+            @RequestParam(
+                    required = false,
+                    name = "a"
+            ) ArchivableQueryType archived
+    ) {
+        List<Income> incomes = ArchivedService.determine(archived, incomeRepository);
+
+        return ResponseEntity.ok(incomes.stream()
+                .map(incomeMapper::toBasicIncomeResponse)
+                .toList());
     }
 
     @Zoned
@@ -89,6 +96,15 @@ public class IncomeController {
             tracker.updateField(income::getAmount, request.amount(), income::setAmount);
             tracker.updateField(income::getPaymentDate, request.paymentDate(), income::setPaymentDate);
         }, () -> incomeRepository.save(income), monitorManager);
+    }
+
+    @PatchMapping("archive/{id}")
+    public void archive(@Valid @Positive @PathVariable int id) {
+        Income income = findById(id);
+
+        incomeRepository.archiveById(id);
+
+        monitorManager.monitor(income, ActionType.ARCHIVE);
     }
 
     @DeleteMapping("{id}")

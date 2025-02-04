@@ -1,6 +1,6 @@
 package com.nexus.income;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.nexus.common.ArchivableRepository;
 
-public interface IncomeRepository extends JpaRepository<Income, Integer> {
+public interface IncomeRepository extends ArchivableRepository<Income, Integer> {
 }

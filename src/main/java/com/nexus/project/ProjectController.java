@@ -1,7 +1,10 @@
 package com.nexus.project;
 
 import com.nexus.abstraction.UserContext;
+import com.nexus.common.ArchivableQueryType;
+import com.nexus.common.ArchivedService;
 import com.nexus.common.Status;
+import com.nexus.exception.NoUpdateException;
 import com.nexus.file.File;
 import com.nexus.file.FileService;
 import com.nexus.monitor.ActionType;
@@ -47,9 +50,16 @@ public class ProjectController extends UserContext {
     }
 
     @GetMapping
-    public ResponseEntity<List<ListProjectResponse>> getAll() {
+    public ResponseEntity<List<ListProjectResponse>> getAll(
+            @RequestParam(
+                    required = false,
+                    name = "a"
+            ) ArchivableQueryType archived
+    ) {
+        List<Project> projects = ArchivedService.determine(archived, projectRepository);
+
         return ResponseEntity.ok(
-                projectRepository.findAll().stream()
+                projects.stream()
                         .map(projectMapper::toListProjectResponse)
                         .toList()
         );
@@ -111,6 +121,10 @@ public class ProjectController extends UserContext {
     public void update(@Valid @RequestBody UpdateProjectRequest request) {
         Project project = projectFinder.findById(request.id());
 
+        if (project.isArchived()) {
+            throw new NoUpdateException("Archived project cannot be updated");
+        }
+
         UpdateHandler.updateEntity(project, tracker -> {
             tracker.updateField(project::getPrice, request.price(), project::setPrice);
             tracker.updateField(project::getName, request.name(), project::setName);
@@ -134,6 +148,10 @@ public class ProjectController extends UserContext {
     public void updateStatus(@Valid @Positive @PathVariable int id, Status status) {
         Project project = projectFinder.findById(id);
 
+        if (project.isArchived()) {
+            throw new NoUpdateException("Archived project cannot be updated");
+        }
+
         UpdateHandler.updateEntity(project,tracker -> {
             tracker.updateField(project::getStatus, status, project::setStatus);
         }, () -> projectRepository.save(project), monitorManager);
@@ -156,10 +174,33 @@ public class ProjectController extends UserContext {
         Project project = projectFinder.findById(id);
         File file = fileService.findById(fileId);
 
+        if (file.getProjects().isEmpty()) {
+            file.setArchived(true);
+        }
+
         project.removeFile(file);
 
         projectRepository.save(project);
 
         monitorManager.monitor(project, ActionType.REMOVE_FILE, file.getName());
+    }
+
+    @PatchMapping("archive/{id}")
+    public void archive(@Valid @Positive @PathVariable int id) {
+        Project project = projectFinder.findById(id);
+
+        if (project.isArchived()) {
+            throw new NoUpdateException("Project is already archived");
+        }
+
+        for (File file : project.getFiles()) {
+            if (file.getProjects().isEmpty()) {
+                file.setArchived(true);
+            }
+        }
+
+        projectRepository.save(project);
+
+        monitorManager.monitor(project, ActionType.ARCHIVE);
     }
 }

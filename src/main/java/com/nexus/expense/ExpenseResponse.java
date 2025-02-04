@@ -3,8 +3,9 @@ package com.nexus.expense;
 import com.nexus.expensecategory.BasicExpenseCategoryResponse;
 
 public record ExpenseResponse(
-        long id,
+        Long id,
         double amount,
         String paymentDate,
-        BasicExpenseCategoryResponse category
+        BasicExpenseCategoryResponse category,
+        boolean archived
 ) { }

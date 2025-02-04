@@ -5,5 +5,7 @@ public record EventResponse(
         String description,
         String eventType,
         String status,
-        String date
+        String date,
+        boolean urgent,
+        boolean archived
 ) { }

@@ -1,10 +1,14 @@
 package com.nexus.file;
 
+import com.nexus.common.ArchivableQueryType;
+import com.nexus.common.ArchivedService;
+import com.nexus.exception.NoUpdateException;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.monitor.ActionType;
 import com.nexus.monitor.MonitorManager;
 import com.nexus.project.Project;
 import com.nexus.project.ProjectFinder;
+import com.nexus.tenant.TenantContext;
 import com.nexus.utils.UpdateHandler;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -14,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("files")
@@ -34,6 +39,21 @@ public class FileController {
         this.fileService = fileService;
         this.projectFinder = projectFinder;
         this.fileMapper = fileMapper;
+    }
+
+
+    @GetMapping
+    public ResponseEntity<List<BasicFileResponse>> getAllByTenant(
+            @RequestParam(
+                required = false,
+                name = "a"
+            ) ArchivableQueryType archived
+    ) {
+        List<File> files = ArchivedService.determine(archived, fileRepository);
+
+        return ResponseEntity.ok(files.stream()
+                .map(fileMapper::toBasicFileResponse)
+                .toList());
     }
 
     @GetMapping("by-project/{id}")
@@ -78,10 +98,19 @@ public class FileController {
     public void update(@Valid @RequestBody UpdateFileRequest request) {
         File file = fileService.findById(request.id());
 
+        if (file.isArchived()) {
+            throw new NoUpdateException("Archived file cannot be updated");
+        }
+
         UpdateHandler.updateEntity(tracker -> {
             tracker.updateField(file::getName, request.name(), file::setName);
             tracker.updateField(file::getDescription, request.description(), file::setDescription);
         }, () -> fileRepository.saveAndFlush(file));
+    }
+
+    @PatchMapping("archive/{id}")
+    public void archive(@Valid @Positive @PathVariable int id) {
+        fileRepository.archiveById(id);
     }
 
     @DeleteMapping("{id}")
@@ -110,7 +139,8 @@ public class FileController {
                 name,
                 request.description(),
                 type,
-                fileUrl
+                fileUrl,
+                TenantContext.getTenantId()
         );
     }
 }

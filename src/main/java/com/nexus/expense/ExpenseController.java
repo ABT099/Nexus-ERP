@@ -1,5 +1,8 @@
 package com.nexus.expense;
 
+import com.nexus.common.ArchivableQueryType;
+import com.nexus.common.ArchivedService;
+import com.nexus.exception.NoUpdateException;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.expensecategory.ExpenseCategory;
 import com.nexus.expensecategory.ExpenseCategoryFinder;
@@ -44,12 +47,17 @@ public class ExpenseController {
 
     @Zoned
     @GetMapping
-    public ResponseEntity<List<ExpenseResponse>> getAll() {
-        return ResponseEntity.ok(
-                expenseRepository.findAll().stream()
-                        .map(expenseMapper::toExpenseResponse)
-                        .toList()
-        );
+    public ResponseEntity<List<ExpenseResponse>> getAll(
+        @RequestParam(
+            required = false,
+            name = "a"
+        ) ArchivableQueryType archived
+    ) {
+        List<Expense> expenses = ArchivedService.determine(archived, expenseRepository);
+
+        return ResponseEntity.ok(expenses.stream()
+                .map(expenseMapper::toExpenseResponse)
+                .toList());
     }
 
     @Zoned
@@ -85,6 +93,10 @@ public class ExpenseController {
     public void update(@Valid @Positive @PathVariable long id, @Valid @RequestBody UpdateExpenseRequest request) {
         Expense expense = findById(id);
 
+        if (expense.isArchived()) {
+            throw new NoUpdateException("Archived expense cannot be updated");
+        }
+
         UpdateHandler.updateEntity(expense, tracker -> {
             tracker.updateField(
                     expense.getExpenseCategory()::getId,
@@ -96,6 +108,19 @@ public class ExpenseController {
             tracker.updateField(expense::getAmount, request.amount(), expense::setAmount);
             tracker.updateField(expense::getPaymentDate, request.paymentDate(), expense::setPaymentDate);
         }, () -> expenseRepository.save(expense), monitorManager);
+    }
+
+    @PatchMapping("archive/{id}")
+    public void archive(@Valid @Positive @PathVariable long id) {
+        Expense expense = findById(id);
+
+        if (expense.isArchived()) {
+            throw new NoUpdateException("Expense is already archived");
+        }
+
+        expenseRepository.archiveById(id);
+
+        monitorManager.monitor(expense, ActionType.ARCHIVE);
     }
 
     @DeleteMapping("{id}")

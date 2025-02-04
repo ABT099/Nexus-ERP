@@ -45,6 +45,9 @@ public class ProjectStep extends AbstractAppAuditing<Integer> {
     @OneToMany(fetch = FetchType.LAZY)
     private List<Interaction> interactions;
 
+    @Column(nullable = false)
+    private boolean archived = false;
+
     public ProjectStep(Project project, String name, String description, ZonedDateTime startDate, ZonedDateTime expectedEndDate) {
         this.name = name;
         this.description = description;
@@ -118,5 +121,13 @@ public class ProjectStep extends AbstractAppAuditing<Integer> {
 
     public void removeEmployee(Employee employee) {
         employees.remove(employee);
+    }
+
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 }

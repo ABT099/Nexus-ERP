@@ -2,6 +2,7 @@ package com.nexus.employee;
 
 import com.nexus.abstraction.UserContext;
 import com.nexus.common.ArchivableQueryType;
+import com.nexus.common.ArchivedService;
 import com.nexus.common.person.CreatePersonRequest;
 import com.nexus.common.person.PersonService;
 import com.nexus.common.person.UpdatePersonRequest;
@@ -42,13 +43,7 @@ public class EmployeeController extends UserContext {
                     required = false,
                     name = "a"
             )ArchivableQueryType queryType) {
-        List<Employee> employees;
-
-        switch (queryType) {
-            case ALL -> employees = employeeRepository.findAll();
-            case Archived -> employees = employeeRepository.findAllArchived();
-            default -> employees = employeeRepository.findAllNonArchived();
-        }
+        List<Employee> employees = ArchivedService.determine(queryType, employeeRepository);
 
         return ResponseEntity.ok(employees.stream().map(employeeMapper::toBasicEmployeeResponse).toList());
     }

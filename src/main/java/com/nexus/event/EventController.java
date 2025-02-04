@@ -3,6 +3,7 @@ package com.nexus.event;
 import com.nexus.admin.Admin;
 import com.nexus.admin.AdminFinder;
 import com.nexus.common.Status;
+import com.nexus.exception.NoUpdateException;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.monitor.ActionType;
 import com.nexus.monitor.MonitorManager;
@@ -43,9 +44,21 @@ public class EventController {
 
     @Zoned
     @GetMapping("/admin/{adminId}")
-    public ResponseEntity<List<BasicEventResponse>> getAllByAdmin(@Valid @Positive @PathVariable long adminId) {
-        List<Event> events = new ArrayList<>(Optional.ofNullable(eventRepository.findAllByAdminId(adminId))
-                .orElse(Collections.emptyList()));
+    public ResponseEntity<List<BasicEventResponse>> getAllByAdmin(
+            @Valid @Positive @PathVariable long adminId,
+            @RequestParam(
+                    required = false,
+                    name = "a"
+            ) String archived
+    ) {
+
+        List<Event> events;
+
+        if (Objects.equals(archived.toLowerCase(), "archived")) {
+            events = eventRepository.findAllByAdminId(adminId);
+        } else {
+            events = eventRepository.findAllNonArchivedByAdminId(adminId);
+        }
 
         events.sort(
                 Comparator.comparing(Event::isUrgent, Comparator.nullsLast(Boolean::compareTo)).reversed()
@@ -92,6 +105,10 @@ public class EventController {
     ) {
         Event event = findById(id);
 
+        if (event.isArchived()) {
+            throw new NoUpdateException("Archived event cannot be updated");
+        }
+
         UpdateHandler.updateEntity(event, tracker -> {
             tracker.updateField(event::getName, request.name(), event::setName);
             tracker.updateField(event::getDescription, request.description(), event::setDescription);
@@ -105,6 +122,10 @@ public class EventController {
     public void updateStatus(@Valid @Positive @PathVariable int id, @RequestBody Status status) {
         Event event = findById(id);
 
+        if (event.isArchived()) {
+            throw new NoUpdateException("Archived event cannot be updated");
+        }
+
         UpdateHandler.updateEntity(event, tracker -> {
             tracker.updateField(event::getStatus, status, event::setStatus);
         }, () -> eventRepository.save(event), monitorManager);
@@ -116,6 +137,11 @@ public class EventController {
             @Valid @Positive @PathVariable long adminId
     ) {
         Event event = findById(eventId);
+
+        if (event.isArchived()) {
+            throw new NoUpdateException("Archived event cannot be updated");
+        }
+
         Admin admin = adminFinder.findById(adminId);
 
         event.addAdmin(admin);
@@ -132,6 +158,11 @@ public class EventController {
             @Valid @Positive @PathVariable long adminId
     ) {
         Event event = findById(eventId);
+
+        if (event.isArchived()) {
+            throw new NoUpdateException("Archived event cannot be updated");
+        }
+
         Admin admin = adminFinder.findById(adminId);
 
         event.removeAdmin(admin);
@@ -140,6 +171,19 @@ public class EventController {
         eventManager.removeEvent(adminId, new EventDTO(eventId, event.getName(), event.getDate(), event.isUrgent()));
 
         monitorManager.monitor(event, ActionType.REMOVE_ADMIN, admin.getUser().getUsername());
+    }
+
+    @PatchMapping("archive/{id}")
+    public void archive(@Valid @Positive @PathVariable long id) {
+        Event event = findById(id);
+
+        if (event.isArchived()) {
+            throw new NoUpdateException("Event is already archived");
+        }
+
+        eventRepository.archiveById(id);
+
+        monitorManager.monitor(event, ActionType.ARCHIVE);
     }
 
     @DeleteMapping("{id}")

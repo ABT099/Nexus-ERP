@@ -1,6 +1,6 @@
 package com.nexus.expense;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.nexus.common.ArchivableRepository;
 
-public interface ExpenseRepository extends JpaRepository<Expense, Long> {
+public interface ExpenseRepository extends ArchivableRepository<Expense, Long> {
 }

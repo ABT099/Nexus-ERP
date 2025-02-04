@@ -20,7 +20,7 @@ public class ProjectFinder {
     }
 
     public void doesProjectExist(Integer id) {
-        if (!projectRepository.existsById(id)) {
+        if (!projectRepository.existsByIdAndArchivedFalse(id)) {
             throw new ResourceNotFoundException("Project with id " + id + " not found");
         }
     }

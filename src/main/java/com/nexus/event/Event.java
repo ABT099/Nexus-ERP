@@ -38,6 +38,9 @@ public class Event extends AbstractAppAuditing<Long> {
     @Column(nullable = false)
     private boolean urgent = false;
 
+    @Column(nullable = false)
+    private boolean archived = false;
+
     @ManyToMany(
             fetch = FetchType.LAZY
     )
@@ -114,5 +117,13 @@ public class Event extends AbstractAppAuditing<Long> {
 
     public boolean isUrgent() {
         return urgent;
+    }
+
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 }

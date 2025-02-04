@@ -56,7 +56,7 @@ public class FileRepositoryTest extends AbstractRepositoryTest {
 
         projectRepository.save(project);
 
-        File file = new File("name", "description", "type", "url");
+        File file = new File("name", "description", "type", "url", tenant.getId());
 
         project.addFile(file);
 

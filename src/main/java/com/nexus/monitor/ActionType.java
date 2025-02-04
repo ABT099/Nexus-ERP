@@ -9,5 +9,6 @@ public enum ActionType {
     ADD_ADMIN,
     REMOVE_ADMIN,
     ADD_EMPLOYEE,
-    REMOVE_EMPLOYEE
+    REMOVE_EMPLOYEE,
+    ARCHIVE
 }

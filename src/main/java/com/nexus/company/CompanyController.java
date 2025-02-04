@@ -2,6 +2,7 @@ package com.nexus.company;
 
 import com.nexus.abstraction.UserContext;
 import com.nexus.common.ArchivableQueryType;
+import com.nexus.common.ArchivedService;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.user.UserCreationContext;
 import com.nexus.user.UserDTO;
@@ -36,13 +37,7 @@ public class CompanyController extends UserContext {
                     required = false,
                     name = "a"
             ) ArchivableQueryType queryType) {
-        List<Company> companies;
-
-        switch (queryType) {
-            case ALL -> companies = companyRepository.findAll();
-            case Archived -> companies = companyRepository.findAllArchived();
-            default -> companies = companyRepository.findAllNonArchived();
-        }
+        List<Company> companies = ArchivedService.determine(queryType, companyRepository);
 
         return ResponseEntity.ok(companies.stream().map(companyMapper::map).toList());
     }

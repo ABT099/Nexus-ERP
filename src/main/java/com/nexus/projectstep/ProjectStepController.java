@@ -1,8 +1,11 @@
 package com.nexus.projectstep;
 
+import com.nexus.common.ArchivableQueryType;
+import com.nexus.common.ArchivedService;
 import com.nexus.common.Status;
 import com.nexus.employee.Employee;
 import com.nexus.employee.EmployeeFinder;
+import com.nexus.exception.NoUpdateException;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.monitor.ActionType;
 import com.nexus.monitor.MonitorManager;
@@ -42,11 +45,19 @@ public class ProjectStepController {
     }
 
     @GetMapping("by-project/{id}")
-    public ResponseEntity<List<BasicStepResponse>> getAllByProject(@Valid @Positive @PathVariable int id) {
+    public ResponseEntity<List<BasicStepResponse>> getAllByProject(
+            @Valid @Positive @PathVariable int id,
+            @RequestParam(
+                    required = false,
+                    name = "a"
+            ) ArchivableQueryType archived
+    ) {
         projectFinder.doesProjectExist(id);
 
+        List<ProjectStep> steps = ArchivedService.determine(archived, projectStepRepository);
+
         return ResponseEntity.ok(
-                projectStepRepository.findAllByProjectId(id).stream()
+                steps.stream()
                         .map(projectStepMapper::toBasicStepResponse)
                         .toList()
         );
@@ -62,6 +73,10 @@ public class ProjectStepController {
     @PostMapping
     public ResponseEntity<Integer> create(@Valid @RequestBody CreateProjectStepRequest request) {
         Project project = projectFinder.findById(request.projectId());
+
+        if (project.isArchived()) {
+            throw new NoUpdateException("Project is archived");
+        }
 
         ProjectStep step = new ProjectStep(
                 project,
@@ -81,6 +96,10 @@ public class ProjectStepController {
     @PutMapping
     public void update(@Valid @RequestBody UpdateProjectStepRequest request) {
         ProjectStep step = findById(request.id());
+
+        if (step.isArchived()) {
+            throw new NoUpdateException("Step is archived");
+        }
 
         UpdateHandler.updateEntity(step, tracker -> {
             tracker.updateField(step::getName, request.name(), step::setName);
@@ -135,6 +154,15 @@ public class ProjectStepController {
         UpdateHandler.updateEntity(step, tracker -> {
             tracker.updateField(step::getStatus, status, step::setStatus);
         }, () -> projectStepRepository.save(step), monitorManager);
+    }
+
+    @PatchMapping("archive/{id}")
+    public void archive(@Valid @Positive @PathVariable int id) {
+        ProjectStep step = findById(id);
+
+        projectStepRepository.archiveById(id);
+
+        monitorManager.monitor(step, ActionType.ARCHIVE);
     }
 
     private ProjectStep findById(int id) {

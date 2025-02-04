@@ -1,6 +1,6 @@
 package com.nexus.file;
 
-import com.nexus.abstraction.AbstractAppAuditing;
+import com.nexus.abstraction.AuditableTenantAware;
 import com.nexus.project.Project;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,9 +9,10 @@ import jakarta.persistence.ManyToMany;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
-public class File extends AbstractAppAuditing<Integer> {
+public class File extends AuditableTenantAware<Integer> {
 
     @Column(
             columnDefinition = "text",
@@ -43,11 +44,15 @@ public class File extends AbstractAppAuditing<Integer> {
     )
     private Set<Project> projects = new HashSet<>();
 
-    public File(String name, String description, String type, String url) {
+    @Column(nullable = false)
+    private boolean archived = false;
+
+    public File(String name, String description, String type, String url, UUID tenantId) {
         this.name = name;
         this.description = description;
         this.type = type;
         this.url = url;
+        setTenantId(tenantId);
     }
 
     public File() {}
@@ -86,5 +91,13 @@ public class File extends AbstractAppAuditing<Integer> {
 
     public Set<Project> getProjects() {
         return projects;
+    }
+
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 }

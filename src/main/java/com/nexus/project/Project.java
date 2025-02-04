@@ -88,6 +88,9 @@ public class Project extends AuditableTenantAware<Integer> {
     @OneToMany(fetch = FetchType.LAZY)
     private List<Interaction> interactions;
 
+    @Column(nullable = false)
+    private boolean archived = false;
+
     public Project(User owner, double price, String name, String description, ZonedDateTime startDate, ZonedDateTime expectedEndDate, UUID tenantId) {
         this.name = name;
         this.description = description;
@@ -176,14 +179,6 @@ public class Project extends AuditableTenantAware<Integer> {
         return employees;
     }
 
-    public void addEmployee(Employee employee) {
-        employees.add(employee);
-    }
-
-    public void removeEmployee(Employee employee) {
-        employees.remove(employee);
-    }
-
     public Set<File> getFiles() {
         return files;
     }
@@ -196,5 +191,13 @@ public class Project extends AuditableTenantAware<Integer> {
     public void removeFile(File file) {
         files.remove(file);
         file.getProjects().remove(this);
+    }
+
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 }

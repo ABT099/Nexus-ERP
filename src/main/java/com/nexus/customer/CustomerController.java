@@ -2,6 +2,7 @@ package com.nexus.customer;
 
 import com.nexus.abstraction.UserContext;
 import com.nexus.common.ArchivableQueryType;
+import com.nexus.common.ArchivedService;
 import com.nexus.common.person.CreatePersonRequest;
 import com.nexus.common.person.PersonService;
 import com.nexus.common.person.UpdatePersonRequest;
@@ -40,13 +41,7 @@ public class CustomerController extends UserContext {
                     required = false,
                     name = "a"
             )ArchivableQueryType queryType) {
-        List<Customer> customers;
-
-        switch (queryType) {
-            case ALL -> customers = customerRepository.findAll();
-            case Archived -> customers = customerRepository.findAllArchived();
-            default -> customers = customerRepository.findAllNonArchived();
-        }
+        List<Customer> customers = ArchivedService.determine(queryType, customerRepository);
 
         return ResponseEntity.ok(customers.stream().map(customerMapper::map).toList());
     }

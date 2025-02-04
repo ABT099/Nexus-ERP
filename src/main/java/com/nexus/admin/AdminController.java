@@ -3,6 +3,7 @@ package com.nexus.admin;
 import com.nexus.abstraction.UserContext;
 import com.nexus.auth.RegisterResponse;
 import com.nexus.common.ArchivableQueryType;
+import com.nexus.common.ArchivedService;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.common.person.CreatePersonRequest;
 import com.nexus.common.person.PersonService;
@@ -44,13 +45,7 @@ public class AdminController extends UserContext {
                     name = "a"
             ) ArchivableQueryType archived
     ) {
-        List<Admin> result;
-
-        switch (archived) {
-            case ALL -> result = adminRepository.findAll();
-            case Archived -> result = adminRepository.findAllArchived();
-            default -> result = adminRepository.findAllNonArchived();
-        }
+        List<Admin> result = ArchivedService.determine(archived, adminRepository);
 
         return ResponseEntity.ok(
                 result.stream().map(adminMapper::toBasicAdminResponse).toList()
