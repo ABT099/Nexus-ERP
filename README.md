@@ -1,6 +1,6 @@
 # Nexus: The All-in-One Solution for Software Development Companies  
 
-Nexus is a comprehensive platform designed to streamline and optimize operations for software development companies. It offers powerful features including project management, planning, and budgeting with GitHub integration, employee and customer management, financial management with payment gateway support (e.g., Stripe), chat and messaging, event scheduling, notifications, and file management. Additional highlights include email automation (receipts, project updates), multi-currency support, recruitment and applicant tracking, attendance and time management, performance tracking, and a monitoring system to ensure smooth interactions at all user levels.  
+Nexus is a comprehensive platform designed to streamline and optimize operations for software development companies. It offers powerful features including project management, planning, and budgeting with GitHub integration, employee and customer management, financial management with income gateway support (e.g., Stripe), chat and messaging, event scheduling, notifications, and file management. Additional highlights include email automation (receipts, project updates), multi-currency support, recruitment and applicant tracking, attendance and time management, performance tracking, and a monitoring system to ensure smooth interactions at all user levels.  
 
 Effortlessly manage your team, projects, and customers—all in one place with Nexus!
 
@@ -13,7 +13,7 @@ Nexus Backend is the backbone of the **Nexus: All-in-One Solution for Software D
 ## Features  
 - **Project Management**: APIs for planning, tracking, and GitHub integration.  
 - **Employee & Customer Management**: Manage users, roles, and relationships.  
-- **Financial Management**: Support for multi-currency transactions and payment gateway integrations (e.g., Stripe).  
+- **Financial Management**: Support for multi-currency transactions and income gateway integrations (e.g., Stripe).  
 - **Chat & Messaging**: Real-time communication with customers and employees.  
 - **Event Scheduling**: APIs for custom schedules, reminders, and notifications.  
 - **File Management**: Upload, organize, and manage files securely.  

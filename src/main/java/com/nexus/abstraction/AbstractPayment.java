@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Positive;
 import java.time.Instant;
 
 @MappedSuperclass
-public abstract class AbstractFinancial extends AuditableTenantAware<Long> {
+public abstract class AbstractPayment extends AuditableTenantAware<Long> {
     
     @Positive
     private double amount;
@@ -18,18 +18,18 @@ public abstract class AbstractFinancial extends AuditableTenantAware<Long> {
     @JoinColumn(name = "project_id")
     private Project project;
 
-    public AbstractFinancial(double amount, Instant paymentDate, Project project) {
+    public AbstractPayment(double amount, Instant paymentDate, Project project) {
         this.amount = amount;
         this.paymentDate = paymentDate;
         this.project = project;
     }
 
-    public AbstractFinancial(double amount, Instant paymentDate) {
+    public AbstractPayment(double amount, Instant paymentDate) {
         this.amount = amount;
         this.paymentDate = paymentDate;
     }
 
-    public AbstractFinancial() {}
+    public AbstractPayment() {}
 
     public double getAmount() {
         return amount;

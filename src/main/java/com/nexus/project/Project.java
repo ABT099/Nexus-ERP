@@ -6,7 +6,7 @@ import com.nexus.employee.Employee;
 import com.nexus.expense.Expense;
 import com.nexus.file.File;
 import com.nexus.ineteraction.Interaction;
-import com.nexus.payment.Payment;
+import com.nexus.income.Income;
 import com.nexus.projectstep.ProjectStep;
 import com.nexus.user.User;
 import jakarta.persistence.*;
@@ -68,7 +68,7 @@ public class Project extends AuditableTenantAware<Integer> {
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.LAZY)
-    private List<Payment> payments = new ArrayList<>();
+    private List<Income> incomes = new ArrayList<>();
 
     @OneToMany(
             mappedBy = "project",
@@ -156,8 +156,8 @@ public class Project extends AuditableTenantAware<Integer> {
         return steps;
     }
 
-    public List<Payment> getPayments() {
-        return payments;
+    public List<Income> getPayments() {
+        return incomes;
     }
 
     public List<Expense> getExpenses() {

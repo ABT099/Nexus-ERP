@@ -1,8 +1,8 @@
-package com.nexus.payment;
+package com.nexus.income;
 
 import com.nexus.user.UserInfoDTO;
 
-public record PaymentResponse(
+public record IncomeResponse(
         Long id,
         double amount,
         String paymentDate,

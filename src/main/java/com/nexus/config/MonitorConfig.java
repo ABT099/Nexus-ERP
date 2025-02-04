@@ -5,13 +5,13 @@ import com.nexus.admin.Admin;
 import com.nexus.email.SendEmailService;
 import com.nexus.event.Event;
 import com.nexus.expense.Expense;
+import com.nexus.income.Income;
 import com.nexus.ineteraction.Interaction;
 import com.nexus.monitor.ActionType;
 import com.nexus.monitor.MonitorManager;
 import com.nexus.notification.NotificationDTO;
 import com.nexus.notification.NotificationManager;
 import com.nexus.notification.NotificationType;
-import com.nexus.payment.Payment;
 import com.nexus.project.Project;
 import com.nexus.projectstep.ProjectStep;
 import com.nexus.user.User;
@@ -230,7 +230,7 @@ public class MonitorConfig {
             prepareAndSendNotifications(notifier, title, body.toString(), users);
         });
 
-        MonitorManager.registerStrategy(Payment.class, (
+        MonitorManager.registerStrategy(Income.class, (
                 payment,
                 repo,
                 notifier,

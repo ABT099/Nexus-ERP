@@ -1,6 +1,6 @@
 package com.nexus.expense;
 
-import com.nexus.abstraction.AbstractFinancial;
+import com.nexus.abstraction.AbstractPayment;
 import com.nexus.expensecategory.ExpenseCategory;
 import com.nexus.project.Project;
 import jakarta.persistence.Entity;
@@ -10,7 +10,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-public class Expense extends AbstractFinancial {
+public class Expense extends AbstractPayment {
     @ManyToOne(optional = false)
     private ExpenseCategory expenseCategory;
 

@@ -44,10 +44,10 @@ ALTER TABLE expense
     ADD CONSTRAINT FK_EXPENSE_ON_EXPENSECATEGORY FOREIGN KEY (expense_category_id) REFERENCES expense_category (id);
 
 
-ALTER TABLE payment
+ALTER TABLE income
     DROP COLUMN id;
 
-ALTER TABLE payment
+ALTER TABLE income
     ADD id BIGINT NOT NULL PRIMARY KEY;
 
 ALTER TABLE file

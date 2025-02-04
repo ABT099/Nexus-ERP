@@ -1,8 +1,8 @@
 package com.nexus.user;
 
 import com.nexus.abstraction.TenantAware;
+import com.nexus.income.Income;
 import com.nexus.notification.Notification;
-import com.nexus.payment.Payment;
 import com.nexus.project.Project;
 import jakarta.persistence.*;
 
@@ -48,7 +48,7 @@ public class User extends TenantAware {
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
             mappedBy = "payer"
     )
-    private List<Payment> payments;
+    private List<Income> incomes;
 
     @OneToMany(
             orphanRemoval = true,

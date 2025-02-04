@@ -18,10 +18,10 @@ ALTER TABLE chat
 ALTER TABLE chat
     ADD tenant_id UUID NOT NULL;
 
-ALTER TABLE payment
+ALTER TABLE income
     DROP COLUMN tenant_id;
 
-ALTER TABLE payment
+ALTER TABLE income
     ADD tenant_id UUID NOT NULL;
 
 ALTER TABLE expense
@@ -44,8 +44,8 @@ ALTER TABLE chat
     ADD CONSTRAINT FK_CHAT_TENANT FOREIGN KEY (tenant_id) REFERENCES tenant (id);
 
 
-ALTER TABLE payment
-    ADD CONSTRAINT FK_PAYMENT_TENANT FOREIGN KEY (tenant_id) REFERENCES tenant (id);
+ALTER TABLE income
+    ADD CONSTRAINT FK_INCOME_TENANT FOREIGN KEY (tenant_id) REFERENCES tenant (id);
 
 
 ALTER TABLE expense
