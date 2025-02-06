@@ -1,13 +1,13 @@
 package com.nexus.employee;
 
 import com.nexus.exception.ResourceNotFoundException;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
-public class EmployeeFinder {
+@Service
+public class EmployeeService {
     private final EmployeeRepository employeeRepository;
 
-    public EmployeeFinder(EmployeeRepository employeeRepository) {
+    public EmployeeService(EmployeeRepository employeeRepository) {
         this.employeeRepository = employeeRepository;
     }
 

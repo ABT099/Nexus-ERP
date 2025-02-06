@@ -1,14 +1,14 @@
 package com.nexus.project;
 
 import com.nexus.exception.ResourceNotFoundException;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
-public class ProjectFinder {
+@Service
+public class ProjectService {
 
     private final ProjectRepository projectRepository;
 
-    public ProjectFinder(ProjectRepository projectRepository) {
+    public ProjectService(ProjectRepository projectRepository) {
         this.projectRepository = projectRepository;
     }
 

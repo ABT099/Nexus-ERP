@@ -1,5 +1,6 @@
 package com.nexus.abstraction;
 
+import com.nexus.budget.Budget;
 import com.nexus.project.Project;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
@@ -17,6 +18,10 @@ public abstract class AbstractPayment extends AuditableTenantAware<Long> {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "budget_id")
+    private Budget budget;
 
     @Column(nullable = false)
     private boolean archived = false;
@@ -64,5 +69,13 @@ public abstract class AbstractPayment extends AuditableTenantAware<Long> {
 
     public void setArchived(boolean archived) {
         this.archived = archived;
+    }
+
+    public Budget getBudget() {
+        return budget;
+    }
+
+    public void setBudget(Budget budget) {
+        this.budget = budget;
     }
 }

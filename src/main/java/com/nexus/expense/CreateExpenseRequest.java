@@ -9,5 +9,4 @@ public record CreateExpenseRequest(
         Instant paymentDate,
         Integer projectId,
         @Positive Long expenseCategoryId
-) {
-}
+) { }

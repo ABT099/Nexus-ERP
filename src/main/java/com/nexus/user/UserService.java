@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -40,7 +41,7 @@ public class UserService {
     public UserTenantDTO findUserTenantInfo(String username) {
         User user = findByUsername(username);
 
-        return new UserTenantDTO(user.getId().toString(), user.getTenantId());
+        return new UserTenantDTO(Objects.requireNonNull(user.getId()).toString(), user.getTenantId());
     }
 
     public void doesUserExists(long id) {

@@ -2,6 +2,7 @@ package com.nexus.config;
 
 import com.nexus.abstraction.AbstractAppUser;
 import com.nexus.admin.Admin;
+import com.nexus.budget.Budget;
 import com.nexus.email.SendEmailService;
 import com.nexus.event.Event;
 import com.nexus.expense.Expense;
@@ -300,6 +301,44 @@ public class MonitorConfig {
             }
 
             List<User> users = userService.findAllByTenantIdAndUserType(expense.getTenantId(), UserType.ADMIN);
+
+            prepareAndSendNotifications(notifier, title, body.toString(), users);
+        });
+
+        MonitorManager.registerStrategy(Budget.class, (
+                budget,
+                repo,
+                notifier,
+                actionType,
+                args) -> {
+            String title = "";
+            StringBuilder body = new StringBuilder();
+
+            User changedBy = budget.getLastModifiedBy().orElseThrow(
+                    () -> new RuntimeException("Project step has no last modified by user!")
+            );
+
+            if (args.length > 0 && actionType.equals(ActionType.UPDATE)) {
+                title = "A Budget Has Been Updated!";
+                body.append(String.format("%s Updated Budget: %s", changedBy, budget));
+            } else {
+                switch (actionType) {
+                    case CREATE -> {
+                        User createdBy = budget.getCreatedBy().orElseThrow(
+                                () -> new RuntimeException("Budget has no last modified by user!")
+                        );
+
+                        title = "A Budget Has Been Created!";
+                        body.append(String.format("%s Created Budget: %s\n", createdBy, budget));
+                    }
+                    case DELETE -> {
+                        title = "A Budget Has Been Deleted!";
+                        body.append(String.format("%s Deleted Budget: %s\n", changedBy, budget));
+                    }
+                }
+            }
+
+            List<User> users = userService.findAllByTenantIdAndUserType(budget.getTenantId(), UserType.ADMIN);
 
             prepareAndSendNotifications(notifier, title, body.toString(), users);
         });

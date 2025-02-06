@@ -5,11 +5,6 @@ import com.nexus.common.ArchivedService;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.monitor.ActionType;
 import com.nexus.monitor.MonitorManager;
-import com.nexus.project.Project;
-import com.nexus.project.ProjectFinder;
-import com.nexus.tenant.TenantContext;
-import com.nexus.user.User;
-import com.nexus.user.UserService;
 import com.nexus.utils.UpdateHandler;
 import com.nexus.zoned.Zoned;
 import jakarta.validation.Valid;
@@ -25,23 +20,19 @@ import java.util.List;
 public class IncomeController {
 
     private final IncomeRepository incomeRepository;
-    private final ProjectFinder projectFinder;
-    private final UserService userService;
     private final IncomeMapper incomeMapper;
     private final MonitorManager monitorManager;
+    private final IncomeService incomeService;
 
     public IncomeController(
             IncomeRepository incomeRepository,
-            ProjectFinder projectFinder,
-            UserService userService,
             IncomeMapper incomeMapper,
-            MonitorManager monitorManager
+            MonitorManager monitorManager, IncomeService incomeService
     ) {
         this.incomeRepository = incomeRepository;
-        this.projectFinder = projectFinder;
-        this.userService = userService;
         this.incomeMapper = incomeMapper;
         this.monitorManager = monitorManager;
+        this.incomeService = incomeService;
     }
 
     @Zoned
@@ -62,26 +53,14 @@ public class IncomeController {
     @Zoned
     @GetMapping("{id}")
     public ResponseEntity<IncomeResponse> getById(@Valid @Positive @PathVariable("id") int id) {
-        Income income = findById(id);
+        Income income = incomeService.findById(id);
 
         return ResponseEntity.ok(incomeMapper.toIncomeResponse(income));
     }
 
     @PostMapping
     public ResponseEntity<Long> create(@Valid @RequestBody CreateIncomeRequest request) {
-        User payer = userService.findById(request.payerId());
-
-        Income income;
-
-        if (request.projectId() != null) {
-            Project project = projectFinder.findById(request.projectId());
-
-            income = new Income(request.amount(), request.paymentDate(), project, payer, TenantContext.getTenantId());
-        } else {
-            income = new Income(request.amount(), request.paymentDate(), payer, TenantContext.getTenantId());
-        }
-
-        incomeRepository.save(income);
+        Income income = incomeService.create(request);
 
         monitorManager.monitor(income, ActionType.CREATE);
 
@@ -90,7 +69,7 @@ public class IncomeController {
 
     @PutMapping("{id}")
     public void update(@Valid @Positive @PathVariable int id, @Valid @RequestBody UpdateIncomeRequest request) {
-        Income income = findById(id);
+        Income income = incomeService.findById(id);
 
         UpdateHandler.updateEntity(income, tracker -> {
             tracker.updateField(income::getAmount, request.amount(), income::setAmount);
@@ -100,7 +79,7 @@ public class IncomeController {
 
     @PatchMapping("archive/{id}")
     public void archive(@Valid @Positive @PathVariable int id) {
-        Income income = findById(id);
+        Income income = incomeService.findById(id);
 
         incomeRepository.archiveById(id);
 
@@ -109,17 +88,10 @@ public class IncomeController {
 
     @DeleteMapping("{id}")
     public void delete(@Valid @Positive @PathVariable int id) {
-        Income income = findById(id);
+        Income income = incomeService.findById(id);
 
         incomeRepository.delete(income);
 
         monitorManager.monitor(income, ActionType.DELETE);
-    }
-
-    private Income findById(int id) {
-        return incomeRepository.findById(id)
-                .orElseThrow(
-                        () -> new ResourceNotFoundException("Payment not found with id " + id)
-                );
     }
 }

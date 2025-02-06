@@ -10,5 +10,7 @@ public enum ActionType {
     REMOVE_ADMIN,
     ADD_EMPLOYEE,
     REMOVE_EMPLOYEE,
-    ARCHIVE
+    ARCHIVE,
+    ADD_PAYMENT,
+    REMOVE_PAYMENT
 }

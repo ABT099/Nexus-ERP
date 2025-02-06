@@ -27,14 +27,14 @@ public class AdminController extends UserContext {
     private final AdminRepository adminRepository;
     private final UserCreationContext userCreationContext;
     private final PersonService<Admin> personService;
-    private final AdminFinder adminFinder;
+    private final AdminService adminService;
     private final AdminMapper adminMapper;
 
-    public AdminController(AdminRepository adminRepository, UserCreationContext userCreationContext, PersonService<Admin> personService, AdminFinder adminFinder, AdminMapper adminMapper) {
+    public AdminController(AdminRepository adminRepository, UserCreationContext userCreationContext, PersonService<Admin> personService, AdminService adminService, AdminMapper adminMapper) {
         this.adminRepository = adminRepository;
         this.userCreationContext = userCreationContext;
         this.personService = personService;
-        this.adminFinder = adminFinder;
+        this.adminService = adminService;
         this.adminMapper = adminMapper;
     }
 
@@ -54,7 +54,7 @@ public class AdminController extends UserContext {
 
     @GetMapping("{id}")
     public ResponseEntity<AdminResponse> getById(@Valid @Positive @PathVariable long id) {
-        Admin admin = adminFinder.findById(id);
+        Admin admin = adminService.findById(id);
 
         return ResponseEntity.ok(
                 adminMapper.toAdminResponse(admin)
@@ -86,7 +86,7 @@ public class AdminController extends UserContext {
 
     @PutMapping("{id}")
     public void updateById(@Valid @Positive @PathVariable long id, @Valid @RequestBody UpdatePersonRequest request) {
-        Admin admin = adminFinder.findById(id);
+        Admin admin = adminService.findById(id);
 
         admin = personService.updatePerson(admin, request);
 

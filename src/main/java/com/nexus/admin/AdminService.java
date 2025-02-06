@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class AdminFinder {
+public class AdminService {
     private final AdminRepository adminRepository;
 
-    public AdminFinder(AdminRepository adminRepository) {
+    public AdminService(AdminRepository adminRepository) {
         this.adminRepository = adminRepository;
     }
 

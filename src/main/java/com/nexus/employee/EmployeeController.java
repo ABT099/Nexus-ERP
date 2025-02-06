@@ -26,14 +26,14 @@ public class EmployeeController extends UserContext {
     private final EmployeeRepository employeeRepository;
     private final UserCreationContext userCreationContext;
     private final PersonService<Employee> personService;
-    private final EmployeeFinder employeeFinder;
+    private final EmployeeService employeeService;
     private final EmployeeMapper employeeMapper;
 
-    public EmployeeController(EmployeeRepository employeeRepository, UserCreationContext userCreationContext, PersonService<Employee> personService, EmployeeFinder employeeFinder, EmployeeMapper employeeMapper) {
+    public EmployeeController(EmployeeRepository employeeRepository, UserCreationContext userCreationContext, PersonService<Employee> personService, EmployeeService employeeService, EmployeeMapper employeeMapper) {
         this.employeeRepository = employeeRepository;
         this.userCreationContext = userCreationContext;
         this.personService = personService;
-        this.employeeFinder = employeeFinder;
+        this.employeeService = employeeService;
         this.employeeMapper = employeeMapper;
     }
 
@@ -50,7 +50,7 @@ public class EmployeeController extends UserContext {
 
     @GetMapping("{id}")
     public ResponseEntity<EmployeeResponse> getById(@Valid @Positive @PathVariable long id) {
-        Employee employee = employeeFinder.findById(id);
+        Employee employee = employeeService.findById(id);
 
         return ResponseEntity.ok(employeeMapper.toEmployeeResponse(employee));
     }
@@ -89,7 +89,7 @@ public class EmployeeController extends UserContext {
 
     @PutMapping("{id}")
     public void update(@Valid @Positive @PathVariable long id, @RequestBody UpdatePersonRequest request) {
-        Employee employee = employeeFinder.findById(id);
+        Employee employee = employeeService.findById(id);
 
         employee = personService.updatePerson(employee, request);
 

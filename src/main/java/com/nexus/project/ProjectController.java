@@ -27,7 +27,7 @@ import java.util.List;
 public class ProjectController extends UserContext {
 
     private final ProjectRepository projectRepository;
-    private final ProjectFinder projectFinder;
+    private final ProjectService projectService;
     private final UserService userService;
     private final FileService fileService;
     private final ProjectMapper projectMapper;
@@ -35,14 +35,14 @@ public class ProjectController extends UserContext {
 
     public ProjectController(
             ProjectRepository projectRepository,
-            ProjectFinder projectFinder,
+            ProjectService projectService,
             UserService userService,
             FileService fileService,
             ProjectMapper projectMapper,
             MonitorManager monitorManager
     ) {
         this.projectRepository = projectRepository;
-        this.projectFinder = projectFinder;
+        this.projectService = projectService;
         this.userService = userService;
         this.fileService = fileService;
         this.projectMapper = projectMapper;
@@ -91,7 +91,7 @@ public class ProjectController extends UserContext {
 
     @GetMapping("{id}")
     public ResponseEntity<ProjectResponse> getById(@Valid @Positive @PathVariable int id) {
-        Project project = projectFinder.findById(id);
+        Project project = projectService.findById(id);
 
         return ResponseEntity.ok(projectMapper.toProjectResponse(project));
     }
@@ -119,7 +119,7 @@ public class ProjectController extends UserContext {
 
     @PutMapping
     public void update(@Valid @RequestBody UpdateProjectRequest request) {
-        Project project = projectFinder.findById(request.id());
+        Project project = projectService.findById(request.id());
 
         if (project.isArchived()) {
             throw new NoUpdateException("Archived project cannot be updated");
@@ -137,7 +137,7 @@ public class ProjectController extends UserContext {
 
     @DeleteMapping("{id}")
     public void delete(@Valid @Positive @PathVariable int id) {
-        Project project = projectFinder.findById(id);
+        Project project = projectService.findById(id);
 
         projectRepository.delete(project);
 
@@ -146,7 +146,7 @@ public class ProjectController extends UserContext {
 
     @PatchMapping("{id}/status")
     public void updateStatus(@Valid @Positive @PathVariable int id, Status status) {
-        Project project = projectFinder.findById(id);
+        Project project = projectService.findById(id);
 
         if (project.isArchived()) {
             throw new NoUpdateException("Archived project cannot be updated");
@@ -159,7 +159,7 @@ public class ProjectController extends UserContext {
 
     @PatchMapping("{id}/files/{fileId}")
     public void addFile(@Valid @Positive @PathVariable int id, @Valid @Positive @PathVariable int fileId) {
-        Project project = projectFinder.findById(id);
+        Project project = projectService.findById(id);
         File file = fileService.findById(fileId);
 
         project.addFile(file);
@@ -171,7 +171,7 @@ public class ProjectController extends UserContext {
 
     @DeleteMapping("{id}/files/{fileId}")
     public void removeFile(@Valid @Positive @PathVariable int id, @Valid @Positive @PathVariable int fileId) {
-        Project project = projectFinder.findById(id);
+        Project project = projectService.findById(id);
         File file = fileService.findById(fileId);
 
         if (file.getProjects().isEmpty()) {
@@ -187,7 +187,7 @@ public class ProjectController extends UserContext {
 
     @PatchMapping("archive/{id}")
     public void archive(@Valid @Positive @PathVariable int id) {
-        Project project = projectFinder.findById(id);
+        Project project = projectService.findById(id);
 
         if (project.isArchived()) {
             throw new NoUpdateException("Project is already archived");

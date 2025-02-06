@@ -4,13 +4,13 @@ import com.nexus.common.ArchivableQueryType;
 import com.nexus.common.ArchivedService;
 import com.nexus.common.Status;
 import com.nexus.employee.Employee;
-import com.nexus.employee.EmployeeFinder;
+import com.nexus.employee.EmployeeService;
 import com.nexus.exception.NoUpdateException;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.monitor.ActionType;
 import com.nexus.monitor.MonitorManager;
 import com.nexus.project.Project;
-import com.nexus.project.ProjectFinder;
+import com.nexus.project.ProjectService;
 import com.nexus.utils.UpdateHandler;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -25,21 +25,21 @@ import java.util.List;
 public class ProjectStepController {
 
     private final ProjectStepRepository projectStepRepository;
-    private final ProjectFinder projectFinder;
-    private final EmployeeFinder employeeFinder;
+    private final ProjectService projectService;
+    private final EmployeeService employeeService;
     private final ProjectStepMapper projectStepMapper;
     private final MonitorManager monitorManager;
 
     public ProjectStepController(
             ProjectStepRepository projectStepRepository,
-            ProjectFinder projectFinder,
-            EmployeeFinder employeeFinder,
+            ProjectService projectService,
+            EmployeeService employeeService,
             ProjectStepMapper projectStepMapper,
             MonitorManager monitorManager
     ) {
         this.projectStepRepository = projectStepRepository;
-        this.projectFinder = projectFinder;
-        this.employeeFinder = employeeFinder;
+        this.projectService = projectService;
+        this.employeeService = employeeService;
         this.projectStepMapper = projectStepMapper;
         this.monitorManager = monitorManager;
     }
@@ -52,7 +52,7 @@ public class ProjectStepController {
                     name = "a"
             ) ArchivableQueryType archived
     ) {
-        projectFinder.doesProjectExist(id);
+        projectService.doesProjectExist(id);
 
         List<ProjectStep> steps = ArchivedService.determine(archived, projectStepRepository);
 
@@ -72,7 +72,7 @@ public class ProjectStepController {
 
     @PostMapping
     public ResponseEntity<Integer> create(@Valid @RequestBody CreateProjectStepRequest request) {
-        Project project = projectFinder.findById(request.projectId());
+        Project project = projectService.findById(request.projectId());
 
         if (project.isArchived()) {
             throw new NoUpdateException("Project is archived");
@@ -122,7 +122,7 @@ public class ProjectStepController {
     @PatchMapping("{id}/employees/{employeeId}")
     public void addEmployee(@Valid @Positive @PathVariable int id, @Valid @Positive @PathVariable long employeeId) {
         ProjectStep step = findById(id);
-        Employee employee = employeeFinder.findById(employeeId);
+        Employee employee = employeeService.findById(employeeId);
 
         step.addEmployee(employee);
         step.getProject().getEmployees().add(employee);
@@ -135,7 +135,7 @@ public class ProjectStepController {
     @DeleteMapping("{id}/employees/{employeeId}")
     public void removeEmployee(@Valid @Positive @PathVariable int id, @Valid @Positive @PathVariable long employeeId) {
         ProjectStep step = findById(id);
-        Employee employee = employeeFinder.findById(employeeId);
+        Employee employee = employeeService.findById(employeeId);
 
         step.removeEmployee(employee);
         step.getProject().getEmployees().add(employee);

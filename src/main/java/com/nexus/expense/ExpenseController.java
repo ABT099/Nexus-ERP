@@ -8,9 +8,6 @@ import com.nexus.expensecategory.ExpenseCategory;
 import com.nexus.expensecategory.ExpenseCategoryFinder;
 import com.nexus.monitor.ActionType;
 import com.nexus.monitor.MonitorManager;
-import com.nexus.project.Project;
-import com.nexus.project.ProjectFinder;
-import com.nexus.tenant.TenantContext;
 import com.nexus.utils.UpdateHandler;
 import com.nexus.zoned.Zoned;
 import jakarta.validation.Valid;
@@ -26,23 +23,23 @@ import java.util.List;
 public class ExpenseController {
 
     private final ExpenseRepository expenseRepository;
-    private final ProjectFinder projectFinder;
     private final ExpenseCategoryFinder expenseCategoryFinder;
     private final ExpenseMapper expenseMapper;
     private final MonitorManager monitorManager;
+    private final ExpenseService expenseService;
 
     public ExpenseController(
             ExpenseRepository expenseRepository,
-            ProjectFinder projectFinder,
             ExpenseCategoryFinder expenseCategoryFinder,
             ExpenseMapper expenseMapper,
-            MonitorManager monitorManager
+            MonitorManager monitorManager,
+            ExpenseService expenseService
     ) {
         this.expenseRepository = expenseRepository;
-        this.projectFinder = projectFinder;
         this.expenseCategoryFinder = expenseCategoryFinder;
         this.expenseMapper = expenseMapper;
         this.monitorManager = monitorManager;
+        this.expenseService = expenseService;
     }
 
     @Zoned
@@ -63,26 +60,14 @@ public class ExpenseController {
     @Zoned
     @GetMapping("{id}")
     public ResponseEntity<ExpenseResponse> getById(@Valid @Positive @PathVariable int id) {
-        Expense expense = findById(id);
+        Expense expense = expenseService.findById(id);
 
         return ResponseEntity.ok(expenseMapper.toExpenseResponse(expense));
     }
 
     @PostMapping
     public ResponseEntity<Long> create(@Valid @RequestBody CreateExpenseRequest request) {
-        ExpenseCategory expenseCategory = expenseCategoryFinder.findById(request.expenseCategoryId());
-
-        Expense expense;
-
-        if (request.projectId() != null) {
-            Project project = projectFinder.findById(request.projectId());
-
-            expense = new Expense(request.amount(), request.paymentDate(), project, expenseCategory, TenantContext.getTenantId());
-        } else {
-            expense = new Expense(request.amount(), request.paymentDate(), expenseCategory, TenantContext.getTenantId());
-        }
-
-        expenseRepository.save(expense);
+        Expense expense = expenseService.create(request);
 
         monitorManager.monitor(expense, ActionType.CREATE);
 
@@ -91,7 +76,7 @@ public class ExpenseController {
 
     @PutMapping("{id}")
     public void update(@Valid @Positive @PathVariable long id, @Valid @RequestBody UpdateExpenseRequest request) {
-        Expense expense = findById(id);
+        Expense expense = expenseService.findById(id);
 
         if (expense.isArchived()) {
             throw new NoUpdateException("Archived expense cannot be updated");
@@ -112,7 +97,7 @@ public class ExpenseController {
 
     @PatchMapping("archive/{id}")
     public void archive(@Valid @Positive @PathVariable long id) {
-        Expense expense = findById(id);
+        Expense expense = expenseService.findById(id);
 
         if (expense.isArchived()) {
             throw new NoUpdateException("Expense is already archived");
@@ -125,17 +110,10 @@ public class ExpenseController {
 
     @DeleteMapping("{id}")
     public void delete(@Valid @Positive @PathVariable int id) {
-        Expense expense = findById(id);
+        Expense expense = expenseService.findById(id);
 
         expenseRepository.delete(expense);
 
         monitorManager.monitor(expense, ActionType.DELETE);
-    }
-
-    private Expense findById(long id) {
-        return expenseRepository.findById(id)
-                .orElseThrow(
-                        () -> new ResourceNotFoundException("Expense with id " + id + " not found")
-                );
     }
 }

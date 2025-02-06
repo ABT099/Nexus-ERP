@@ -4,10 +4,8 @@ import com.nexus.common.ArchivableQueryType;
 import com.nexus.common.ArchivedService;
 import com.nexus.exception.NoUpdateException;
 import com.nexus.exception.ResourceNotFoundException;
-import com.nexus.monitor.ActionType;
-import com.nexus.monitor.MonitorManager;
 import com.nexus.project.Project;
-import com.nexus.project.ProjectFinder;
+import com.nexus.project.ProjectService;
 import com.nexus.tenant.TenantContext;
 import com.nexus.utils.UpdateHandler;
 import jakarta.validation.Valid;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("files")
@@ -26,18 +23,18 @@ public class FileController {
 
     private final FileRepository fileRepository;
     private final FileService fileService;
-    private final ProjectFinder projectFinder;
+    private final ProjectService projectService;
     private final FileMapper fileMapper;
 
     public FileController(
             FileRepository fileRepository,
             FileService fileService,
-            ProjectFinder projectFinder,
+            ProjectService projectService,
             FileMapper fileMapper
     ) {
         this.fileRepository = fileRepository;
         this.fileService = fileService;
-        this.projectFinder = projectFinder;
+        this.projectService = projectService;
         this.fileMapper = fileMapper;
     }
 
@@ -82,7 +79,7 @@ public class FileController {
             File file = getFile(request);
 
             if (request.projectId() != null) {
-                Project project = projectFinder.findById(request.projectId());
+                Project project = projectService.findById(request.projectId());
 
                 project.addFile(file);
             }

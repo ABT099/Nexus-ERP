@@ -1,7 +1,7 @@
 package com.nexus.event;
 
 import com.nexus.admin.Admin;
-import com.nexus.admin.AdminFinder;
+import com.nexus.admin.AdminService;
 import com.nexus.common.Status;
 import com.nexus.exception.NoUpdateException;
 import com.nexus.exception.ResourceNotFoundException;
@@ -23,20 +23,20 @@ import java.util.stream.Collectors;
 public class EventController {
 
     private final EventRepository eventRepository;
-    private final AdminFinder adminFinder;
+    private final AdminService adminService;
     private final EventManager eventManager;
     private final EventMapper eventMapper;
     private final MonitorManager monitorManager;
 
     public EventController(
             EventRepository eventRepository,
-            AdminFinder adminFinder,
+            AdminService adminService,
             EventManager eventManager,
             EventMapper eventMapper,
             MonitorManager monitorManager
     ) {
         this.eventRepository = eventRepository;
-        this.adminFinder = adminFinder;
+        this.adminService = adminService;
         this.eventManager = eventManager;
         this.eventMapper = eventMapper;
         this.monitorManager = monitorManager;
@@ -80,7 +80,7 @@ public class EventController {
     public ResponseEntity<Long> create(@Valid @RequestBody CreateEventRequest request) {
         Event event = new Event(request.name(), request.description(), request.type(), request.date());
 
-        List<Admin> admins = adminFinder.findAllById(request.adminIds());
+        List<Admin> admins = adminService.findAllById(request.adminIds());
 
         for (Admin admin : admins) {
             event.addAdmin(admin);
@@ -142,7 +142,7 @@ public class EventController {
             throw new NoUpdateException("Archived event cannot be updated");
         }
 
-        Admin admin = adminFinder.findById(adminId);
+        Admin admin = adminService.findById(adminId);
 
         event.addAdmin(admin);
         eventRepository.save(event);
@@ -163,7 +163,7 @@ public class EventController {
             throw new NoUpdateException("Archived event cannot be updated");
         }
 
-        Admin admin = adminFinder.findById(adminId);
+        Admin admin = adminService.findById(adminId);
 
         event.removeAdmin(admin);
         eventRepository.save(event);
