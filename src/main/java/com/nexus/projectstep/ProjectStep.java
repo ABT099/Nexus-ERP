@@ -42,7 +42,7 @@ public class ProjectStep extends AbstractAppAuditing<Integer> {
     )
     private Set<Employee> employees = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "step")
     private List<Interaction> interactions;
 
     @Column(nullable = false)

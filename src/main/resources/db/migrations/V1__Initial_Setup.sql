@@ -233,12 +233,6 @@ CREATE TABLE project_files
     CONSTRAINT pk_project_files PRIMARY KEY (file_id, project_id)
 );
 
-CREATE TABLE project_interactions
-(
-    project_id      INTEGER NOT NULL,
-    interactions_id BIGINT  NOT NULL
-);
-
 CREATE TABLE project_step
 (
     id                  INTEGER                     NOT NULL,
@@ -254,12 +248,6 @@ CREATE TABLE project_step
     status              VARCHAR(255),
     project_id          INTEGER                     NOT NULL,
     CONSTRAINT pk_projectstep PRIMARY KEY (id)
-);
-
-CREATE TABLE project_step_interactions
-(
-    project_step_id INTEGER NOT NULL,
-    interactions_id BIGINT  NOT NULL
 );
 
 CREATE TABLE step_employees

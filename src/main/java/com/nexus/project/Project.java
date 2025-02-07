@@ -85,7 +85,7 @@ public class Project extends AuditableTenantAware<Integer> {
     )
     private Set<Employee> employees = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "project")
     private List<Interaction> interactions;
 
     @Column(nullable = false)
