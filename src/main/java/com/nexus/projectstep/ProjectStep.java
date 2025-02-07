@@ -130,4 +130,8 @@ public class ProjectStep extends AbstractAppAuditing<Integer> {
     public void setArchived(boolean archived) {
         this.archived = archived;
     }
+
+    public List<Interaction> getInteractions() {
+        return interactions;
+    }
 }

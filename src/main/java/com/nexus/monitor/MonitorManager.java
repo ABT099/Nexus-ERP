@@ -1,7 +1,7 @@
 package com.nexus.monitor;
 
 import com.nexus.abstraction.AbstractAppAuditing;
-import com.nexus.ineteraction.InterceptionRepository;
+import com.nexus.ineteraction.InteractionRepository;
 import com.nexus.notification.NotificationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,16 +19,16 @@ public class MonitorManager {
     private static final Map<Class<?>, MonitoringStrategy<?>> strategies = new HashMap<>();
 
     private final Executor taskExecutor;
-    private final InterceptionRepository interceptionRepository;
+    private final InteractionRepository interactionRepository;
     private final NotificationManager notificationManager;
 
     public MonitorManager(
             @Qualifier("taskExecutor") Executor taskExecutor,
-            InterceptionRepository interceptionRepository,
+            InteractionRepository interactionRepository,
             NotificationManager notificationManager
     ) {
         this.taskExecutor = taskExecutor;
-        this.interceptionRepository = interceptionRepository;
+        this.interactionRepository = interactionRepository;
         this.notificationManager = notificationManager;
     }
 
@@ -51,7 +51,7 @@ public class MonitorManager {
                     throw new IllegalStateException("No strategy found for " + entityClass.getSimpleName());
                 }
 
-                strategy.handle(entity, interceptionRepository, notificationManager, actionType, args);
+                strategy.handle(entity, interactionRepository, notificationManager, actionType, args);
             } catch (Exception e) {
                 LOG.error("[Async Monitoring] Thread: {}", Thread.currentThread(), e);
             }
@@ -68,7 +68,7 @@ public class MonitorManager {
     @FunctionalInterface
     public interface MonitoringStrategy<S extends AbstractAppAuditing<?>> {
         void handle(S entity,
-                    InterceptionRepository repository,
+                    InteractionRepository repository,
                     NotificationManager notification,
                     ActionType actionType,
                     String... args) throws Exception;

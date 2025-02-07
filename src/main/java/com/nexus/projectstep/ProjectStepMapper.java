@@ -2,12 +2,21 @@ package com.nexus.projectstep;
 
 import com.nexus.common.Status;
 import com.nexus.employee.BasicEmployeeResponse;
+import com.nexus.ineteraction.InteractionMapper;
+import com.nexus.ineteraction.ListInteractionResponse;
 import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
 
 @Component
 public class ProjectStepMapper {
+
+    private final InteractionMapper interactionMapper;
+
+    public ProjectStepMapper(InteractionMapper interactionMapper) {
+        this.interactionMapper = interactionMapper;
+    }
+
     public BasicStepResponse toBasicStepResponse(ProjectStep projectStep) {
         ZonedDateTime endDate;
 
@@ -44,7 +53,8 @@ public class ProjectStepMapper {
                                 employee.getFirstName(),
                                 employee.getLastName(),
                                 employee.getEmployeeCode())
-                ).toList()
+                ).toList(),
+                projectStep.getInteractions().stream().map(interactionMapper::toListInteractionResponse).toList()
         );
     }
 }

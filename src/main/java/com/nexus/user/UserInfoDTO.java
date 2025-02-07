@@ -1,7 +1,7 @@
 package com.nexus.user;
 
 public record UserInfoDTO(
-    long id,
+    Long id,
     String username,
     String avatarUrl
 ) { }

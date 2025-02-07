@@ -148,7 +148,7 @@ public class MonitorConfig {
                 }
             }
 
-            Interaction interaction = new Interaction(changedBy, title, body.toString(), changedAt);
+            Interaction interaction = new Interaction(changedBy, title, body.toString(), changedAt, project);
             repo.save(interaction);
 
             List<User> users = userService.findAllByTenantIdAndUserType(project.getTenantId(), UserType.ADMIN);
@@ -216,7 +216,7 @@ public class MonitorConfig {
                     () -> new RuntimeException("Project step has no last modified by user!")
             );
 
-            Interaction interaction = new Interaction(changedBy, title, body.toString(), changedAt);
+            Interaction interaction = new Interaction(changedBy, title, body.toString(), changedAt, projectStep);
             repo.save(interaction);
 
             List<User> users = userService.findAllByTenantIdAndUserType(
