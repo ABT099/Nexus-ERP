@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,10 +24,11 @@ public class UserRepositoryTest extends AbstractRepositoryTest {
     private TenantRepository tenantRepository;
 
     private final String username = "abdo";
+    private Tenant tenant;
 
     @BeforeEach
     public void setUp() {
-        Tenant tenant = tenantRepository.save(new Tenant());
+        tenant = tenantRepository.save(new Tenant());
 
         User user = new User(username, "password", UserType.ADMIN, tenant.getId());
         underTest.save(user);
@@ -43,5 +45,12 @@ public class UserRepositoryTest extends AbstractRepositoryTest {
     public void userExistsByUsername() {
         boolean exists = underTest.existsByUsername(username);
         assertThat(exists).isTrue();
+    }
+
+    @Test
+    public void userExistsByTenantIdAndUserType() {
+        List<User> users = underTest.findAllByTenantIdAndUserType(tenant.getId(), UserType.ADMIN);
+
+        assertThat(users).isNotEmpty();
     }
 }

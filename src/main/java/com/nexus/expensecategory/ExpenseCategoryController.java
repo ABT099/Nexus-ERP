@@ -1,6 +1,5 @@
 package com.nexus.expensecategory;
 
-import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.utils.UpdateHandler;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -15,10 +14,10 @@ import java.util.List;
 public class ExpenseCategoryController {
 
     private final ExpenseCategoryRepository repository;
-    private final ExpenseCategoryFinder finder;
+    private final ExpenseCategoryService finder;
     private final ExpenseCategoryMapper mapper;
 
-    public ExpenseCategoryController(ExpenseCategoryRepository repository, ExpenseCategoryFinder finder, ExpenseCategoryMapper mapper) {
+    public ExpenseCategoryController(ExpenseCategoryRepository repository, ExpenseCategoryService finder, ExpenseCategoryMapper mapper) {
         this.repository = repository;
         this.finder = finder;
         this.mapper = mapper;

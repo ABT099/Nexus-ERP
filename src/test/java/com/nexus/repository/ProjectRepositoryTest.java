@@ -58,4 +58,35 @@ public class ProjectRepositoryTest extends AbstractRepositoryTest {
         assertFalse(projects.isEmpty());
         assertTrue(projects.contains(project));
     }
+
+    @Test
+    void shouldCheckIfProjectExistsByIdAndArchivedFalse() {
+        Tenant tenant = new Tenant();
+        tenantRepository.save(tenant);
+
+        User user = new User(
+                "username",
+                "password",
+                UserType.SUPER_USER,
+                tenant.getId()
+        );
+
+        userRepository.save(user);
+
+        Project project = new Project(
+                user,
+                123,
+                "name",
+                "description",
+                ZonedDateTime.now(),
+                ZonedDateTime.now().plusDays(1),
+                tenant.getId()
+        );
+
+        projectRepository.save(project);
+
+        boolean exists = projectRepository.existsByIdAndArchivedFalse(project.getId());
+
+        assertTrue(exists);
+    }
 }

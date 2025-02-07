@@ -3,9 +3,8 @@ package com.nexus.expense;
 import com.nexus.common.ArchivableQueryType;
 import com.nexus.common.ArchivedService;
 import com.nexus.exception.NoUpdateException;
-import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.expensecategory.ExpenseCategory;
-import com.nexus.expensecategory.ExpenseCategoryFinder;
+import com.nexus.expensecategory.ExpenseCategoryService;
 import com.nexus.monitor.ActionType;
 import com.nexus.monitor.MonitorManager;
 import com.nexus.utils.UpdateHandler;
@@ -23,20 +22,20 @@ import java.util.List;
 public class ExpenseController {
 
     private final ExpenseRepository expenseRepository;
-    private final ExpenseCategoryFinder expenseCategoryFinder;
+    private final ExpenseCategoryService expenseCategoryService;
     private final ExpenseMapper expenseMapper;
     private final MonitorManager monitorManager;
     private final ExpenseService expenseService;
 
     public ExpenseController(
             ExpenseRepository expenseRepository,
-            ExpenseCategoryFinder expenseCategoryFinder,
+            ExpenseCategoryService expenseCategoryService,
             ExpenseMapper expenseMapper,
             MonitorManager monitorManager,
             ExpenseService expenseService
     ) {
         this.expenseRepository = expenseRepository;
-        this.expenseCategoryFinder = expenseCategoryFinder;
+        this.expenseCategoryService = expenseCategoryService;
         this.expenseMapper = expenseMapper;
         this.monitorManager = monitorManager;
         this.expenseService = expenseService;
@@ -87,7 +86,7 @@ public class ExpenseController {
                     expense.getExpenseCategory()::getId,
                     request.expenseCategoryId(),
                     cId -> {
-                        ExpenseCategory eCategory = expenseCategoryFinder.findById(cId);
+                        ExpenseCategory eCategory = expenseCategoryService.findById(cId);
                         expense.setExpenseCategory(eCategory);
                     });
             tracker.updateField(expense::getAmount, request.amount(), expense::setAmount);

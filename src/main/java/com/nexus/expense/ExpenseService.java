@@ -2,7 +2,7 @@ package com.nexus.expense;
 
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.expensecategory.ExpenseCategory;
-import com.nexus.expensecategory.ExpenseCategoryFinder;
+import com.nexus.expensecategory.ExpenseCategoryService;
 import com.nexus.project.Project;
 import com.nexus.project.ProjectService;
 import com.nexus.tenant.TenantContext;
@@ -12,16 +12,16 @@ import org.springframework.stereotype.Service;
 public class ExpenseService {
 
     private final ProjectService projectService;
-    private final ExpenseCategoryFinder expenseCategoryFinder;
+    private final ExpenseCategoryService expenseCategoryService;
     private final ExpenseRepository expenseRepository;
 
     public ExpenseService(
             ProjectService projectService,
-            ExpenseCategoryFinder expenseCategoryFinder,
+            ExpenseCategoryService expenseCategoryService,
             ExpenseRepository expenseRepository
     ) {
         this.projectService = projectService;
-        this.expenseCategoryFinder = expenseCategoryFinder;
+        this.expenseCategoryService = expenseCategoryService;
         this.expenseRepository = expenseRepository;
     }
 
@@ -34,7 +34,7 @@ public class ExpenseService {
     }
 
     public Expense create(CreateExpenseRequest request) {
-        ExpenseCategory expenseCategory = expenseCategoryFinder.findById(request.expenseCategoryId());
+        ExpenseCategory expenseCategory = expenseCategoryService.findById(request.expenseCategoryId());
 
         Expense expense;
 

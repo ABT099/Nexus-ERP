@@ -41,15 +41,7 @@ public class EventRepositoryTest extends AbstractRepositoryTest {
     @Test
     void findAllByAdminId() {
         // Arrange
-        Tenant tenant = tenantRepository.save(new Tenant());
-
-        User user = new User("user", "pass", UserType.ADMIN, tenant.getId());
-        userRepository.save(user);
-
-        Admin admin = new Admin(user, "first", "last");
-        adminRepository.save(admin);
-
-        adminRepository.save(admin);
+        Admin admin = prepareAdmin();
 
         List<Event> events = List.of(
                 new Event("event1", "event1Desc", EventType.MEETING, Instant.now().plus(1, ChronoUnit.DAYS)),
@@ -68,6 +60,31 @@ public class EventRepositoryTest extends AbstractRepositoryTest {
         // Assert
         assertEquals(actual.size(), events.size());
         assertIterableEquals(actual, admin.getEvents());
+    }
+
+    @Test
+    void shouldFindAllNonArchivedByAdminId() {
+        Admin admin = prepareAdmin();
+
+        List<Event> events = List.of(
+                new Event("event1", "event1Desc", EventType.MEETING, Instant.now().plus(1, ChronoUnit.DAYS)),
+                new Event("event2", "event2Desc", EventType.MEETING,  Instant.now().plus(1, ChronoUnit.DAYS))
+        );
+
+        for (Event event : events) {
+            event.addAdmin(admin);
+        }
+
+        events.getFirst().setArchived(true);
+        eventRepository.saveAll(events);
+
+        List<Event> actual = eventRepository.findAllNonArchivedByAdminId(admin.getId());
+
+        assertEquals(actual.size(), events.size() - 1);
+
+        for (Event event : actual) {
+            assertFalse(event.isArchived());
+        }
     }
 
     @Test
@@ -94,5 +111,19 @@ public class EventRepositoryTest extends AbstractRepositoryTest {
         for (Event event : updated) {
             assertTrue(event.isUrgent());
         }
+    }
+
+    private Admin prepareAdmin() {
+        Tenant tenant = tenantRepository.save(new Tenant());
+
+        User user = new User("user", "pass", UserType.ADMIN, tenant.getId());
+        userRepository.save(user);
+
+        Admin admin = new Admin(user, "first", "last");
+        adminRepository.save(admin);
+
+        adminRepository.save(admin);
+
+        return admin;
     }
 }
