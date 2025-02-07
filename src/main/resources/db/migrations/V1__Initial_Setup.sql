@@ -279,12 +279,6 @@ ALTER TABLE customer
 ALTER TABLE employee
     ADD CONSTRAINT uc_employee_user UNIQUE (user_id);
 
-ALTER TABLE project_interactions
-    ADD CONSTRAINT uc_project_interactions_interactions UNIQUE (interactions_id);
-
-ALTER TABLE project_step_interactions
-    ADD CONSTRAINT uc_project_step_interactions_interactions UNIQUE (interactions_id);
-
 ALTER TABLE admin
     ADD CONSTRAINT FK_ADMIN_ON_USER FOREIGN KEY (user_id) REFERENCES _user (id);
 
@@ -380,18 +374,6 @@ ALTER TABLE project_files
 
 ALTER TABLE project_files
     ADD CONSTRAINT fk_profil_on_project FOREIGN KEY (project_id) REFERENCES project (id);
-
-ALTER TABLE project_interactions
-    ADD CONSTRAINT fk_proint_on_interaction FOREIGN KEY (interactions_id) REFERENCES interaction (id);
-
-ALTER TABLE project_interactions
-    ADD CONSTRAINT fk_proint_on_project FOREIGN KEY (project_id) REFERENCES project (id);
-
-ALTER TABLE project_step_interactions
-    ADD CONSTRAINT fk_prosteint_on_interaction FOREIGN KEY (interactions_id) REFERENCES interaction (id);
-
-ALTER TABLE project_step_interactions
-    ADD CONSTRAINT fk_prosteint_on_project_step FOREIGN KEY (project_step_id) REFERENCES project_step (id);
 
 ALTER TABLE step_employees
     ADD CONSTRAINT fk_steemp_on_employee FOREIGN KEY (employee_id) REFERENCES employee (id);
