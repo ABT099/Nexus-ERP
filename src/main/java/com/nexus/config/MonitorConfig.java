@@ -1,5 +1,6 @@
 package com.nexus.config;
 
+import com.nexus.abstraction.AbstractAppAuditing;
 import com.nexus.abstraction.AbstractAppUser;
 import com.nexus.admin.Admin;
 import com.nexus.budget.Budget;
@@ -48,14 +49,13 @@ public class MonitorConfig {
             String title = "";
             StringBuilder body = new StringBuilder();
 
-            User changedBy = event.getLastModifiedBy().orElseThrow(
-                    () -> new RuntimeException("Event has no last modified by user!")
-            );
 
             if (args.length > 0 && actionType.equals(ActionType.UPDATE)) {
                 Instant changedAt = event.getLastModifiedDate().orElseThrow(
                         () -> new RuntimeException("Event has no last modified by user!")
                 );
+
+                User changedBy = getChangedBy(event);
 
                 title = "An Event Has Been Updated!";
                 body.append(String.format("%s Updated Event: %s, at: %s\n", changedBy.getUsername(), event, changedAt));
@@ -71,14 +71,20 @@ public class MonitorConfig {
                         body.append(String.format("%s Created Event: %s\n", createdBy, event));
                     }
                     case ADD_ADMIN -> {
+                        User changedBy = getChangedBy(event);
+
                         title = "New Admin Has Been Added to Event!";
                         body.append(String.format("%s Added %s Event: %s\n", changedBy, event, args[0]));
                     }
                     case REMOVE_ADMIN -> {
+                        User changedBy = getChangedBy(event);
+
                         title = "Admin Has Been Removed from Event!";
                         body.append(String.format("%s Removed %s Event: %s\n", changedBy, event, args[0]));
                     }
                     case DELETE -> {
+                        User changedBy = getChangedBy(event);
+
                         title = "An Event Has Been Deleted!";
                         body.append(String.format("%s Deleted Event: %s\n", changedBy, event));
                     }
@@ -110,10 +116,7 @@ public class MonitorConfig {
 
             String title ="";
             StringBuilder body = new StringBuilder();
-
-            User changedBy = project.getLastModifiedBy().orElseThrow(
-                    () -> new RuntimeException("Project has no last modified by user!")
-            );
+            User changedBy = getChangedBy(project);
 
             Instant changedAt = project.getLastModifiedDate().orElseThrow(
                     () -> new RuntimeException("Project has no last modified by user!")
@@ -126,12 +129,12 @@ public class MonitorConfig {
             } else {
                 switch (actionType) {
                     case CREATE -> {
-                        User createdBy = project.getCreatedBy().orElseThrow(
+                        changedBy = project.getCreatedBy().orElseThrow(
                                 () -> new RuntimeException("Project has no creator!")
                         );
 
                         title = "A Project Has Been Created!";
-                        body.append(String.format("%s Created Project: %s\n", createdBy, project));
+                        body.append(String.format("%s Created Project: %s\n", changedBy, project));
                     }
                     case DELETE -> {
                         title = "A Project Has Been Deleted!";
@@ -166,10 +169,7 @@ public class MonitorConfig {
 
             String title = "";
             StringBuilder body = new StringBuilder();
-
-            User changedBy = projectStep.getLastModifiedBy().orElseThrow(
-                    () -> new RuntimeException("Project step has no last modified by user!")
-            );
+            User changedBy = getChangedBy(projectStep);
 
             if (args.length > 0 && actionType.equals(ActionType.UPDATE)) {
                 title = String.format("A Step Has Been Updated For Project: %s", projectStep.getProject().getName());
@@ -180,14 +180,14 @@ public class MonitorConfig {
             } else {
                 switch (actionType) {
                     case CREATE -> {
-                        User createdBy = projectStep.getCreatedBy().orElseThrow(
+                        changedBy = projectStep.getCreatedBy().orElseThrow(
                                 () -> new RuntimeException("Project step has no creator!")
                         );
 
                         title = String.format("A Step Has Been Add For Project: %s", projectStep.getProject().getName());
                         body.append(String.format(
                                 "%s Added A New Step: %s for Project: %s",
-                                createdBy, projectStep, projectStep.getProject().getName()
+                                changedBy, projectStep, projectStep.getProject().getName()
                         ));
                     }
                     case DELETE -> {
@@ -232,7 +232,7 @@ public class MonitorConfig {
         });
 
         MonitorManager.registerStrategy(Income.class, (
-                payment,
+                income,
                 repo,
                 notifier,
                 actionType,
@@ -241,27 +241,27 @@ public class MonitorConfig {
             String title = "";
             StringBuilder body = new StringBuilder();
 
-            User changedBy = payment.getLastModifiedBy().orElseThrow(
-                    () -> new RuntimeException("Project step has no last modified by user!")
-            );
-
             if (args.length > 0 && actionType.equals(ActionType.UPDATE)) {
+                User changedBy = getChangedBy(income);
+
                 title = "A Payment Has Been Updated!";
-                body.append(String.format("%s Updated Payment: %s\n", changedBy, payment));
+                body.append(String.format("%s Updated Payment: %s\n", changedBy, income));
             } else {
                 switch (actionType) {
                     case CREATE -> {
                         title = "A New Payment Received!";
-                        body.append(String.format("%s Have Payed: %s\n", payment.getPayer(), payment.getAmount()));
+                        body.append(String.format("%s Have Payed: %s\n", income.getPayer(), income.getAmount()));
                     }
                     case DELETE -> {
+                        User changedBy = getChangedBy(income);
+
                         title = "A Payment Has Been Deleted!";
-                        body.append(String.format("%s Deleted Payment: %s\n", changedBy, payment));
+                        body.append(String.format("%s Deleted Payment: %s\n", changedBy, income));
                     }
                 }
             }
 
-            List<User> users = userService.findAllByTenantIdAndUserType(payment.getTenantId(), UserType.ADMIN);
+            List<User> users = userService.findAllByTenantIdAndUserType(income.getTenantId(), UserType.ADMIN);
 
             prepareAndSendNotifications(notifier, title, body.toString(), users);
         });
@@ -276,11 +276,9 @@ public class MonitorConfig {
             String title = "";
             StringBuilder body = new StringBuilder();
 
-            User changedBy = expense.getLastModifiedBy().orElseThrow(
-                    () -> new RuntimeException("Project step has no last modified by user!")
-            );
-
             if (args.length > 0 && actionType.equals(ActionType.UPDATE)) {
+                User changedBy = getChangedBy(expense);
+
                 title = "A Expense Has Been Updated!";
                 body.append(String.format("%s Updated Expense: %s", changedBy, expense));
             } else {
@@ -294,6 +292,8 @@ public class MonitorConfig {
                         body.append(String.format("%s Created Expense: %s\n", createdBy, expense));
                     }
                     case DELETE -> {
+                        User changedBy = getChangedBy(expense);
+
                         title = "An Expense Has Been Deleted!";
                         body.append(String.format("%s Deleted Expense: %s\n", changedBy, expense));
                     }
@@ -314,11 +314,10 @@ public class MonitorConfig {
             String title = "";
             StringBuilder body = new StringBuilder();
 
-            User changedBy = budget.getLastModifiedBy().orElseThrow(
-                    () -> new RuntimeException("Project step has no last modified by user!")
-            );
 
             if (args.length > 0 && actionType.equals(ActionType.UPDATE)) {
+                User changedBy = getChangedBy(budget);
+
                 title = "A Budget Has Been Updated!";
                 body.append(String.format("%s Updated Budget: %s", changedBy, budget));
             } else {
@@ -332,6 +331,8 @@ public class MonitorConfig {
                         body.append(String.format("%s Created Budget: %s\n", createdBy, budget));
                     }
                     case DELETE -> {
+                        User changedBy = getChangedBy(budget);
+
                         title = "A Budget Has Been Deleted!";
                         body.append(String.format("%s Deleted Budget: %s\n", changedBy, budget));
                     }
@@ -360,5 +361,11 @@ public class MonitorConfig {
         notifier.addBatchNotification(notificationDTOS);
         notifier.flush();
     }
+
+    private <T extends AbstractAppAuditing<?>> User getChangedBy(T entity) {
+       return entity.getLastModifiedBy().orElseThrow(
+                () -> new RuntimeException(String.format("%s step has no last modified by user!", entity.getClass().getSimpleName()))
+        );
+    };
 
 }

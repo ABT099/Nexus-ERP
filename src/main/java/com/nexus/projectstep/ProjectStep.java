@@ -7,6 +7,7 @@ import com.nexus.ineteraction.Interaction;
 import com.nexus.project.Project;
 import jakarta.persistence.*;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -19,10 +20,10 @@ public class ProjectStep extends AbstractAppAuditing<Integer> {
     @Column(nullable = false, columnDefinition = "text")
     private String description;
     @Column(nullable = false)
-    private ZonedDateTime startDate;
+    private Instant startDate;
     @Column(nullable = false)
-    private ZonedDateTime expectedEndDate;
-    private ZonedDateTime actualEndDate;
+    private Instant expectedEndDate;
+    private Instant actualEndDate;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status = Status.PENDING;
@@ -48,7 +49,7 @@ public class ProjectStep extends AbstractAppAuditing<Integer> {
     @Column(nullable = false)
     private boolean archived = false;
 
-    public ProjectStep(Project project, String name, String description, ZonedDateTime startDate, ZonedDateTime expectedEndDate) {
+    public ProjectStep(Project project, String name, String description, Instant startDate, Instant expectedEndDate) {
         this.name = name;
         this.description = description;
         this.startDate = startDate;
@@ -75,27 +76,27 @@ public class ProjectStep extends AbstractAppAuditing<Integer> {
         this.description = description;
     }
 
-    public ZonedDateTime getStartDate() {
+    public Instant getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(ZonedDateTime startDate) {
+    public void setStartDate(Instant startDate) {
         this.startDate = startDate;
     }
 
-    public ZonedDateTime getExpectedEndDate() {
+    public Instant getExpectedEndDate() {
         return expectedEndDate;
     }
 
-    public void setExpectedEndDate(ZonedDateTime expectedEndDate) {
+    public void setExpectedEndDate(Instant expectedEndDate) {
         this.expectedEndDate = expectedEndDate;
     }
 
-    public ZonedDateTime getActualEndDate() {
+    public Instant getActualEndDate() {
         return actualEndDate;
     }
 
-    public void setActualEndDate(ZonedDateTime actualEndDate) {
+    public void setActualEndDate(Instant actualEndDate) {
         this.actualEndDate = actualEndDate;
     }
 

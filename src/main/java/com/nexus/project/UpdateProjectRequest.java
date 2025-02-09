@@ -5,14 +5,14 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 public record UpdateProjectRequest(
         @NotNull @Positive Integer id,
         @NotEmpty String name,
         @NotEmpty String description,
-        @AfterNow ZonedDateTime startDate,
-        @AfterNow ZonedDateTime expectedEndDate,
-        ZonedDateTime actualEndDate,
+        Instant startDate,
+        @AfterNow Instant expectedEndDate,
+        Instant actualEndDate,
         @Positive double price
 ) { }

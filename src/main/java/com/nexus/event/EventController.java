@@ -181,7 +181,9 @@ public class EventController {
             throw new NoUpdateException("Event is already archived");
         }
 
-        eventRepository.archiveById(id);
+        event.setArchived(true);
+
+        eventRepository.save(event);
 
         monitorManager.monitor(event, ActionType.ARCHIVE);
     }

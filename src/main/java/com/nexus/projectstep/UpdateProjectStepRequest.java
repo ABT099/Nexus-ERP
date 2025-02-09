@@ -1,17 +1,16 @@
 package com.nexus.projectstep;
 
-import com.nexus.validation.AfterNow;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 public record UpdateProjectStepRequest(
         @NotNull @Positive Integer id,
         @NotEmpty String name,
         @NotEmpty String description,
-        @AfterNow ZonedDateTime startDate,
-        @AfterNow ZonedDateTime expectedEndDate,
-        ZonedDateTime actualEndDate
+        Instant startDate,
+        Instant expectedEndDate,
+        Instant actualEndDate
 ) { }

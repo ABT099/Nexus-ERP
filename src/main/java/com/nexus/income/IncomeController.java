@@ -2,7 +2,7 @@ package com.nexus.income;
 
 import com.nexus.common.ArchivableQueryType;
 import com.nexus.common.ArchivedService;
-import com.nexus.exception.ResourceNotFoundException;
+import com.nexus.exception.NoUpdateException;
 import com.nexus.monitor.ActionType;
 import com.nexus.monitor.MonitorManager;
 import com.nexus.utils.UpdateHandler;
@@ -16,7 +16,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("payments")
+@RequestMapping("incomes")
 public class IncomeController {
 
     private final IncomeRepository incomeRepository;
@@ -81,7 +81,13 @@ public class IncomeController {
     public void archive(@Valid @Positive @PathVariable int id) {
         Income income = incomeService.findById(id);
 
-        incomeRepository.archiveById(id);
+        if (income.isArchived()) {
+            throw new NoUpdateException("Income is already archived");
+        }
+
+        income.setArchived(true);
+
+        incomeRepository.save(income);
 
         monitorManager.monitor(income, ActionType.ARCHIVE);
     }

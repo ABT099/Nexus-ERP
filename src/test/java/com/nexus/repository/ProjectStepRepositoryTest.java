@@ -12,7 +12,9 @@ import com.nexus.user.UserType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,8 +51,8 @@ public class ProjectStepRepositoryTest extends AbstractRepositoryTest {
                 123,
                 "name",
                 "description",
-                ZonedDateTime.now(),
-                ZonedDateTime.now().plusDays(1),
+                Instant.now(),
+                Instant.now().plus(1, ChronoUnit.DAYS),
                 tenant.getId()
         );
 
@@ -58,10 +60,10 @@ public class ProjectStepRepositoryTest extends AbstractRepositoryTest {
 
         List<ProjectStep> steps = List.of(
                 new ProjectStep(
-                    project, "name1", "description1", ZonedDateTime.now(), ZonedDateTime.now().plusDays(1)
+                    project, "name1", "description1", Instant.now(), Instant.now().plus(1, ChronoUnit.DAYS)
                 ),
                 new ProjectStep(
-                    project, "name2", "description2", ZonedDateTime.now(), ZonedDateTime.now().plusDays(1)
+                    project, "name2", "description2", Instant.now(), Instant.now().plus(1, ChronoUnit.DAYS)
                 ));
 
 

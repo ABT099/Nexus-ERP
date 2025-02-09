@@ -6,6 +6,7 @@ import com.nexus.ineteraction.InteractionMapper;
 import com.nexus.ineteraction.ListInteractionResponse;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 
 @Component
@@ -18,7 +19,7 @@ public class ProjectStepMapper {
     }
 
     public BasicStepResponse toBasicStepResponse(ProjectStep projectStep) {
-        ZonedDateTime endDate;
+        Instant endDate;
 
         if (projectStep.getStatus().equals(Status.COMPLETED) || projectStep.getStatus().equals(Status.CANCELLED)) {
             endDate = projectStep.getActualEndDate();

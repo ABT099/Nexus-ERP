@@ -15,7 +15,6 @@ import java.util.UUID;
 @MappedSuperclass
 @FilterDef(name = "ATenantFilter", parameters = @ParamDef(name = "tenantId", type = UUID.class))
 @Filters(@Filter(name = "ATenantFilter", condition = "tenant_id = :tenantId"))
-@EntityListeners(AuditingEntityListener.class)
 public abstract class AuditableTenantAware<ID extends Serializable> extends AbstractAppAuditing<ID> {
     @Column(nullable = false)
     private UUID tenantId;

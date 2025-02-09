@@ -102,7 +102,9 @@ public class ExpenseController {
             throw new NoUpdateException("Expense is already archived");
         }
 
-        expenseRepository.archiveById(id);
+        expense.setArchived(true);
+
+        expenseRepository.save(expense);
 
         monitorManager.monitor(expense, ActionType.ARCHIVE);
     }

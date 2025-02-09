@@ -12,7 +12,9 @@ import com.nexus.user.UserType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -49,8 +51,8 @@ public class FileRepositoryTest extends AbstractRepositoryTest {
                 123,
                 "name",
                 "description",
-                ZonedDateTime.now(),
-                ZonedDateTime.now().plusDays(1),
+                Instant.now(),
+                Instant.now().plus(1, ChronoUnit.DAYS),
                 tenant.getId()
         );
 

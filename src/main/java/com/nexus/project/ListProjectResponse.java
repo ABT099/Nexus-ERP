@@ -2,11 +2,11 @@ package com.nexus.project;
 
 import com.nexus.common.Status;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 public record ListProjectResponse(
     Integer id,
     String name,
-    ZonedDateTime startDate,
+    Instant startDate,
     Status status
 ) { }

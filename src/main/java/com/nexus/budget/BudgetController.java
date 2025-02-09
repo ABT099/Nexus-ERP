@@ -12,7 +12,9 @@ import com.nexus.income.Income;
 import com.nexus.income.IncomeService;
 import com.nexus.monitor.ActionType;
 import com.nexus.monitor.MonitorManager;
+import com.nexus.tenant.TenantContext;
 import com.nexus.utils.UpdateHandler;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
@@ -73,12 +75,16 @@ public class BudgetController {
     @PostMapping
     public ResponseEntity<Long> create(@Valid @RequestBody BudgetRequest request) {
         Budget budget = new Budget(
+                request.name(),
                 request.startDate(),
                 request.endDate(),
                 request.budget(),
                 request.currentTotal(),
-                request.active()
+                request.active(),
+                TenantContext.getTenantId()
         );
+
+        budgetRepository.save(budget);
 
         monitorManager.monitor(budget, ActionType.CREATE);
 
@@ -111,11 +117,14 @@ public class BudgetController {
             throw new NoUpdateException("Budget is already archived");
         }
 
-        budgetRepository.archiveById(id);
+        budget.setArchived(true);
+
+        budgetRepository.save(budget);
 
         monitorManager.monitor(budget, ActionType.ARCHIVE);
     }
 
+    @Transactional
     @PatchMapping("{id}/add-income")
     public void addIncome(@Valid @Positive @PathVariable Long id, @Valid @RequestBody CreateIncomeRequest request) {
         Budget budget = findById(id);
@@ -133,7 +142,8 @@ public class BudgetController {
         monitorManager.monitor(budget, ActionType.ADD_PAYMENT);
     }
 
-    @PatchMapping("{budgetId}/add-income/{incomeId}")
+    @Transactional
+    @PatchMapping("{budgetId}/remove-income/{incomeId}")
     public void removeIncome(
             @Valid @Positive @PathVariable Long budgetId,
             @Valid @Positive @PathVariable Integer incomeId
@@ -153,6 +163,7 @@ public class BudgetController {
         monitorManager.monitor(budget, ActionType.REMOVE_PAYMENT);
     }
 
+    @Transactional
     @PatchMapping("{id}/add-expense")
     public void addExpense(@Valid @Positive @PathVariable Long id, @Valid @RequestBody CreateExpenseRequest request) {
         Budget budget = findById(id);
@@ -170,7 +181,8 @@ public class BudgetController {
         monitorManager.monitor(budget, ActionType.ADD_PAYMENT);
     }
 
-    @PatchMapping("{budgetId}/add-income/{expenseId}")
+    @Transactional
+    @PatchMapping("{budgetId}/remove-expense/{expenseId}")
     public void removeExpense(
             @Valid @Positive @PathVariable Long budgetId,
             @Valid @Positive @PathVariable Integer expenseId

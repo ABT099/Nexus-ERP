@@ -1,5 +1,6 @@
 package com.nexus.income;
 
+import com.nexus.project.BasicProjectResponse;
 import com.nexus.user.UserMapper;
 import org.springframework.stereotype.Component;
 
@@ -20,11 +21,21 @@ public class IncomeMapper {
     }
 
     public IncomeResponse toIncomeResponse(Income income) {
+        BasicProjectResponse project = null;
+
+        if (income.getProject() != null) {
+            project = new BasicProjectResponse(
+                    income.getProject().getId(),
+                    income.getProject().getName()
+            );
+        }
+
         return new IncomeResponse(
                 income.getId(),
                 income.getAmount(),
                 income.getPaymentDate().toString(),
-                userMapper.toUserInfo(income.getPayer())
+                userMapper.toUserInfo(income.getPayer()),
+                project
         );
     }
 }

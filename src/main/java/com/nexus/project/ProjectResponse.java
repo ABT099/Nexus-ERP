@@ -9,16 +9,16 @@ import com.nexus.ineteraction.ListInteractionResponse;
 import com.nexus.projectstep.BasicStepResponse;
 import com.nexus.user.UserInfoDTO;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.List;
 
 public record ProjectResponse(
         Integer id,
         String name,
         String description,
-        ZonedDateTime startDate,
-        ZonedDateTime expectedEndDate,
-        ZonedDateTime actualEndDate,
+        Instant startDate,
+        Instant expectedEndDate,
+        Instant actualEndDate,
         Status status,
         UserInfoDTO owner,
         List<BasicStepResponse> steps,

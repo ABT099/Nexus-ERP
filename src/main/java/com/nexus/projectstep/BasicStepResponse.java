@@ -2,13 +2,13 @@ package com.nexus.projectstep;
 
 import com.nexus.common.Status;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 public record BasicStepResponse(
     Integer id,
     String name,
     String description,
-    ZonedDateTime startDate,
-    ZonedDateTime endDate,
+    Instant startDate,
+    Instant endDate,
     Status status
 ) { }

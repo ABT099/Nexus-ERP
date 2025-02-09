@@ -160,7 +160,13 @@ public class ProjectStepController {
     public void archive(@Valid @Positive @PathVariable int id) {
         ProjectStep step = findById(id);
 
-        projectStepRepository.archiveById(id);
+        if (step.isArchived()) {
+            throw new NoUpdateException("Step is already archived");
+        }
+
+        step.setArchived(true);
+
+        projectStepRepository.save(step);
 
         monitorManager.monitor(step, ActionType.ARCHIVE);
     }

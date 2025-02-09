@@ -70,7 +70,7 @@ public class FileController {
     }
 
     @PostMapping
-    public ResponseEntity<Integer> upload(@Valid @RequestBody UploadFileRequest request) {
+    public ResponseEntity<Integer> upload(@ModelAttribute UploadFileRequest request) {
         if (request.file().isEmpty()) {
             throw new ResourceNotFoundException("file not found");
         }

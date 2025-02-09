@@ -13,6 +13,7 @@ import com.nexus.tenant.TenantContext;
 import com.nexus.user.User;
 import com.nexus.user.UserService;
 import com.nexus.utils.UpdateHandler;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
@@ -145,16 +146,17 @@ public class ProjectController extends UserContext {
     }
 
     @PatchMapping("{id}/status")
-    public void updateStatus(@Valid @Positive @PathVariable int id, Status status) {
+    public void updateStatus(@Valid @Positive @PathVariable int id, @RequestBody Status status) {
         Project project = projectService.findById(id);
 
         if (project.isArchived()) {
             throw new NoUpdateException("Archived project cannot be updated");
         }
 
-        UpdateHandler.updateEntity(project,tracker -> {
-            tracker.updateField(project::getStatus, status, project::setStatus);
-        }, () -> projectRepository.save(project), monitorManager);
+        UpdateHandler.updateEntity(project,tracker ->
+                tracker.updateField(project::getStatus, status, project::setStatus),
+                () -> projectRepository.save(project), monitorManager
+        );
     }
 
     @PatchMapping("{id}/files/{fileId}")
@@ -174,10 +176,6 @@ public class ProjectController extends UserContext {
         Project project = projectService.findById(id);
         File file = fileService.findById(fileId);
 
-        if (file.getProjects().isEmpty()) {
-            file.setArchived(true);
-        }
-
         project.removeFile(file);
 
         projectRepository.save(project);
@@ -194,10 +192,10 @@ public class ProjectController extends UserContext {
         }
 
         for (File file : project.getFiles()) {
-            if (file.getProjects().isEmpty()) {
-                file.setArchived(true);
-            }
+            file.getProjects().remove(project);
         }
+
+        project.setArchived(true);
 
         projectRepository.save(project);
 

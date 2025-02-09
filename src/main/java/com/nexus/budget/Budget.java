@@ -11,6 +11,7 @@ import jakarta.persistence.OneToMany;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 public class Budget extends AuditableTenantAware<Long> {
@@ -42,17 +43,19 @@ public class Budget extends AuditableTenantAware<Long> {
     @Column(nullable = false)
     boolean active;
 
-    @Column(nullable = false)
-    boolean archived = false;
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    boolean archived;
 
     public Budget() {}
 
-    public Budget(Instant startDate, Instant endDate, double budget, double currentTotal, boolean active) {
+    public Budget(String name, Instant startDate, Instant endDate, double budget, double currentTotal, boolean active, UUID tenantId) {
+        this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
         this.budget = budget;
         this.currentTotal = currentTotal;
         this.active = active;
+        setTenantId(tenantId);
     }
 
     public <T extends AbstractPayment> void addPayment(T payment) {
@@ -165,5 +168,13 @@ public class Budget extends AuditableTenantAware<Long> {
 
     public void setArchived(boolean archive) {
         this.archived = archive;
+    }
+
+    public List<Income> getIncomes() {
+        return incomes;
+    }
+
+    public List<Expense> getExpenses() {
+        return expenses;
     }
 }
