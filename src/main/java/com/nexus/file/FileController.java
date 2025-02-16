@@ -6,16 +6,21 @@ import com.nexus.exception.NoUpdateException;
 import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.project.Project;
 import com.nexus.project.ProjectService;
+import com.nexus.s3.S3Service;
 import com.nexus.tenant.TenantContext;
 import com.nexus.utils.UpdateHandler;
+
+import org.springframework.http.MediaType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("files")
@@ -25,17 +30,20 @@ public class FileController {
     private final FileService fileService;
     private final ProjectService projectService;
     private final FileMapper fileMapper;
+    private final S3Service s3Service;
 
     public FileController(
             FileRepository fileRepository,
             FileService fileService,
             ProjectService projectService,
-            FileMapper fileMapper
+            FileMapper fileMapper,
+            S3Service s3Service
     ) {
         this.fileRepository = fileRepository;
         this.fileService = fileService;
         this.projectService = projectService;
         this.fileMapper = fileMapper;
+        this.s3Service = s3Service;
     }
 
 
@@ -69,7 +77,7 @@ public class FileController {
         return ResponseEntity.ok(fileMapper.toFileResponse(file));
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Integer> upload(@ModelAttribute UploadFileRequest request) {
         if (request.file().isEmpty()) {
             throw new ResourceNotFoundException("file not found");
@@ -111,14 +119,18 @@ public class FileController {
     }
 
     @DeleteMapping("{id}")
+    @Transactional(rollbackFor = Exception.class)
     public void delete(@Valid @Positive @PathVariable int id) {
-        // delete the file from the storage, ie: s3 or any else
-        File file = fileService.findById(id);
-
-        fileRepository.delete(file);
+        try {
+            File file = fileService.findById(id);
+            s3Service.delteFile(file.getUrl());
+            fileRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Error deleting file", e);
+        }
     }
 
-    private static File getFile(UploadFileRequest request) throws IOException {
+    private File getFile(UploadFileRequest request) throws IOException {
         String type = request.file().getContentType();
         String name;
         if (request.name().isEmpty()) {
@@ -129,8 +141,8 @@ public class FileController {
 
         byte[] fileContent = request.file().getBytes();
 
-        // Add your file handling logic here
-        String fileUrl = "";
+        var bucketName = UUID.randomUUID().toString();
+        String fileUrl =  s3Service.uploadFile(bucketName, request.file().getContentType(), fileContent);
 
         return new File(
                 name,

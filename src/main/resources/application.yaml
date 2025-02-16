@@ -1,4 +1,12 @@
 spring:
+  serverlet:
+    multipart:
+      max-file-size: 1GB
+      max-request-size: 1GB
+      file-size-threshold: 0
+      location: /tmp
+  codec:
+    max-in-memory-size: 10MB
   application:
     name: nexus
   jpa:
@@ -44,3 +52,8 @@ server:
 logging:
   level:
     com.nexus: debug
+
+aws:
+  region: eu-central-1
+  secret-key: ${AWS_SECRET_KEY}
+  access-key: ${AWS_ACCESS_KEY}
