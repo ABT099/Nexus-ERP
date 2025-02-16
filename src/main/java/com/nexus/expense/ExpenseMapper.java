@@ -1,7 +1,6 @@
 package com.nexus.expense;
 
 import com.nexus.expensecategory.ExpenseCategoryMapper;
-import com.nexus.project.ProjectMapper;
 import org.springframework.stereotype.Component;
 
 @Component

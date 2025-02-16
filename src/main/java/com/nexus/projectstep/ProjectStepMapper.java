@@ -3,11 +3,9 @@ package com.nexus.projectstep;
 import com.nexus.common.Status;
 import com.nexus.employee.BasicEmployeeResponse;
 import com.nexus.ineteraction.InteractionMapper;
-import com.nexus.ineteraction.ListInteractionResponse;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 
 @Component
 public class ProjectStepMapper {

@@ -1,7 +1,6 @@
 package com.nexus.file;
 
 import com.nexus.project.BasicProjectResponse;
-import com.nexus.project.ProjectMapper;
 import com.nexus.user.UserMapper;
 import org.springframework.stereotype.Component;
 

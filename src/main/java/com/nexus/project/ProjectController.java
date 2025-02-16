@@ -13,7 +13,6 @@ import com.nexus.tenant.TenantContext;
 import com.nexus.user.User;
 import com.nexus.user.UserService;
 import com.nexus.utils.UpdateHandler;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;

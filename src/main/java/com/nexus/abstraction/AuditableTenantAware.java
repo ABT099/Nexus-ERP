@@ -1,14 +1,11 @@
 package com.nexus.abstraction;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.Filters;
 import org.hibernate.annotations.ParamDef;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import java.io.Serializable;
 import java.util.UUID;
 

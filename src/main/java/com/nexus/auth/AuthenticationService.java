@@ -1,7 +1,6 @@
 package com.nexus.auth;
 
 import com.nexus.auth.jwt.JwtService;
-import com.nexus.user.User;
 import com.nexus.user.UserService;
 import com.nexus.user.UserTenantDTO;
 import org.slf4j.Logger;
