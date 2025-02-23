@@ -1,4 +1,4 @@
-package com.nexus.common;
+package com.nexus.auth;
 
 import org.springframework.http.HttpMethod;
 
@@ -18,11 +18,12 @@ public class URLS {
             "/configuration/security",
             "/swagger-ui/**",
             "/webjars/**",
-            "/swagger-ui.html"
+            "/swagger-ui.html",
+            "/stripe/webhook"
     };
 
     public static final Map<HttpMethod, String[]> AllowedMethodUrls = Map.of(
-            HttpMethod.POST, new String[] { "/admins" }
+            HttpMethod.POST, new String[] { "/tenants" }
     );
 
     public static final Set<String> URLSWithRelativePaths = new HashSet<>();

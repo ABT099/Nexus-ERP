@@ -87,7 +87,7 @@ public class UserController extends UserContext {
         }
 
         try {
-            s3Service.delteFile(user.getAvatarUrl());
+            s3Service.deleteFile(user.getAvatarUrl());
         } catch (Exception e) {
             throw new RuntimeException("Error deleting avatar image", e);
         }

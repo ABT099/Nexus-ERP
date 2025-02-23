@@ -1,4 +1,4 @@
-package com.nexus.config;
+package com.nexus.monitor;
 
 import com.nexus.abstraction.AbstractAppAuditing;
 import com.nexus.abstraction.AbstractAppUser;
@@ -9,8 +9,6 @@ import com.nexus.event.Event;
 import com.nexus.expense.Expense;
 import com.nexus.income.Income;
 import com.nexus.ineteraction.Interaction;
-import com.nexus.monitor.ActionType;
-import com.nexus.monitor.MonitorManager;
 import com.nexus.notification.NotificationDTO;
 import com.nexus.notification.NotificationManager;
 import com.nexus.notification.NotificationType;

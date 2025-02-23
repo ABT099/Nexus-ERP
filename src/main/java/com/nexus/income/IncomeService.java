@@ -34,14 +34,16 @@ public class IncomeService {
     public Income create(CreateIncomeRequest request) {
         User payer = userService.findById(request.payerId());
 
+        String currency = "";
+
         Income income;
 
         if (request.projectId() != null) {
             Project project = projectService.findById(request.projectId());
 
-            income = new Income(request.amount(), request.paymentDate(), project, payer, TenantContext.getTenantId());
+            income = new Income(request.amount(), currency, request.paymentDate(), project, payer, TenantContext.getTenantId());
         } else {
-            income = new Income(request.amount(), request.paymentDate(), payer, TenantContext.getTenantId());
+            income = new Income(request.amount(), currency, request.paymentDate(), payer, TenantContext.getTenantId());
         }
 
         incomeRepository.save(income);

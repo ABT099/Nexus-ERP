@@ -21,14 +21,14 @@ public class Income extends AbstractPayment {
     @JoinColumn(name = "payer_id", nullable = false)
     private User payer;
 
-    public Income(double amount, Instant paymentDate, Project project, User payer, UUID tenantId) {
-        super(amount, paymentDate, project);
+    public Income(double amount, String currency, Instant paymentDate, Project project, User payer, UUID tenantId) {
+        super(amount, paymentDate, project, currency);
         this.payer = payer;
         setTenantId(tenantId);
     }
 
-    public Income(double amount, Instant paymentDate, User payer, UUID tenantId) {
-        super(amount, paymentDate);
+    public Income(double amount, String currency, Instant paymentDate, User payer, UUID tenantId) {
+        super(amount, paymentDate, currency);
         this.payer = payer;
         setTenantId(tenantId);
     }

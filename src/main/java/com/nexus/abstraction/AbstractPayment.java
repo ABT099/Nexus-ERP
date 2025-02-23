@@ -26,15 +26,20 @@ public abstract class AbstractPayment extends AuditableTenantAware<Long> {
     @Column(nullable = false)
     private boolean archived = false;
 
-    public AbstractPayment(double amount, Instant paymentDate, Project project) {
+    @Column(nullable = false, columnDefinition = "text")
+    private String currency;
+
+    public AbstractPayment(double amount, Instant paymentDate, Project project, String currency) {
         this.amount = amount;
         this.paymentDate = paymentDate;
         this.project = project;
+        this.currency = currency;
     }
 
-    public AbstractPayment(double amount, Instant paymentDate) {
+    public AbstractPayment(double amount, Instant paymentDate, String currency) {
         this.amount = amount;
         this.paymentDate = paymentDate;
+        this.currency = currency;
     }
 
     public AbstractPayment() {}

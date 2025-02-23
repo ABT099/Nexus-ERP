@@ -36,14 +36,16 @@ public class ExpenseService {
     public Expense create(CreateExpenseRequest request) {
         ExpenseCategory expenseCategory = expenseCategoryService.findById(request.expenseCategoryId());
 
+        String currency = "";
+
         Expense expense;
 
         if (request.projectId() != null) {
             Project project = projectService.findById(request.projectId());
 
-            expense = new Expense(request.amount(), request.paymentDate(), project, expenseCategory, TenantContext.getTenantId());
+            expense = new Expense(request.amount(), currency, request.paymentDate(), project, expenseCategory, TenantContext.getTenantId());
         } else {
-            expense = new Expense(request.amount(), request.paymentDate(), expenseCategory, TenantContext.getTenantId());
+            expense = new Expense(request.amount(), currency, request.paymentDate(), expenseCategory, TenantContext.getTenantId());
         }
 
         expenseRepository.save(expense);

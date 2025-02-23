@@ -1,4 +1,4 @@
-package com.nexus.config;
+package com.nexus.s3;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -14,11 +14,10 @@ public class S3Config {
 
     @Bean
     public S3Client s3Client() {
-        S3Client client = S3Client.builder()
+
+        return S3Client.builder()
                           .region(Region.of(awsRegion))
                           .build();
-
-        return client;
     }
     
 }

@@ -1,7 +1,7 @@
 package com.nexus.tenant;
 
 import com.nexus.auth.jwt.AppAuthToken;
-import com.nexus.common.URLS;
+import com.nexus.auth.URLS;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;

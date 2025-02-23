@@ -55,5 +55,7 @@ logging:
 
 aws:
   region: eu-central-1
-  secret-key: ${AWS_SECRET_KEY}
-  access-key: ${AWS_ACCESS_KEY}
+
+stripe:
+  secret-key: ${STRIPE_SECRET_KEY}
+  webhook-secret: ${STRIPE_WEBHOOK_SECRET}

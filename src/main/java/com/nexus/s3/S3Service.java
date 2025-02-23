@@ -54,7 +54,7 @@ public class S3Service {
         }
     }
 
-    public void delteFile(String url) throws Exception {
+    public void deleteFile(String url) throws Exception {
         try {
             URL s3Url = URI.create(url).toURL();
             String host = s3Url.getHost();

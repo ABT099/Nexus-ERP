@@ -123,7 +123,7 @@ public class FileController {
     public void delete(@Valid @Positive @PathVariable int id) {
         try {
             File file = fileService.findById(id);
-            s3Service.delteFile(file.getUrl());
+            s3Service.deleteFile(file.getUrl());
             fileRepository.deleteById(id);
         } catch (Exception e) {
             throw new RuntimeException("Error deleting file", e);
