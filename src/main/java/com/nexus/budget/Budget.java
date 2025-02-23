@@ -4,10 +4,8 @@ import com.nexus.abstraction.AbstractPayment;
 import com.nexus.abstraction.AuditableTenantAware;
 import com.nexus.expense.Expense;
 import com.nexus.income.Income;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import com.nexus.project.Project;
+import jakarta.persistence.*;
 
 import java.time.Instant;
 import java.util.List;
@@ -16,35 +14,39 @@ import java.util.UUID;
 @Entity
 public class Budget extends AuditableTenantAware<Long> {
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    private Project project;
+
     @Column(nullable = false, columnDefinition = "text")
-    String name;
+    private String name;
 
     @Column(columnDefinition = "TIMESTAMP", nullable = false)
-    Instant startDate;
+    private Instant startDate;
 
     @Column(columnDefinition = "TIMESTAMP", nullable = false)
-    Instant endDate;
+    private Instant endDate;
 
     @Column(nullable = false)
-    double budget;
+    private double budget;
 
-    double currentTotal;
-    double totalIncome;
-    double totalExpense;
+    private double currentTotal;
+    private double totalIncome;
+    private double totalExpense;
 
     @OneToMany(mappedBy = "budget", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<Income> incomes;
+    private List<Income> incomes;
     @OneToMany(mappedBy = "budget", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<Expense> expenses;
+    private List<Expense> expenses;
 
     @Column(columnDefinition = "text")
-    String notice;
+    private String notice;
 
     @Column(nullable = false)
-    boolean active;
+    private boolean active;
 
     @Column(nullable = false, columnDefinition = "boolean default false")
-    boolean archived;
+    private boolean archived;
 
     public Budget() {}
 
@@ -176,5 +178,13 @@ public class Budget extends AuditableTenantAware<Long> {
 
     public List<Expense> getExpenses() {
         return expenses;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 }

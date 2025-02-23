@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Positive;
 import java.time.Instant;
 
 public record CreateExpenseRequest(
-        @Positive double amount,
+        @Positive long amount,
         Instant paymentDate,
         Integer projectId,
         @Positive Long expenseCategoryId

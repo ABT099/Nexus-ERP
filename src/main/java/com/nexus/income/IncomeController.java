@@ -67,6 +67,11 @@ public class IncomeController {
         return ResponseEntity.created(URI.create("/payments/" + income.getId())).body(income.getId());
     }
 
+    @PostMapping("delegate")
+    public void delegatePayment() {
+        
+    }
+
     @PutMapping("{id}")
     public void update(@Valid @Positive @PathVariable int id, @Valid @RequestBody UpdateIncomeRequest request) {
         Income income = incomeService.findById(id);

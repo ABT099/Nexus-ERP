@@ -2,17 +2,24 @@ package com.nexus.stripe;
 
 import com.nexus.abstraction.UserContext;
 import com.nexus.email.SendEmailService;
+import com.nexus.exception.ResourceNotFoundException;
 import com.nexus.notification.NotificationDTO;
 import com.nexus.notification.NotificationManager;
 import com.nexus.notification.NotificationType;
+import com.nexus.tenant.Tenant;
 import com.nexus.tenant.TenantContext;
 import com.nexus.tenant.TenantRepository;
+import com.stripe.Stripe;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.*;
+import com.stripe.model.oauth.TokenResponse;
+import com.stripe.net.OAuth;
+import com.stripe.net.RequestOptions;
 import com.stripe.net.Webhook;
 import com.stripe.param.SubscriptionCreateParams;
 import com.stripe.param.SubscriptionUpdateParams;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -22,7 +29,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -37,10 +49,58 @@ public class StripeController extends UserContext {
     @Value("${stripe.webhook-secret}")
     private String stripeWebhookSecret;
 
+    @Value("${stripe.client-id}")
+    private String stripeClientId;
+
+    @Value("${stripe.redirect-uri}")
+    private String stripeRedirectUri;
+
     public StripeController(TenantRepository tenantRepository, NotificationManager notificationManager, SendEmailService sendEmailService) {
         this.tenantRepository = tenantRepository;
         this.notificationManager = notificationManager;
         this.sendEmailService = sendEmailService;
+    }
+
+    @GetMapping("/connect")
+    public void connectStripe(HttpServletResponse response) {
+        try {
+            String url = "https://connect.stripe.com/oauth/authorize?response_type=code" +
+                    "&client_id=" + stripeClientId +
+                    "&scope=read_write" +
+                    "&redirect_uri=" + URLEncoder.encode(stripeRedirectUri, StandardCharsets.UTF_8);
+            response.sendRedirect(url);
+        } catch (IOException e) {
+            LOG.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    @GetMapping("/callback")
+    public ResponseEntity<String> stripeCallback(@RequestParam("code") String code,
+                                                 @RequestParam(value = "state", required = false) String state) {
+        try {
+            Map<String, Object> params = new HashMap<>();
+            params.put("client_secret", Stripe.apiKey);
+            params.put("code", code);
+            params.put("grant_type", "authorization_code");
+
+            RequestOptions options = RequestOptions
+                    .builder()
+                    .setClientId(Stripe.apiKey)
+                    .build();
+
+            TokenResponse tokenResponse = OAuth.token(params, options);
+
+            Tenant tenant = tenantRepository.findById(TenantContext.getTenantId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Tenant not found"));
+
+            tenant.setStripeAccountId(tokenResponse.getStripeUserId());
+
+            return ResponseEntity.ok("Stripe account connected: " + tokenResponse.getStripeUserId());
+        } catch (StripeException e) {
+            LOG.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 
     @GetMapping("{paymentMethodId}")

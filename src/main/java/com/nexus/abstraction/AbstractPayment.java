@@ -11,7 +11,7 @@ import java.time.Instant;
 public abstract class AbstractPayment extends AuditableTenantAware<Long> {
     
     @Positive
-    private double amount;
+    private long amount;
 
     private Instant paymentDate;
 
@@ -29,14 +29,14 @@ public abstract class AbstractPayment extends AuditableTenantAware<Long> {
     @Column(nullable = false, columnDefinition = "text")
     private String currency;
 
-    public AbstractPayment(double amount, Instant paymentDate, Project project, String currency) {
+    public AbstractPayment(long amount, Instant paymentDate, Project project, String currency) {
         this.amount = amount;
         this.paymentDate = paymentDate;
         this.project = project;
         this.currency = currency;
     }
 
-    public AbstractPayment(double amount, Instant paymentDate, String currency) {
+    public AbstractPayment(long amount, Instant paymentDate, String currency) {
         this.amount = amount;
         this.paymentDate = paymentDate;
         this.currency = currency;
@@ -44,11 +44,11 @@ public abstract class AbstractPayment extends AuditableTenantAware<Long> {
 
     public AbstractPayment() {}
 
-    public double getAmount() {
+    public long getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(long amount) {
         this.amount = amount;
     }
 
@@ -82,5 +82,13 @@ public abstract class AbstractPayment extends AuditableTenantAware<Long> {
 
     public void setBudget(Budget budget) {
         this.budget = budget;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 }

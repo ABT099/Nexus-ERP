@@ -53,15 +53,6 @@ public class TenantController {
         }
     }
 
-
-    @PatchMapping("change-stripe-account")
-    public void changeStripeAccount() {
-    }
-
-    @PatchMapping("remove-stripe-account")
-    public void removeStripeAccount() {
-    }
-
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         // delete the tenant and every thing related to it

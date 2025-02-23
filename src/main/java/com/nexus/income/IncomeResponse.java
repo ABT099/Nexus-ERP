@@ -5,7 +5,7 @@ import com.nexus.user.UserInfoDTO;
 
 public record IncomeResponse(
         Long id,
-        double amount,
+        long amount,
         String paymentDate,
         UserInfoDTO payer,
         BasicProjectResponse project

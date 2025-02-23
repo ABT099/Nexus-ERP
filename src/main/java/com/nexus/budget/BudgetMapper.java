@@ -24,8 +24,8 @@ public class BudgetMapper {
                 budget.getCurrentTotal(),
                 budget.getTotalIncome(),
                 budget.getTotalExpense(),
-                budget.incomes.stream().map(incomeMapper::toBasicIncomeResponse).toList(),
-                budget.expenses.stream().map(expenseMapper::toExpenseResponse).toList(),
+                budget.getIncomes().stream().map(incomeMapper::toBasicIncomeResponse).toList(),
+                budget.getExpenses().stream().map(expenseMapper::toExpenseResponse).toList(),
                 budget.getNotice(),
                 budget.isActive(),
                 budget.isArchived()

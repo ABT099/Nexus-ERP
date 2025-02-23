@@ -4,7 +4,7 @@ import com.nexus.expensecategory.BasicExpenseCategoryResponse;
 
 public record ExpenseResponse(
         Long id,
-        double amount,
+        long amount,
         String paymentDate,
         BasicExpenseCategoryResponse category,
         boolean archived

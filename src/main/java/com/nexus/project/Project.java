@@ -1,6 +1,7 @@
 package com.nexus.project;
 
 import com.nexus.abstraction.AuditableTenantAware;
+import com.nexus.budget.Budget;
 import com.nexus.common.Status;
 import com.nexus.employee.Employee;
 import com.nexus.expense.Expense;
@@ -62,6 +63,13 @@ public class Project extends AuditableTenantAware<Integer> {
             inverseJoinColumns = @JoinColumn(name = "file_id")
     )
     private Set<File> files = new HashSet<>();
+
+    @OneToMany(
+            mappedBy = "project",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    private List<Budget> budgets = new ArrayList<>();
 
     @OneToMany(
             mappedBy = "project",
@@ -159,12 +167,16 @@ public class Project extends AuditableTenantAware<Integer> {
         return steps;
     }
 
-    public List<Income> getPayments() {
+    public List<Income> getIncomes() {
         return incomes;
     }
 
     public List<Expense> getExpenses() {
         return expenses;
+    }
+
+    public List<Budget> getBudgets() {
+        return budgets;
     }
 
     public double getPrice() {

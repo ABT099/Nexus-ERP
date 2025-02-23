@@ -16,4 +16,11 @@ public interface TenantRepository extends CrudRepository<Tenant, UUID> {
     where t.id = :tenantId
     """)
     void updateTenantSubscriptionStatus(UUID tenantId, SubscriptionStatus newStatus);
+
+    @Query("""
+    select t.stripeAccountId
+    from Tenant t
+    where t.id = :tenantId
+    """)
+    String getStripeAccountIdByTenantId(UUID tenantId);
 }

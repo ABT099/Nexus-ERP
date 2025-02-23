@@ -59,3 +59,5 @@ aws:
 stripe:
   secret-key: ${STRIPE_SECRET_KEY}
   webhook-secret: ${STRIPE_WEBHOOK_SECRET}
+  client-id: ${STRIPE_CLIENT_ID}
+  redirect-uri: ${STRIPE_REDIRECT_URI}

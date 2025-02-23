@@ -64,7 +64,7 @@ public class ProjectMapper {
                                 employee.getEmployeeCode()
                         )
                 ).toList(),
-                project.getPayments().stream().map(incomeMapper::toBasicIncomeResponse).toList(),
+                project.getIncomes().stream().map(incomeMapper::toBasicIncomeResponse).toList(),
                 project.getExpenses().stream().map(expenseMapper::toExpenseResponse).toList(),
                 project.getFiles().stream().map(fileMapper::toBasicFileResponse).toList(),
                 project.getInteractions().stream().map(interactionMapper::toListInteractionResponse).toList()
