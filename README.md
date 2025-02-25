@@ -1,6 +1,6 @@
-# Nexus Backend  
+# Nexus ERP Backend  
 
-Nexus Backend is designed to handle and optimize all core operations. This service powers the logic, data management, and integrations that enable seamless workflows and interactions across the platform.  
+Nexus ERP Backend is designed to handle and optimize all core operations. This service powers the logic, data management, and integrations that enable seamless workflows and interactions across the platform.  
 
 ## Features  
 - **Project Management**: APIs for planning, tracking, and GitHub integration.  
