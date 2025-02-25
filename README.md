@@ -1,26 +1,15 @@
-# Nexus: The All-in-One Solution for Software Development Companies  
-
-Nexus is a comprehensive platform designed to streamline and optimize operations for software development companies. It offers powerful features including project management, planning, and budgeting with GitHub integration, employee and customer management, financial management with income gateway support (e.g., Stripe), chat and messaging, event scheduling, notifications, and file management. Additional highlights include email automation (receipts, project updates), multi-currency support, recruitment and applicant tracking, attendance and time management, performance tracking, and a monitoring system to ensure smooth interactions at all user levels.  
-
-Effortlessly manage your team, projects, and customers—all in one place with Nexus!
-
----  
-
 # Nexus Backend  
 
-Nexus Backend is the backbone of the **Nexus: All-in-One Solution for Software Development Companies**, designed to handle and optimize all core operations. This service powers the logic, data management, and integrations that enable seamless workflows and interactions across the platform.  
+Nexus Backend is designed to handle and optimize all core operations. This service powers the logic, data management, and integrations that enable seamless workflows and interactions across the platform.  
 
 ## Features  
 - **Project Management**: APIs for planning, tracking, and GitHub integration.  
 - **Employee & Customer Management**: Manage users, roles, and relationships.  
-- **Financial Management**: Support for multi-currency transactions and income gateway integrations (e.g., Stripe).  
+- **Financial Management**: Support for multi-currency transactions and income gateway integrations (e.g., Stripe).
+- **Budgeting**: Support for creating global budgets and project local budgets
 - **Chat & Messaging**: Real-time communication with customers and employees.  
 - **Event Scheduling**: APIs for custom schedules, reminders, and notifications.  
 - **File Management**: Upload, organize, and manage files securely.  
-- **Email Automation**: Generate and send receipts, project updates, and other email notifications.  
-- **Recruitment**: Tools for applicant tracking and recruitment workflows.  
-- **Time & Attendance**: Manage employee time tracking and attendance.  
-- **Performance Monitoring**: Track and analyze employee performance metrics.  
 - **Custom Notifications**: Event-driven notifications tailored for each user level.  
 
 ## Tech Stack  
@@ -33,10 +22,9 @@ Nexus Backend is the backbone of the **Nexus: All-in-One Solution for Software D
 ## Installation  
 
 ### Prerequisites  
-- Java 17 or higher  
-- Maven or Gradle  
-- PostgreSQL or MongoDB  
-- GitHub Personal Access Token (for project management integration)  
+- Java 21 or higher  
+- Maven
+- PostgreSQL
 
 ### Steps  
 
@@ -48,20 +36,23 @@ Nexus Backend is the backbone of the **Nexus: All-in-One Solution for Software D
 
 2. Import the project into your favorite IDE (e.g., IntelliJ IDEA, Eclipse).  
 
-3. Configure the application properties:  
-   Create an `application.yml` file under the `src/main/resources` directory and define the required environment variables:  
-   ```yaml  
-   spring:  
-     datasource:  
-       url: jdbc:postgresql://<your-database-host>:5432/<your-database-name>  
-       username: <your-database-username>  
-       password: <your-database-password>  
-     jpa:  
-       hibernate:  
-         ddl-auto: update  
-   github:  
-     token: <your-github-token>  
-   ```  
+   3. Configure the application properties:  
+      Create an `application.yml` file under the `src/main/resources` directory and define the required environment variables:  
+      ```yaml  
+      spring:  
+        datasource:  
+          url: jdbc:postgresql://<your-database-host>:5432/<your-database-name>  
+          username: <your-database-username>  
+          password: <your-database-password>
+        mail:
+          username: ${MAIL_USERNAME}
+          password: ${MAIL_PASSWORD}
+      stripe:
+        secret-key: ${STRIPE_SECRET_KEY}
+        webhook-secret: ${STRIPE_WEBHOOK_SECRET}
+        client-id: ${STRIPE_CLIENT_ID}
+        redirect-uri: ${STRIPE_REDIRECT_URI}
+      ```  
 
 4. Build the project:  
    ```bash  
@@ -87,4 +78,4 @@ http://localhost:8080/swagger-ui.html
 ```  
 
 ## License  
-This project is not for public use, it just show case the code for 
+This project is developed exclusively for a local customer and is not intended for public use. This repository exists solely to showcase the code. No permission is granted for redistribution, modification, or commercial use.
